@@ -119,8 +119,6 @@ class NeuroSetup(object):
         self.aerDummyOut = self.aerDummy()
         self.update()
         self.apply()
-        self.mapping = Mapping(name='mapping',
-                               description='Mapping')
         self.monitors = Monitors()
 
     def load_setuptype(self, filename, prefix=''):
@@ -217,7 +215,12 @@ class NeuroSetup(object):
 
             self.map_api = self._import_module(str(nmapper.attrib['module']))
             self.mapper = self.map_api.Mappings(**self.map_kwargs)
-            self.mapping = Mapping('mapping')
+            if self.map_kwargs.has_key('version'):
+                if float(self.map_kwargs['version']) == 2.0:
+                    self.mapping = PMapping('mapping')
+                else:
+                    self.mapping = Mapping('mapping')
+
         #If there is no mapper tag in setup, build an empty mapper
         if not hasattr(self, 'mapper'):
             from ConfAPI import Mappings
