@@ -1,0 +1,179 @@
+Introduction
+============
+
+A general introduction.
+
+Neuromorphic hardware
+---------------------
+
+- multineuron chips
+- AER communication
+
+Description of the Chips Developed at INI
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Our VLSI chips can be interfaced to computers via custom "AEX" boards, and
+among each other via a custom "mapper" board. The AEX boards are controlled by
+an FPGA (Filed Programmable Gate Array) which routes the communications between
+serial (i.e. other chips and mapper), parallel (i.e. the chip) and usb ports
+(i.e. the user's computer). Here is a brief tutorial on how to use these
+boards, how they are configured in a multi-chip setup, and how to re-program
+the FPGAs on the AEX boards to suit your needs.
+
+:IFSLWTA:
+
+    This chip contains a 1D sheet consisting of 128 IAF neurons, 4 of them receive
+    excitation from the other 124 and inhibit them back. Each row has 32 synapses,
+    2 excitatory, 2 inhibitory, 28 excitatory plastic synapses. Neurons have local
+    connections to first and second neighbour. Plasticity acts as a 2 state switch:
+    each synapse (28*128) can be turned on or off by learning. If it happens that
+    one synapse has a value between the on and off values, it will be pushed to the
+    nearest one according to a set of thresholds.
+
+    This chip shows the Stop-Learning algorithm (Brader et al., 2007; Mitra et al.,
+    2009).
+
+    Uses 12/16bits for neuron addressing.
+
+:2DIFWTA:
+
+    This chip is a 2D matrix of 32*64 IAF neurons similar to the ifslwta ones. Each
+    neuron has 2 excitatory connections (synapses 1-2) and 1 inhibitory (synapse 0). Local connections are
+    with the nearest neighbour (can be limited to 1/2 vertical neighbours +/- 1 lateral/diagonal neighbours).
+    Uses 13/16bits for neuron addressing.
+    There is a *bug* in this chip that generates illegal events on the AER bus :
+    Every time an inhibitory synapse of a neuron with a Y coordinate of (4n+2) or
+    (4n+3) is addressed, the system gets into a hung-up state and all AEX boards
+    have to be restarted in order to make it work again !
+
+:CPG:
+
+:DVS Silicon Retina:
+
+:Silicon cochlea:
+
+The AER interface board
+~~~~~~~~~~~~~~~~~~~~~~~
+
+AER chips need to be interfaced to the outer world. We developed a custom board
+to route signals from/to the chip to/from a usb connected computer and a serial
+bus for multi-chip and mapping capabilities.
+
+An AEX board has three I/O channels:
+USB, Parallel, Serial. USB protocol is used for communication with an external
+PC for monitoring, bias settings and stimulation. Parallel port gives access to
+the chip through the AMDA and daughter board. Serial communication is used by
+the mapper via the AER protocol. The board is controlled by a Xilinx ***model***
+32bits FPGA chip. Refer to D. Fasnacht Master thesis for more infos.
+The mapper receives spike events from the chip with a stamp which identifies the
+neuron that emitted that spike. A mapping table is compiled on the mapper so
+every incoming event can be sent to other neurons as they were
+connected by a synapse. Mapper has a I/O serial interface (16bit). Refer to D.
+Fasnacht documentation.
+
+The mapper
+~~~~~~~~~~
+
+Suppose you have N chips (so N AEX boards, AMDAs and daughter boards). Using one
+mapper you can arbitrarily connect neurons of these chips, building complex networks.
+
+We have two setups currently available:
+
+ * the `Zenzero setup <hardware-setups#the-zenzero-setup>`_
+ * the `Zaex setup <hardware-setups#the-zaex-setup>`_
+
+Refer to those pages for details on how to use these existing setups. If you
+want to arrange a chip in a new multichip setup, you have to reprogram the AEX
+board's FPGA, where informations are routed and filtered properly.
+
+Please notice that what you are going to reprogram is only valid for a specific
+setup, so before going into any modification prepare the setup you want to
+arrange. For example: 1 2Difwta and 1 ifslwta.  The serial connections are
+arranged in a loop chain as 
+
+========== === ===========   
+Source         Destination
+========== === ===========   
+Mapper OUT --> Chip1 IN
+---------- --- -----------   
+Chip1 OUT  --> Chip2 IN
+---------- --- -----------   
+...
+---------- --- -----------   
+ChipN OUT  --> Mapper IN
+========== === ===========   
+
+ChipN is connected to the user's PC via USB. An address coming from the mapper
+is checked by each AEX board and sent to the next chip. If it is an address for
+ChipM, AEX board number M will also send the message to its chip via Parallel
+port. This message will pass through each AEX until the mapper rejects it (see
+next section for details).  An address coming from ChipL will be stamped by its
+AEX board.  Chip addressing use the bits that are not used for neurons
+addressing.  Of course there are some limitations. The first one can think of
+is a bandwith limitation, the amount of information per time unit the chain can
+process.
+
+In this design we will suppose that mapper capabilities are enough to route all
+the incoming events without sensible deviations from the ideal case. This can
+be false in particular cases.  The second is in the address space. Each chip
+needs a certain amount of bits for the addressing of neurons. The bigger the
+chip (N neurons), the higher the number (~logN). While the AEX boards can
+manage 32bits data, the mapper serial communication is 16bits so 16 bits are
+the maximum number of bits one can use for chip and neurons addressing. The
+design must consider the maximum amount of bits for neurons addressing and what
+remains for chip addressing. The design presented here refers to the use of 1
+Retina and 3 2Difwta chip. One can even choose not to use the retina and use
+the sequencer instead. They cannot be used together at the same time. You can
+use either 2Difwta and/or ifslwta chips. Once you program the AEX you cannot
+change the position of an AEX in the chain * is it true? *.  2Difwta uses 13/16
+bits, so we have 3 bits left for chips addressing. Retina chip uses 15/16 bits
+but here we can use only 13 of them restricting the size of the retina. The 8
+resulting addresses are as follows.
+
+.. Make a table here
+
+==============   =======
+Chip             IN
+==============   =======
+Retina/Seq       000
+--------------   -------
+Chip 1 IN:       001
+--------------   -------
+Chip 2 IN:       010
+--------------   -------
+Chip 3 IN:       011
+==============   =======
+
+==============   =======
+Chip             OUT
+==============   =======
+Retina/Seq       100
+--------------   -------
+Chip 1           101
+--------------   -------
+Chip 2           110
+--------------   -------
+Chip 3           111
+==============   =======
+
+Each setup needs one (and only one) special channel 0 board. This board doesn't
+transmit mapped events (i.e. inputs for the chips) through the serial-to-serial
+path. This means it has to be the last one on the chain and the one that is
+used to send events from usb to the chain. This serial-to-serial filtering has
+been introduced after realizing that the mapper cannot receive mapped events,
+otherwise the chain is blocked. Please notice that because of this you cannot
+use channel 4 (retina input) for the sequencer: your events would be trashed by
+the special aex.
+
+Software
+--------
+
+.. figure:: ../images/software.jpg
+
+Software for real-time interaction, control, configuration of a neuromorphic
+system. General stuff about:
+
+- what can be done
+- how it is implemented
+- what's needed to control new hardware (csv, xml, ...)
+- server-client architecture

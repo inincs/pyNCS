@@ -1,0 +1,196 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Reprogram routing of AEX boards &mdash; Python NCS tools 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Python NCS tools 0.2 documentation" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Python NCS tools 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="reprogram-routing-of-aex-boards">
+<h1>Reprogram routing of AEX boards<a class="headerlink" href="#reprogram-routing-of-aex-boards" title="Permalink to this headline">¶</a></h1>
+<p>Those who want to create their own AEX version, have to first checkout the code
+from <a class="reference external" href="https://x.ethz.ch/svn/aer/fpga">https://x.ethz.ch/svn/aer/fpga</a></p>
+<p>Therein, the AEX project file for Xilinx ISE is: <tt class="docutils literal"><span class="pre">aex/aex.ise</span></tt>.
+The top VHDL file is: <tt class="docutils literal"><span class="pre">aextop/z_top.vhd</span></tt>.</p>
+<p>Once you downladed the fpga code you can open the file &#8216;aex/aex.ise&#8217;. On the
+left panel, &#8216;Sources&#8217;, blablabla.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you encounter problems you can always go back to revision 1564 of
+the <tt class="docutils literal"><span class="pre">aex.ise</span></tt> file, rename it as you want, for example <tt class="docutils literal"><span class="pre">aex2.ise</span></tt>,
+and go on with your modifications</p>
+</div>
+<p>In the top file, at the beginning, just after the entity declaration, you find
+all the configuration settings. The configuration is with respect to paths
+between the three interfaces, denoted as P, S, U for Parallel, Serial and USB.
+There are 3^3 = 9 combinations so 9 possible path to configure. At first, each
+path can be enabled or disabled completely. These are the first nine constants,
+with the names <tt class="docutils literal"><span class="pre">confPathEnableXYxS</span></tt>, with XY being PP, PS, PU, SP, and so on...</p>
+<p>If <tt class="docutils literal"><span class="pre">0</span></tt> is assigned to a path, it is disabled.
+Then there are four configuration values for each path,</p>
+<ul class="simple">
+<li>confXYFilterRangeMinxDI with default x&#8221;00000000&#8221;</li>
+<li>confXYFilterRangeMaxxDI with default x&#8221;FFFFFFFF&#8221;</li>
+<li>confXYOutMaskAndxDI with default x&#8221;FFFFFFFF&#8221;</li>
+<li>confXYOutMaskOrxDI with default x&#8221;00000000&#8221;</li>
+</ul>
+<p>with XY being the same as before.
+An address A coming to the path is checked to be in the range:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">A</span> <span class="o">&gt;=</span> <span class="n">confXYFilterRangeMinxDI</span> <span class="ow">and</span> <span class="n">A</span> <span class="o">&gt;=</span> <span class="n">confFilterRangeMaxxDI</span>
+</pre></div>
+</div>
+<p>If not, the address is discarded. If the filter check is passed, A is used to
+calculate Anew in the following way:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Anew</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">A</span> <span class="ow">and</span> <span class="n">confXYOutMaskAndxDI</span><span class="p">)</span> <span class="ow">or</span> <span class="n">confXYOutMaskOrxDI</span>
+</pre></div>
+</div>
+<p>This gives us the possibility to make the trick. Notice first that we have to
+distinguish if an event is input for a chip or output from a chip, because of
+monitoring purposes. This reduces the address space. The range filtering is
+used by an AEX for checking if an address has to be sent to its chip. The &#8216;or&#8217;
+mask is used for adding the stamp. The &#8216;and&#8217; mask is used for cleaning the bits
+before stamping.</p>
+<p>For example, if we had 8 bits, 5 for neurons addressing:</p>
+<ol class="arabic simple">
+<li>01011010 (0x5A) comes from the mapper</li>
+<li>it is for chip number 010 (0x40)</li>
+<li>this cause activity on chip 010</li>
+<li>chip 010 stamp its activity with 110 (add 0xC0 to the address)</li>
+<li>mapper finds 0xC0 + 0x14 and then knows who is the sender</li>
+<li>mapper maps this activity to someone else...</li>
+</ol>
+<p>Note that each event add an address in the communication loop. If nobody removed
+it, the chain would soon saturate. The idea is then to stamp a chip output
+address in a different way of a chip input address. * better explanation
+please...*</p>
+<p>Each AEX board will have its own configuration because the filter and stamp
+change. For example, for Chip1:</p>
+<div class="highlight-python"><pre>constant confSPFilterRangeMinxDI : std_logic_vector(31 downto 0) :=x"0000A000";
+constant confSPFilterRangeMaxxDI : std_logic_vector(31 downto 0) :=x"0000AFFF";
+constant confSPOutMaskAndxDI     : std_logic_vector(31 downto 0) :=x"FFFF1FFF";
+constant confSPOutMaskOrxDI      : std_logic_vector(31 downto 0) :=x"00002000";</pre>
+</div>
+<p>The path enabled are PS, PU, SP, SU, US for all the AEXs.</p>
+<p>The files created are in &#8216;fpga/aextop&#8217; folder:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">z_top_CH1.vhd</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">z_top_CH2.vhd</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">z_top_CH3.vhd</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">z_top_RS.vhd</span></tt></li>
+</ul>
+<div class="section" id="notes-and-common-problems-in-programming-aex">
+<h2>Notes and common problems in programming AEX<a class="headerlink" href="#notes-and-common-problems-in-programming-aex" title="Permalink to this headline">¶</a></h2>
+<p>The ise project file is automagically saved in any moment... If you do
+something wrong like removing all the sources on the left panel, this change
+will persist even if you close the project without explicitly saving.  - At the
+end of the process, be sure that only D2 led is on and the others are off. Once
+you connect the board to the USB you should se D1 and D3 on and D2 off. Please
+notice that this is a possible check but is <em>not</em> exhaustive.</p>
+</div>
+<div class="section" id="going-further">
+<h2>Going further<a class="headerlink" href="#going-further" title="Permalink to this headline">¶</a></h2>
+<p>The loop design we described before is the simplest one can think of. This
+setup will work with an input (retina or sequencer) and 3 chips, 2Difwta or
+ifslwta.  An other possibility is to use the fact that ifslwta chips use a
+lower number of bits for neurons and synapses addressing. This means that in
+principal it is possible to use one retina and up to 6 ifslwta <em>is it true?</em>.</p>
+<p>Anyway we implemented this before in order to see if everything is going to
+work or not, then after we can think about something more general.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Reprogram routing of AEX boards</a><ul>
+<li><a class="reference internal" href="#notes-and-common-problems-in-programming-aex">Notes and common problems in programming AEX</a></li>
+<li><a class="reference internal" href="#going-further">Going further</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/general/aex_reprogramming.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Python NCS tools 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2009, Emre Neftci, Sadique Sheik, Daniel Sonnleithner, Giacomo Indiveri.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

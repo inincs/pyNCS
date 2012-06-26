@@ -1,0 +1,21 @@
+Controlling new hardware with pyNCS
+===================================
+
+Neuromorphic chips
+------------------
+
+In order to use new chips with the existing software, a bunch of files need to
+be written.
+
+- csv
+- xml
+
+...
+
+New oscillocope
+---------------
+
+- how to import drivers into pyOsc
+
+New anything else
+-----------------

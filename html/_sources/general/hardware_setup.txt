@@ -1,0 +1,97 @@
+---------------------
+How to set up a setup
+---------------------
+
+Here we describe how to configure a new setup from scratch using existing
+hardware, i.e. existing VLSI chips and AER boards.
+
+Equipment
+=========
+
+- The ExCol Mapper (Daniel_)
+- AEX boards for monitoring and sequencing spike trains to the chips (Daniel_)
+- Optional: tmpdiff128 retina on a parallel AER compatible board
+- at least 1 IFSLWTA chip (Giacomo chip) consisting of 128 I&F neurons with 32 synapses each (2 non-plastic exc., 2 inhibitory, 28 plastic synapses implementing the bistable learning synapse) and optional hard-wired "soft Winner-take-all connectivity
+- Optional: 1 2DIFWTA (Elisabetta chip) consisting of 64 x 32 I&F, 3 non-plastic synapses per neuron, 1 inhibitory synapse, 2 excitatory synapses
+
+- boards
+- mapper
+- chips
+- cables
+- software
+- drivers
+- other resources (acquisition board, ...)
+
+Installation
+============
+
+Program the mapper
+~~~~~~~~~~~~~~~~~~
+
+- how to program the mapper
+
+Program the AEX FPGA
+~~~~~~~~~~~~~~~~~~~~
+
+Tools you need
+~~~~~~~~~~~~~~
+
+As many AEX boards as you want (and 6V power suppliers for each...), Xilinx
+Platform Cable USB *or parallel*, Windows or Linux machine with drivers for
+Xilinx Platform Cable USB, AEX svn repository access rigths. This guide is for
+windows machines.
+
+#. Download the code for the AEXs from the svn repository.
+#. Plug-in Xilinx Platform Cable USB.
+#. After some dialog windows you will have corrected installed Xilinx drivers.
+#. Download ISE Webpack from http://www.xilinx.com/tools/webpack.htm
+
+Program can be installed on both Linux and Windows machines (see
+http://www.xilinx.com/ise/ossupport/index.htm) but driver for usb cable can be
+installed very easily on Windows [Note: there's a DVD with all the tools you
+need in the box of the Xilinx USB cable]. You'll need to use ISE Project
+workspace and Impact. The first compiles the code for the fpga, the other
+actually programs the fpga.
+
+The AEX project file for Xilinx ISE is: ``aex/aex.ise``.
+The top VHDL file is: ``aextop/z_top.vhd``.
+
+Once you downladed the fpga code you can open the file 'aex/aex.ise'. On the
+left panel, 'Sources', blablabla.
+
+Clean everything (i.e. right-click on the top file and remove it) then
+``addsource``, choose your code (for example ``z_top_CH1.vhd``),
+make sure it is set as Top Module on the Source panel and be sure that all the
+sources for all the single parts are loaded. On the FPGA Design Summary
+double-click on Generate Programming file. Wait and get rid of the warnings...
+Open Impact and create a new project, open ``aex/z_top.bit``, than choose "create PROM
+file", select 4M model, click on left side on Generate file, go to the Boundary
+Scan, initialize the chain. assign you brand new .mcs file to the PROM (xcf04s)
+and the brand new z_top.bit in /aex to the FPGA (xc3s500e). Right click and
+Program both devices. After programming the xc3s500e you could see changes in
+leds state. You did it! In future you can use Verify insted of Program in
+order to compare what\'s on the FPGA and what\'s on your code.
+
+If you want to change the routing scheme, have a look at `Reprogramming AEX`_.
+
+.. _Reprogramming AEX: aex_reprogramming.html
+
+Power-cycle
+~~~~~~~~~~~
+
+There is a particular power cycle that one must respect:
+
+#. plug all the serial cables in the correct manner
+#. plug all USB cables, first the 0 channel board (it will be seen as
+   `/dev/aerfx0`)
+#. Power up the AEX boards
+#. Turn on the AMDA boards (first main the daughter)
+#. Turn on the aex server
+
+The AMDA server starts automatically when plugging the first AMDA board. The
+AEX server have to be explicitly installed.
+Check that server are on::
+
+    $> ps aux | grep Serv
+    fabios   24743 20.1  0.4  54800  8320 pts/1    Sl+  11:44   0:02 python Server.py
+    root     31477  0.0  0.3 166532  6768 ?        S<l  Mar28   0:45 python -c    import pyAmdaServer;pyAmdaServer.Main.run()

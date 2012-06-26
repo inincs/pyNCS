@@ -1,0 +1,219 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>How to set up a setup &mdash; Python NCS tools 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Python NCS tools 0.2 documentation" href="../index.html" />
+    <link rel="next" title="Controlling new hardware with pyNCS" href="new_hardware.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="license.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="new_hardware.html" title="Controlling new hardware with pyNCS"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="license.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Python NCS tools 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="how-to-set-up-a-setup">
+<h1>How to set up a setup<a class="headerlink" href="#how-to-set-up-a-setup" title="Permalink to this headline">¶</a></h1>
+<p>Here we describe how to configure a new setup from scratch using existing
+hardware, i.e. existing VLSI chips and AER boards.</p>
+<div class="section" id="equipment">
+<h2>Equipment<a class="headerlink" href="#equipment" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>The ExCol Mapper (<a href="#id1"><span class="problematic" id="id2">Daniel_</span></a>)</li>
+<li>AEX boards for monitoring and sequencing spike trains to the chips (<a href="#id3"><span class="problematic" id="id4">Daniel_</span></a>)</li>
+<li>Optional: tmpdiff128 retina on a parallel AER compatible board</li>
+<li>at least 1 IFSLWTA chip (Giacomo chip) consisting of 128 I&amp;F neurons with 32 synapses each (2 non-plastic exc., 2 inhibitory, 28 plastic synapses implementing the bistable learning synapse) and optional hard-wired &#8220;soft Winner-take-all connectivity</li>
+<li>Optional: 1 2DIFWTA (Elisabetta chip) consisting of 64 x 32 I&amp;F, 3 non-plastic synapses per neuron, 1 inhibitory synapse, 2 excitatory synapses</li>
+<li>boards</li>
+<li>mapper</li>
+<li>chips</li>
+<li>cables</li>
+<li>software</li>
+<li>drivers</li>
+<li>other resources (acquisition board, ...)</li>
+</ul>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="program-the-mapper">
+<h3>Program the mapper<a class="headerlink" href="#program-the-mapper" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>how to program the mapper</li>
+</ul>
+</div>
+<div class="section" id="program-the-aex-fpga">
+<h3>Program the AEX FPGA<a class="headerlink" href="#program-the-aex-fpga" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="tools-you-need">
+<h3>Tools you need<a class="headerlink" href="#tools-you-need" title="Permalink to this headline">¶</a></h3>
+<p>As many AEX boards as you want (and 6V power suppliers for each...), Xilinx
+Platform Cable USB <em>or parallel</em>, Windows or Linux machine with drivers for
+Xilinx Platform Cable USB, AEX svn repository access rigths. This guide is for
+windows machines.</p>
+<ol class="arabic simple">
+<li>Download the code for the AEXs from the svn repository.</li>
+<li>Plug-in Xilinx Platform Cable USB.</li>
+<li>After some dialog windows you will have corrected installed Xilinx drivers.</li>
+<li>Download ISE Webpack from <a class="reference external" href="http://www.xilinx.com/tools/webpack.htm">http://www.xilinx.com/tools/webpack.htm</a></li>
+</ol>
+<p>Program can be installed on both Linux and Windows machines (see
+<a class="reference external" href="http://www.xilinx.com/ise/ossupport/index.htm">http://www.xilinx.com/ise/ossupport/index.htm</a>) but driver for usb cable can be
+installed very easily on Windows [Note: there&#8217;s a DVD with all the tools you
+need in the box of the Xilinx USB cable]. You&#8217;ll need to use ISE Project
+workspace and Impact. The first compiles the code for the fpga, the other
+actually programs the fpga.</p>
+<p>The AEX project file for Xilinx ISE is: <tt class="docutils literal"><span class="pre">aex/aex.ise</span></tt>.
+The top VHDL file is: <tt class="docutils literal"><span class="pre">aextop/z_top.vhd</span></tt>.</p>
+<p>Once you downladed the fpga code you can open the file &#8216;aex/aex.ise&#8217;. On the
+left panel, &#8216;Sources&#8217;, blablabla.</p>
+<p>Clean everything (i.e. right-click on the top file and remove it) then
+<tt class="docutils literal"><span class="pre">addsource</span></tt>, choose your code (for example <tt class="docutils literal"><span class="pre">z_top_CH1.vhd</span></tt>),
+make sure it is set as Top Module on the Source panel and be sure that all the
+sources for all the single parts are loaded. On the FPGA Design Summary
+double-click on Generate Programming file. Wait and get rid of the warnings...
+Open Impact and create a new project, open <tt class="docutils literal"><span class="pre">aex/z_top.bit</span></tt>, than choose &#8220;create PROM
+file&#8221;, select 4M model, click on left side on Generate file, go to the Boundary
+Scan, initialize the chain. assign you brand new .mcs file to the PROM (xcf04s)
+and the brand new z_top.bit in /aex to the FPGA (xc3s500e). Right click and
+Program both devices. After programming the xc3s500e you could see changes in
+leds state. You did it! In future you can use Verify insted of Program in
+order to compare what&#8217;s on the FPGA and what&#8217;s on your code.</p>
+<p>If you want to change the routing scheme, have a look at <a class="reference external" href="aex_reprogramming.html">Reprogramming AEX</a>.</p>
+</div>
+<div class="section" id="power-cycle">
+<h3>Power-cycle<a class="headerlink" href="#power-cycle" title="Permalink to this headline">¶</a></h3>
+<p>There is a particular power cycle that one must respect:</p>
+<ol class="arabic simple">
+<li>plug all the serial cables in the correct manner</li>
+<li>plug all USB cables, first the 0 channel board (it will be seen as
+<cite>/dev/aerfx0</cite>)</li>
+<li>Power up the AEX boards</li>
+<li>Turn on the AMDA boards (first main the daughter)</li>
+<li>Turn on the aex server</li>
+</ol>
+<p>The AMDA server starts automatically when plugging the first AMDA board. The
+AEX server have to be explicitly installed.
+Check that server are on:</p>
+<div class="highlight-python"><pre>$&gt; ps aux | grep Serv
+fabios   24743 20.1  0.4  54800  8320 pts/1    Sl+  11:44   0:02 python Server.py
+root     31477  0.0  0.3 166532  6768 ?        S&lt;l  Mar28   0:45 python -c    import pyAmdaServer;pyAmdaServer.Main.run()</pre>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">How to set up a setup</a><ul>
+<li><a class="reference internal" href="#equipment">Equipment</a></li>
+<li><a class="reference internal" href="#installation">Installation</a><ul>
+<li><a class="reference internal" href="#program-the-mapper">Program the mapper</a></li>
+<li><a class="reference internal" href="#program-the-aex-fpga">Program the AEX FPGA</a></li>
+<li><a class="reference internal" href="#tools-you-need">Tools you need</a></li>
+<li><a class="reference internal" href="#power-cycle">Power-cycle</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="license.html"
+                        title="previous chapter">&lt;no title&gt;</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="new_hardware.html"
+                        title="next chapter">Controlling new hardware with pyNCS</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/general/hardware_setup.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="new_hardware.html" title="Controlling new hardware with pyNCS"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="license.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li><a href="../index.html">Python NCS tools 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2009, Emre Neftci, Sadique Sheik, Daniel Sonnleithner, Giacomo Indiveri.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

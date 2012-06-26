@@ -1,0 +1,43 @@
+AerViewer Package
+=================
+
+:mod:`AerViewer` Package
+------------------------
+
+.. automodule:: pyNCS.AerViewer
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`Aer1DViewer` Module
+-------------------------
+
+.. automodule:: pyNCS.AerViewer.Aer1DViewer
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`Aer2DViewer` Module
+-------------------------
+
+.. automodule:: pyNCS.AerViewer.Aer2DViewer
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`Updater1D` Module
+-----------------------
+
+.. automodule:: pyNCS.AerViewer.Updater1D
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`Updater2D` Module
+-----------------------
+
+.. automodule:: pyNCS.AerViewer.Updater2D
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
