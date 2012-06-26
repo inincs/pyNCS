@@ -1,0 +1,51 @@
+pyST Package
+============
+
+:mod:`pyST` Package
+-------------------
+
+.. automodule:: pyNCS.pyST
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`STas` Module
+------------------
+
+.. automodule:: pyNCS.pyST.STas
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`STsl` Module
+------------------
+
+.. automodule:: pyNCS.pyST.STsl
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`pyST_globals` Module
+--------------------------
+
+.. automodule:: pyNCS.pyST.pyST_globals
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`spikes` Module
+--------------------
+
+.. automodule:: pyNCS.pyST.spikes
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`stgen` Module
+-------------------
+
+.. automodule:: pyNCS.pyST.stgen
+    :members:
+    :undoc-members:
+    :show-inheritance:
+

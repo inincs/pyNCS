@@ -1,0 +1,147 @@
+Spectrum Board installation
+===========================
+
+A digital acquisition board is installed on one of the NCS machines. This
+board, named Spectrum after the producers name, can be used for the acquisition
+of analog signals directly from the chips, giving the user the possibility to
+integrate his experiments with a tool for the reading of non-AER signals. NCS
+group has written an interface in Python and standard basic operation can now
+be done from inside a python script just calling an executable.
+
+Introduction
+------------
+
+The board is a Spectrum M2i.3132. It has 8 channels, 12bits. They can acquire simultaneously at 25MHZ max [#]_.
+
+Drivers and software are provided for 
+Windows and a bunch of linux distributions and architectures. For zaex machine, we need the driver sources and compile the driver. The source code is *not*
+distributed so we need a special permission in order to use (and eventually modify) their driver. Every programmer using the board has to sign an agreement saying
+the usual things like "I will not re-ditribute the code... I will not use the code for making money...". Something like this will work::
+    
+   Dear Bernd,
+    I'm a PhD working at the Institute of Neuroinfomatics in Zurich with
+    Giacomo Indiveri. We have an M2i.3132 installed and I need the driver
+    source code because there is no build for our distribution and architecture
+    (Ubuntu <blabla>, multicore SMP, <blabla>). I know I can sign a non-disclosure agreement,
+    can you send it please?
+    Thank you and best regards,
+        Fabio Stefanini
+
+Easily speaking, the board itself is a minimal oscilloscope. It is much similar (in concept) to the hardware installed on other more expensive oscilloscopes
+with nice LCD panels, buttons, controls, ... This one has a lot of advantages, over the obvious disadvantage represented by the performances: it is provided as
+a PCI card to be installed on a computer. This means it can be used by scripts which eventually need to read analog signal and then perform some operation.
+First example coming to your mind: auto-adjusting biases on a chip!
+
+Since the company only gave us the driver, we needed to write our own interface, even because our very peculiar NCS-style purposes (interface with the chips).
+A first attempt of having a complete interface to be integrated in a complex optimization algorithm was done by the writer and it is here documented.
+At this Alpha stage, the C program is able to set board's parameters (how many channels you want to use? Which range in voltages? Which signal should trigger
+the acquisition? etc.) and perform an acquisition writing the output directly into a file.
+
+.. [q] The main contact is ''Bernd.Toerner AT spec DOT de'', ''Claudia.Boras AT spec DOT de'' was the girl
+       replying to my email, ''Matthias.Wilma AT spec DOT de'' is the contact for technical support.
+
+.. [#] This is enough for acquiring signals from our chips. For example, with a samplerate of 25MHz you can clearly catch req/ack signals and trigger acquisition with them.
+
+Installing/Updating the board
+-----------------------------
+
+You can checkout all the code you need from svn_. Here's a short description of the important content you just downloaded:
+    
+    - examples: a set of examples programs in C provided by the company. They should easily work and I started from them writing the actual interface.
+    - spcm_linuxkernel_source: the driver source!
+    - ncspectrum: the programs for acquiring signals
+    - m2i31_manual_english.pdf: the manual...
+
+.. _svn: https://svn.ini.uzh.ch/repos/avlsi/NCS/SW/spectrum/.
+
+Now have the source code. It is good to update it from time to time. Go to the `Spectrum's website`_ for new software. For the latest new driver
+you always have to ask them the source by email, though. Let's see how to update the driver.
+
+.. _Spectrum's website: http://www.spec.de/driver_download.html
+
+You need to be root sometimes to complete the operations(Actually you should be a member of SPCM group on ZAEX to have the right access!!). Ask zaex's admins for that. To compile the drivers type::
+
+    $ sudo su
+    # cd spcm_linuxkernel_source/m2i_krnl_linux
+    # make -f Makefile.kernel26 
+
+The kernel module should be copied in the /lib/modules/`uname -r`/extras. Run a::
+
+    # sudo depmod  
+
+to make sure the module list is updated. To load the module run::
+
+    # sudo modprobe spcm
+
+If modprobe does not work, try::
+
+    # sudo insmod /lib/modules/`uname -r`/extras/spcm.ko
+
+Check that the /dev/spcm0 node is created and check its permissions. If it has root permissions, it means udev rules didn't work so always remember to run the programs that use the device as root. Trying to solve the udev problem is also a good idea.
+
+*TODO: fix udev problem (udev rule apply correct permissions to /dev/spcm0 but segfault is raised if you are not root!)*
+
+Spectrum software
+-----------------
+
+From the company's website you can download the latest software. The first one is the Spcm Control Center (spcm_control_center_v127b3459.tgz). It visualizes some
+infos about the spcm card so you can use it in order to check that the board is really running. You can do also other unimportant stuff with it if you want.
+
+An other cool and useful one is SBench6 (sbench6-6.0.06b3529-1.64bit_stdc++6.rpm). Install it by typing::
+
+    $> sudo rpm -Uvh sbench6-6.0.06b3529-1.64bit_stdc++6.rpm
+
+Once you do that you end up with a cool GUI which visualize signals in realtime. You can practice with it a bit. Just run it::
+
+    $> SBench6
+
+Normally, you first visualize the signals you are going to acquire and sets the parameters (ranges, offsets, ...), try some acquisition and test different
+buffer lenghts and triggering and finally put everything in a python script and automatize the acquisition. The latter operation is a bit time consuming because
+it require to write a lot of stuff. Since you can save the configuration file directly from the GUI, it would be nice to be able to read this signal from inside the
+python script. Do you want to be the really first guy implementing this amazing feature? Be my guest then!
+
+For saving the configuration just go to File > Save config. It will save a txt file with a lot of stuff in it.
+
+Please notice that the free version of SBench6 doesn't allow ASCII save of data file. If you want an ASCII file with your data you can only use the C program ``rec_single_asciifile``.
+
+Common problems
+---------------
+
+Debugging
+~~~~~~~~~
+
+Whenever something weird happens, is cool to have a trace of all the operations that have been done with the board.
+Open the Spectrum Control Center and set the log level on the support tab to "log all, including library calls".
+Then close the Control Center and start your program.
+Now all driver calls and further informations are stored in the file "spcmdrv_debug.txt". If you want to contact the company, always send them this file.
+It is also useful for debugging you program, obviously.
+
+The system doesn't find the board
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+It can be a problem of permission. Try running you command with ``sudo``, for example::
+
+    $> sudo Sbench6
+ 
+If this works, it means the udev rule is not working properly setting the right permissions for ``/dev/spcm0``. If it still doesn't work
+the problem is maybe hard to solve. First, check that ``/dev/spcm0`` is actually there, then try to remove the module and load it again::
+
+    $> sudo rmmod spcm
+    $> ls /dev/spcm0
+    ls: cannot access /dev/spcm0: No such file or directory
+    $> sudo modprobe spcm
+    $> ls /dev/spcm0
+    /dev/spcm0
+
+SBench6 keeps crashing
+~~~~~~~~~~~~~~~~~~~~~~
+
+Well... That's why it is so useful to save a config file... If it crashes, just close it and open it again. Perhaps this is related to the "acquiring
+zeros" problem. Who knows... You may want to contact the company.
+
+
+Acquired signals are all 0s
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This is a bug somewhere in the driver, most probably. Nobody really figured out how to solve it. A work-around is to set a smaller buffersize (under 2MB)
+and/or decreasing the framerate and acquire again. Do you want to fix this problem? Be my guest!

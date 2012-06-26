@@ -1,0 +1,10 @@
+pyTune plugins explained
+========================
+
+pyTune controls neuromorphic system by means of plugins. A plugin basically
+translates pyTune informations (classes, methods, attributes, keywords, ...)
+into system-specific ones. For example, the pyNCS plugin for pyTune contains
+methods for setting the biases of the chips when calling ``set`` functions.
+Once a new plugin is implemented, all the features of pyTune should be
+available right away.
+

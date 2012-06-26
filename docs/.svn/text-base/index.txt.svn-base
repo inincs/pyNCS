@@ -1,0 +1,74 @@
+.. NCS documentation master file, created by
+   sphinx-quickstart on Mon Nov 23 16:07:25 2009.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Python NCS tools documentation
+==============================
+
+Please refer to http://ncs.ethz.ch/ncs for more information
+
+General
+-------
+
+.. toctree::
+   :maxdepth: 2
+
+   general/introduction.txt
+   general/installation.txt
+   general/tutorial.txt
+   general/pyosc.txt
+   general/experiments.txt
+   general/pytune.txt
+   general/learning.txt
+
+Technical
+---------
+
+.. toctree::
+   :maxdepth: 2
+
+   general/hardware_setup.txt
+   general/new_hardware.txt
+   general/spcm.txt
+   general/troubleshooting.txt
+
+Examples
+--------
+
+This section should be constantly updated so stay tuned!
+
+.. toctree::
+   :maxdepth: 1
+
+   examples/attractor.txt
+   examples/reservoir.txt
+
+API reference
+-------------
+
+.. toctree::
+   :maxdepth: 2
+
+   general/api.txt
+
+Obsolete
+--------
+
+The following documents are very old and obsolete but you can still look at
+them if you need. At the time they were written, most of the high-level tools
+(mostly pyNCS) where not there yet.
+
+.. toctree::
+   :maxdepth: 1
+
+   old/hardware_usage.txt
+   old/getting_started.txt
+   old/pymap.txt
+
+.. Indices and tables
+.. ==================
+.. 
+.. * :ref:`genindex`
+.. * :ref:`modindex`
+.. * :ref:`search`

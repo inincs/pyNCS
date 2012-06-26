@@ -1,0 +1,85 @@
+Doing real experiments
+======================
+
+Structure
+---------
+
+For highly complex experiments it is useful to split the scripts
+into several files. We normally try to follow the scheme below.
+
+Folders:
+
+:Results:
+    contains pickles of the results under nicely-named folders
+:biases:
+    bias (text) files of the chips
+:setupfiles:
+    xml files of the setups (*)
+:chipfiles:
+    csv and xml files representing the chips (*)
+
+(*) these folders are usually in a common folder somewhere else because they are
+  not experiment dependent.
+
+Files and correspondent actions:
+
+:expSetup:
+    load the setup
+:expMap:
+    prepare connectivity
+:expPop:
+    create populations
+:expStim:
+    load data set and convert into AER
+:expTools:
+    useful functions, code snippets, ...
+:expOsc:
+    prepare acquisition of analog signals if needed
+:expMon:
+    define monitors (?)
+:expRun:
+    run the experiment and save values
+:expData:
+    analysis of the data
+:expPlot:
+    plot data
+
+Experiment tools
+----------------
+
+We developed a specific class to save the data of our experiments.
+
+Save
+~~~~
+
+::
+
+    et = pyNCS.et
+    et.mksavedir() # creates a new folder under Results/
+    et.globaldata.variable_to_be_saved = v1
+    et.globaldata.an_other_one = v4
+    et.save() # saves everything from globaldata and all expXXX scripts.
+
+Some comments. The ``Results`` folder has to be created in advance. The function
+``mksavedir`` creates, by default, a folder of the format ``NNN__DD-MM-YYYY``.
+You can assign every `pickable` variable you want to globaldata attributes. The
+``save`` function saves:
+
+- all the python files starting by ``exp`` in a single ``tar.gz``
+  file inside the new folder
+- a single pickle of ``et.globaldata``
+- an empty file with the time of the experiment as name
+
+.. warning:: Don't forget to save chip biases!
+
+Load
+~~~~
+
+::
+
+    loaded_data = pyNCS.et
+    et.globaldata.directory = 'Results/128__19-04-2011'
+    et.globaldata = et.globaldata.load()
+
+The ``load`` functions grabs the pickle from the specified directory. You can
+find the variables you saved in ``et.globaldata``.

@@ -1,0 +1,81 @@
+Reservoir
+=========
+
+Description
+-----------
+
+A reservoir is a pool of units with random connections. The connections are
+such that the activity of the network is "at the edge of chaos". This concept
+forms the basis of a particular type of neural networks called
+liquid-state-machines (LSM).
+
+- liquid state machine
+- input
+- read-out
+- LSM with LIF neurons?
+
+Implementation
+--------------
+
+- preliminary operations::
+
+    import blabla
+    import pyNCS
+    
+    nsetup = pyNCS.NeuroSetup('my_setuptype.xml', 'my_setup.xml')
+
+- create a population::
+
+    number_of_units = 500
+    res = pyNCS.Population('', '')
+    res.populate_by_number(nsetup,
+                           'my_chip',
+                           'my_neuron',
+                           number_of_units)
+
+- connect the units::
+
+    C_res = pyNCS.Connection(res, res, 'excitatory0', fashion='random_all2all')
+
+- create input::
+
+    inp = pyNCS.Population('', '')
+    inp.populate_by_id(nsetup,
+                       'my_sequencer',
+                       'my_neuron',
+                       range(5, 10))
+
+- connect the input to the reservoir::
+
+    C_inp = pyNCS.Connection(inp, res, 'excitatory1') # default fashion is one2one
+
+- make the input spike::
+
+    pattern1 = inp.soma.spiketrains_poisson(random(len(inp)), duration=500)
+
+- prepare the hardware::
+
+    nsetup.chips[res.neuronblock.neurochip.id].loadBiases('biases/reservoir.biases')
+    # the following is equivalent to the previous statement
+    res.neuronblock.neurochip.loadBiases('biases/reservoir.biases')
+    
+    nsetup.mapping.write() # connections where automatically appended
+
+- unleash hell::
+
+    # stimulus lasts for 500ms but we want to record more, say 5s
+    out = nsetup.stimulate(pattern1, tDuration=5000)
+
+- plot (with monitors is a lot easier and faster!)::
+
+    # the output
+    out[out.soma.channel].raster_plot()
+    # external input and recurrent input
+    imshow(out[out.synapses.channel].firing_rate(50)) # 50ms time-bin
+    # input stimulus
+    pattern1[inp.soma.channel].raster_plot()
+
+Parameters
+----------
+
+The parameters for a good reservoir are... ?

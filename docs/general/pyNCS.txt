@@ -1,0 +1,99 @@
+pyNCS Package
+=============
+
+:mod:`pyNCS` Package
+--------------------
+
+.. automodule:: pyNCS.__init__
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`ComAPI` Module
+--------------------
+
+.. automodule:: pyNCS.ComAPI
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`ConfAPI` Module
+---------------------
+
+.. automodule:: pyNCS.ConfAPI
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`chip_v2` Module
+---------------------
+
+.. automodule:: pyNCS.chip_v2
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`connection` Module
+------------------------
+
+.. automodule:: pyNCS.connection
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`experimentTools` Module
+-----------------------------
+
+.. automodule:: pyNCS.experimentTools
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`group` Module
+-------------------
+
+.. automodule:: pyNCS.group
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`mapping` Module
+---------------------
+
+.. automodule:: pyNCS.mapping
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`monitors` Module
+----------------------
+
+.. automodule:: pyNCS.monitors
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`neurosetup` Module
+------------------------
+
+.. automodule:: pyNCS.neurosetup
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`population` Module
+------------------------
+
+.. automodule:: pyNCS.population
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+
+    pyNCS.AerViewer
+    pyNCS.pyST
+

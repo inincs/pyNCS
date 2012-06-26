@@ -1,0 +1,147 @@
+::
+
+    # -*- coding: utf-8 -*-
+
+    # HELLO,
+    # THIS IS A TEMPLATE FOR THE CREATION OF PARAMETERS IN THE NCS PLUGIN OF
+    # pyTune. PLEASE READ ALL THE STRINGS WRITTEN IN CAPITAL LETTERS AND FOLLOW THE
+    # DESCRIBED CONVENTIONS AS MUCH AS POSSIBLE.
+
+    from __future__ import with_statement
+    from os import path
+    from pyTune.base import Parameter
+    from pyAex import netClient
+    #from pyOsc import pyOsc
+
+    import numpy as np
+
+    # DEFINE SCOPE CHANNELS HERE #
+    #global scope 
+    #scope = pyOsc.Oscilloscope( driver(debug=True) )
+    #scope.names( {
+      #0 : 'Vmem127',
+      #1 : 'Vsyn ("Vpls")',
+      #2 : 'Vpls ("Vsyn")',
+      #3 : 'VsynAER',
+      #4 : 'VplsAER',
+      #5 : 'Vk',
+      #6 : 'Vwstd',
+      #7 : 'Vmem (scanner)' })
+
+    class Template(Parameter): # REPLACE WITH NameOfYourParameter
+        '''
+        DESCRIBE PARAMETER HERE.
+        Units: "UNITS HERE"
+        '''
+        def __init__(self, paramid='Template', # if your parameter has a long name:
+                                               # PlesaUseThisFormat
+                     xmlfilename='template.xml', # now instead, use_this_format
+                     history_filename='template.history'): # and_also_here
+            '''
+            '''
+            # DON'T FORGET TO CREATE your_parameter.xml!
+            # PLEASE DON'T MODIFY THIS
+            resources = path.join(path.dirname(__file__), xmlfilename)
+            history_filename = path.join(path.dirname(__file__), history_filename)
+            Parameter.__init__(self, paramid, xml=resources, history_filename=history_filename)
+                   
+        def setContext(self, population, synapses_id):
+            """
+            THIS SETS THE context OF A PARAMETER, I.E. POPULATION(S) ON WHICH IT
+            ACTS. PLEASE DESCRIBE ARGUMENTS HERE, AS SHOWN IN THE FOLLOWING
+            EXAMPLE.
+            Sets the context for the parameter. Arguments are:
+              - population = pyNCS.Population
+              - synapses_id = The string of the synapses (e.g. 'excitatory0')
+            """
+            # DEFINE YOUR context HERE, FOR EXAMPLE:
+            self.neurons = population.soma
+            self.synapses = population.synapses[synapses_id]
+            
+            # DON'T FORGET YOU CAN USE Population.neuronblock, IN WHICH YOU FIND
+            # ALL THE BIASES THAT YOU NEED. SEE EXAMPLE:
+            self.bias = population.neuronblock.synapses[synapses_id].biases['tau']
+
+        # THE SET OF FUNCTIONS STARTING WITH DOUBLE UNDERSCORE REPLACE THE ONES
+        # INHERITED FROM pyTune.Parameter
+
+        def __getValue__(self):
+            """
+            DESCRIBE HOW THE FUNCTION WORKS.
+            """
+            # YOU ALWAYS HAVE TO IMPLEMENT A GET FUNCTION.
+            # DON'T FORGET YOU CAN DEFINE __getvalue_startup__ IF YOU NEED TO DO
+            # SOME OPERATION BEFORE THE ACUTAL MEASURE (IT IS AUTOMATICALLY CALLED,
+            # PLEASE *DON'T* CALL IT HERE.
+            # IF THE VALUE IS A FUNCTION OF THE VALUE OF THE SUB-PARAMETERS, YOU
+            # CAN CALL THEM EXPLICITLY HERE VIA:
+            # Parameter.parameters['name_of_subparameter'].getValue()
+            return value
+     
+        def __setValue__(self, value, searchparams):
+            """
+            DESCRIBE HOW THE FUNCTION WORKS.
+            """
+            # YOU DON'T NECESSARILY NEED TO SPECIFY A SET FUNCTION. IF YOU DON'T
+            # SPECIFY HERE, A RECURSIVE FUNCTION WILL BE USED [TODO: is this true?]
+            # searchparams IS A DICTIONARY CONTAINING ALL THE ADDITIONAL
+            # INFORMATIONS YOUR ALGORITHM NEEDS, SUCH AS TOLERANCE, INCREMENT STEP
+            # SIZE, ETC. AN EXAMPLE IS THE FOLLOWING:
+            #   searchparams = {
+            #       'tolerance_style' : '%',
+            #       'template' : {'tolerance' : 20,
+            #                     'max' : 10,
+            #                     'min' : 0,
+            #                     'step' : 1,
+            #                     'step_type' : 'linear',
+            #                    }
+            #       'subparam1' : {'tolerance' : 10,
+            #                      'max' : 4,
+            #                      'min' : 3,
+            #                      'step' : 0.1,
+            #                      'step_type' : 'exponential',
+            #                     }
+            #       'subparam2' : {'tolerance' : 10,
+            #                     }
+            #   }
+            # PLEASE NOTICE: DON'T FORGET TO DEFINE A FUNCTION THAT LOOKS WHEITHER
+            # THE SEARCHPARAMS HAVE BEEN DEFINED AND PUTS DEFAULT VALUES
+            # INSTEAD.
+            return value
+
+        def __get_method__(self): # PLEASE REPLACE method WITH THE
+                                  # name_of_the_method
+            '''
+            DESCRIBE HOW THE METHOD WORKS.
+            '''
+            # IMPLEMENT YOUR OWN METHOD HERE. FOR EXAMPLE, YOU MAY HAVE TWO
+            # DIFFERENT WAYS TO MEASURE YOUR PARAMETER, ONE USING THE SCOPE ONE
+            # USING SPIKING DATA. YOU CAN THEN DEFINE __get_scope__ AND
+            # __get_spiking__. YOU CAN DEFINE AS MANY METHOD AS YOU WANT AND THEN
+            # CALL THEM IN YOUR SCRIPT BY:
+            # getValue(method='your_method_here')
+            return value
+        
+        def __set_method__(self, value, searchparams): # PLEASE REPLACE method WITH THE
+                                  # name_of_the_method
+            '''
+            DESCRIBE HOW THE METHOD WORKS.
+            '''
+            # IMPLEMENT YOUR METHOD HERE. READ __get_method__ COMMENTS TO KNOW MORE
+            # ABOUT METHODS.
+            return value
+        
+        def __get_startup__(self):
+            """
+            """
+            # THIS FUNCTION IS CALLED AT EVERY getValue CALL AND IT IS USED TO
+            # APPLY PRELIMINARY SETTING IF NEEDED, E.G. SET ALL LEARNING SYNAPSES
+            # TO HIGH IF YOU WANT TO MEASURE THEIR EFFICACY.
+            return
+
+        def __set_startup__(self):
+            """
+            """
+            # THIS FUNCTION IS CALLED AT EVERY setValue CALL AND IT IS USED TO
+            # APPLY PRELIMINARY SETTING IF NEEDED
+            return
