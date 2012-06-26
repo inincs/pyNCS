@@ -21,6 +21,7 @@ General
    general/experiments.txt
    general/pytune.txt
    general/learning.txt
+   general/license.txt
 
 Technical
 ---------
@@ -48,23 +49,9 @@ API reference
 -------------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 99
 
-   general/api.txt
-
-Obsolete
---------
-
-The following documents are very old and obsolete but you can still look at
-them if you need. At the time they were written, most of the high-level tools
-(mostly pyNCS) where not there yet.
-
-.. toctree::
-   :maxdepth: 1
-
-   old/hardware_usage.txt
-   old/getting_started.txt
-   old/pymap.txt
+   general/modules.txt
 
 .. Indices and tables
 .. ==================
