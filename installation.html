@@ -1,0 +1,210 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Software Installation &mdash; Python NCS tools 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="static/default.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/underscore.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <link rel="top" title="Python NCS tools 0.2 documentation" href="index.html" />
+    <link rel="next" title="Hardware Usage" href="hardware_usage.html" />
+    <link rel="prev" title="Python NCS tools documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="hardware_usage.html" title="Hardware Usage"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Python NCS tools documentation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Python NCS tools 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="software-installation">
+<h1>Software Installation<a class="headerlink" href="#software-installation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="preliminary-remarks">
+<h2>Preliminary remarks<a class="headerlink" href="#preliminary-remarks" title="Permalink to this headline">¶</a></h2>
+<p><strong>Please remember that most of this software is **work in progress, therefore please do not distribute.</strong></p>
+<p>The software used in the NCS group is mainly written in the Python Programming Language. It is easy to learn and is very powerful. Online tutorials for python can be found on <cite>docs.python.org &lt;http://docs.python.org/tutorial/</cite></p>
+<p>The software is designed and essentially used on Linux. It has been reported to work on Mac OS X without considerable difficulty, but is is currently not supported by Windows.</p>
+<div class="section" id="prerequisites">
+<h3>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h3>
+<p>You first need the following packages</p>
+<ul class="simple">
+<li><a class="reference external" href="http://www.python.org">python</a></li>
+<li><a class="reference external" href="http://www.python.org">python-dev</a></li>
+</ul>
+<p>And the following third party modules</p>
+<ul class="simple">
+<li><a class="reference external" href="http://numpy.scipy.org/">numpy</a></li>
+<li><a class="reference external" href="http://matplotlib.sourceforge.net/">matplotlib</a></li>
+<li><a class="reference external" href="http://numpy.scipy.org/">scipy</a></li>
+</ul>
+<p>For real-time vizualization, you will need Enthoughts Chaco Module:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://www.enthought.com/">Enthought-Chaco</a></li>
+</ul>
+<p>If your computer is going to act as a Server (this will be explained later, but probably not), you also need</p>
+<ul class="simple">
+<li>fxload</li>
+</ul>
+<p>Finally, a nice matlab&#8211;style command line is IPython.</p>
+<ul class="simple">
+<li>(Optional) <a class="reference external" href="http://ipython.scipy.org/">IPython</a></li>
+</ul>
+<p>These packages can be installed in ubuntu with:</p>
+<blockquote>
+<div><tt class="docutils literal"><span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">python</span> <span class="pre">python-dev</span> <span class="pre">python-numpy</span> <span class="pre">python-matplotlib</span> <span class="pre">fxload</span> <span class="pre">iPython</span> <span class="pre">python-scipy</span> <span class="pre">python-enthought-chaco2</span></tt></div></blockquote>
+<p>In addition, installing the following packages might be useful for building this documentation</p>
+<blockquote>
+<div><p><tt class="docutils literal"><span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">python-setuptools</span> <span class="pre">python-sphinxbase</span></tt></p>
+<p><tt class="docutils literal"><span class="pre">sudo</span> <span class="pre">easy_install</span> <span class="pre">shpinxcontrib-aafig</span></tt></p>
+</div></blockquote>
+</div>
+<div class="section" id="installation-of-ncs-python-packages">
+<h3>Installation of NCS python packages<a class="headerlink" href="#installation-of-ncs-python-packages" title="Permalink to this headline">¶</a></h3>
+<p>The NCS software can be downloaded directly from their respective repositories.</p>
+<ul>
+<li><p class="first">NeuroTools: The spike train analysis currently depends on the <a class="reference external" href="http://neuralensemble.org/trac/NeuroTools">NeuroTools</a> project developed by the FACETS project. There is a custom Neurotools package with some improvements and bug fixes in our repository. Install with:</p>
+<blockquote>
+<div><p><tt class="docutils literal"><span class="pre">svn</span> <span class="pre">co</span> <span class="pre">https://svn.ini.uzh.ch/repos/avlsi/NCS/SW/NeuroTools_NCS</span></tt></p>
+</div></blockquote>
+</li>
+<li><p class="first">pyST: the python SpikeToolbox <a class="reference external" href="mailto:emre(at)ini&#46;phys&#46;ethz&#46;ch">Emre</a></p>
+<blockquote>
+<div><p><tt class="docutils literal"><span class="pre">svn</span> <span class="pre">co</span> <span class="pre">https://svn.ini.uzh.ch/repos/avlsi/NCS/SW/pyST</span></tt></p>
+</div></blockquote>
+</li>
+<li><p class="first">pyNCS: the python Neuromorphic Cognitive Systems setup module. This packages contains all the objects needed for the setup (Sadique Sheik, <a class="reference external" href="mailto:emre(at)ini&#46;phys&#46;ethz&#46;ch">Emre</a>)</p>
+<blockquote>
+<div><p><tt class="docutils literal"><span class="pre">svn</span> <span class="pre">co</span> <span class="pre">https://svn.ini.uzh.ch/repos/avlsi/NCS/SW/pyNCS</span></tt></p>
+</div></blockquote>
+</li>
+<li><p class="first">pyAMDA: this module is required by pyNCS and contains the module to set the biases (Sadique Sheik, Daniel Sonnleitner)</p>
+<blockquote>
+<div><p><tt class="docutils literal"><span class="pre">svn</span> <span class="pre">co</span> <span class="pre">https://svn.ini.unizh.ch/repos/avlsi/ALAVLSI/HW/PCBs/AMDA/Software/PythonInterface/pyAMDA</span></tt></p>
+</div></blockquote>
+</li>
+<li><p class="first">pyAex: This module has the client and servers classes used for Stimulation/Monitoring module the chips and setting the mappings (<a class="reference external" href="mailto:emre(at)ini&#46;phys&#46;ethz&#46;ch">Emre</a>)</p>
+<blockquote>
+<div><p><tt class="docutils literal"><span class="pre">svn</span> <span class="pre">co</span> <span class="pre">https://svn.ini.uzh.ch/repos/avlsi/NCS/SW/pyAex</span></tt></p>
+</div></blockquote>
+</li>
+</ul>
+<p>For installing all the python packages (those starting with py and <a class="reference external" href="http://neuralensemble.org/trac/NeuroTools">NeuroTools</a>) go to the root directory of each package and run</p>
+<blockquote>
+<div><tt class="docutils literal"><span class="pre">sudo</span> <span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span></tt></div></blockquote>
+<p>This will install the python module to the appropriate place on your system.</p>
+<p><strong>The following is only needed if your computer is going to act as a server, i.e. it will be directly connected to an AEX board. If you don&#8217;t know what this means, this means it is probably not required</strong></p>
+<ul class="simple">
+<li>aerfx2 and fx2: the driver for the AEX boards (<a class="reference external" href="mailto:fasnacht(at)sos&#46;phys&#46;ethz&#46;ch">Daniel</a>)</li>
+<li>udevamda: the udev rule for the amda boards (Sadique Sheik, Daniel Sonnleitner). you may install the udev rules by running <tt class="docutils literal"><span class="pre">make</span> <span class="pre">install</span></tt> as root in the udevamda directory</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Software Installation</a><ul>
+<li><a class="reference internal" href="#preliminary-remarks">Preliminary remarks</a><ul>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#installation-of-ncs-python-packages">Installation of NCS python packages</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Python NCS tools documentation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="hardware_usage.html"
+                        title="next chapter">Hardware Usage</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="sources/installation.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="hardware_usage.html" title="Hardware Usage"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Python NCS tools documentation"
+             >previous</a> |</li>
+        <li><a href="index.html">Python NCS tools 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2009, Emre Neftci, Sadique Sheik, Daniel Sonnleithner, Giacomo Indiveri.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>
