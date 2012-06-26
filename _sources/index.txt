@@ -6,7 +6,8 @@
 Python NCS tools documentation
 ==============================
 
-Please refer to http://ncs.ethz.ch/ncs for more information
+Please refer to http://ncs.ethz.ch/ncs for more information. 
+
 
 General
 -------
@@ -21,7 +22,6 @@ General
    general/experiments.txt
    general/pytune.txt
    general/learning.txt
-   general/license.txt
 
 Technical
 ---------
@@ -37,8 +37,6 @@ Technical
 Examples
 --------
 
-This section should be constantly updated so stay tuned!
-
 .. toctree::
    :maxdepth: 1
 
@@ -52,6 +50,7 @@ API reference
    :maxdepth: 99
 
    general/modules.txt
+
 
 .. Indices and tables
 .. ==================
