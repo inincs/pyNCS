@@ -1,0 +1,128 @@
+Use plastic synapses of ``ifslwta`` chip
+========================================
+
+Learning algorithm
+------------------
+
+Read `Fusi et al. 2000, Brader et al. 2007`.
+
+Learning chip
+-------------
+
+The algorithm above is implemented in the ``ifslwta`` chip. Input spikes
+trigger the update of the synaptic weight of that synapse. This operation is
+done by an analog circuit which changes the amount of charge stored in a
+capacitance which constitutes the weight of that synape.
+
+Each of the 128 neurons of the ifslwta chip has 32 synapses. Synapses 4 to 31
+are plastic, thus there are 32x128=3584 plastic synapses. One can use the
+multiplexer to use more synapses for each neuron, thus reducing the number of
+neurons (see hardware page of ifslwta for more details). For example, one can
+use a multiplexer of 1-0-1 to have 4 neurons with 28*32 learning synapses each.
+Notice that also non-plastic synapses will be multiplexed.
+
+Synaptic matrix class
+---------------------
+
+We created a class that represent the matrix of synaptic weights on a chip
+(tested on ``ifslwta`` chip). Its structure is similar to a
+``pyTune.Parameter`` structure. We explain here only the interesting parts of
+it. A ``Wij`` class is already written, ask Fabio_.
+
+By creating the matrix we mean creating all the populations and connections
+that we will need to probe the synaptic weights.
+
+.. note:: We first need to import the ``Wij`` class because it is not yet
+          included in the base pyNCS package. We'll assume this class is
+          implemented in the ``wij.py`` file somewhere.
+
+::
+
+    from wij import Wij
+
+    wij = Wij('wij1', 'This is the matrix of synaptic weights on chip1.')
+    wij.set_context(nsetup, 'ifslwta', 'excitatory',
+                    neurons=range(28),
+                    synapses=range(28))
+
+As you may have noticed, the weights the class will look at the 28 synapses
+of the first 28 ``excitatory`` neurons in ``ifslwta`` chip of the ``nsetup``
+setup.
+
+Read the synaptic weights
+-------------------------
+
+In order to read the matrix of synaptic weights we have to do some...
+electrophysiology because there is no way of direct access to them. The way to
+do it is to set the parameters of the learning such that the synapses are kept
+frozen and then send a stimulus to each synapse. If the synapse state is high
+we expect an output from the neuron that is connected to it. If the state is
+low we expect no output.
+
+This procedure relys on -- a lot of -- parameters that has to be set before
+doing the actual measure. Explain here...
+
+Most basic thing, we want to ``get`` the synaptic matrix. There is a method
+that does this for us::
+
+    wij_status = wij.get()
+
+Notice you don't need to assign the value to a variable because the ``get``
+function automatically updates the ``wij.state`` variable for you. During the
+probing, the system performs the following operations:
+
+    - set multiplexer to [0,0,0]
+    - prepare stimulus and write mapping on mapper
+    - "turn off" learning (read below)
+    - stimulate all the synapses of each neuron sequencially (1 spike per
+      synapse)
+    - translate output into binary matrix.
+
+.. note:: A specific set of biases should be applied in a specific sequence
+          prior to the stimulation. Ask Fabio_ for these biases.
+
+The output of the get function is a 28x28 matrix, i.e. the dimensions we
+initilized the matrix with. The weights can be visualized by::
+
+    wij.show()
+
+Set the synaptic weights
+------------------------
+
+In order to set each synaptic weight to a specific value we must run an
+experiment that drives it to the value we want it to be. Even though the
+learning algorithm is not deterministic in general (i.e. it relies on the
+stochastic behaviour of pre- and post-synaptic activities), we can use it in a
+deterministic way by setting some parameter to specific values. For example, if
+we want to drive the weight to the high state, we will set the threshold of the
+membrane potential to 0 and send some high frequency input: the weight will
+receive only potentiation jumps and eventually cross the bi-stability
+threshold.
+
+There is a useful function that sets the weights to all-high or all-low by just
+applying a sequence of biases::
+
+    wij.reset(1) # set all to high
+    wij.reset(0) # set all to zero
+
+Stop-learning
+-------------
+
+The stop-learning features depends on the post-synaptic neuron's firing rate.
+In other words, it depends on something like a Calcium concentration variable.
+In the chip, there is a capacitor that integrates the post-synaptic spikes and
+3 comparators modeling the 3 thresholds described on the learning algorithm.
+The weight of the plastic synapse is modified by the pre-synaptic spikes only
+when the Calcium variable lies within a certain range determined by those
+threshold. One can use these threshold to *turn off* the learning when it is
+not needed, e.g. we don't want to modify the synaptic weights when we send the
+``get`` stimulus. Use::
+
+    wij.set_learning(0)
+
+to turn-off synaptic plasticity.
+
+.. note:: There is no ``set_learning(1)`` because the value of each threshold
+          could depend on the specific experiment.
+
+.. _Fabio: fabio.stefanini@ini.phys.ethz.ch

@@ -1,0 +1,30 @@
+Examples
+========
+
+Contents:
+
+.. :toctree:
+   :maxdepth: 2
+
+   reservoir.txt
+    
+Hello world
+-----------
+
+Feed-forward network: Antennal Lobe of insects
+----------------------------------------------
+
+Recurrent network: Winner-Take-All
+----------------------------------
+
+Recurrent network: reservoir
+----------------------------
+
+Learning: attractors
+--------------------
+
+Learning: perceptron
+--------------------
+
+Learning: thalamo-cortical model
+--------------------------------

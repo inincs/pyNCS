@@ -38,7 +38,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Python NCS tools'
-copyright = u'2009, Emre Neftci, Sadique Sheik, Daniel Sonnleithner, Giacomo Indiveri'
+copyright = u'2012, University of Zurich, Emre Neftci, Sadique Sheik, Fabio Stefanini, Giacomo Indiveri'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

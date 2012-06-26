@@ -1,0 +1,255 @@
+---------------
+Troubleshooting
+---------------
+
+Here you should find solutions to common problems you may encounter while running experiments with our VLSI hardware.
+
+Setup checklist
+===============
+
+#. Make sure you read the `General Introduction <introduction>`_ page before you start with a new experiment.
+
+#. Make sure you all your boards (AMDA, AEX, Mapper, daughterboard) are all firmly plugged in and all cables are connected. Power everything up. Remember that the first AEX you plug-in will be the one used for monithoring/stimulating.
+
+#. Check that the proper device files are created (in /dev/) after you plug your boards (proper 'udev rules' should be installed on our machine). All Amda boards are hardware numbered. You can check the number with  ``ls /dev/amdaboard*``.
+
+#. Check that the Amda server is started: ``ps aux | grep Amda``. Use ``dmesg`` to check the kernel log.
+
+#. Start the Aer server using the script in pyAEX svn.
+
+#. Check that your setupfiles and chipfiles are consistent with the actual
+   setup (read the setupfiles section in :doc:`installation.txt`)
+
+#. Run your experiments following the protocols defined `here <experimental-protocol>`_.
+
+Software
+========
+
+pyNCS
+-----
+
+See `python scripts page <http://ncs.ethz.ch/ncs/internal/experiments-with-ncs-vlsi-chips/experimental-protocol>`_
+
+AMDA board
+-----------
+
+Help! The AMDA server is not running
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+First of all, try to figure out why! You can then start it typing (I suggest in a new shell)::
+    
+    python -c 'import pyAMDA; pyAMDA.Server.run()'
+
+Help! "Bias generator not available"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We don't why and when it happens. Try restarting AmdaServer and carefully power cycle the hardware. In normal case it will fix. If it doesn't, you may want to check pin #46 which should be at Vdd, in particular it's short-circuited to pin #48, which is at Vdd. Pin #46 tells the firmware to use the bias generator.
+
+
+Help! The scanner doesn't work
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+There is an unknown bug regarding this. Everytime you power up the AMDA board you have to push
+the reset button for the scanner to work.
+NOTE 2010.02.08: still doesn't work on AMDA 205 + CPG.
+
+AEX board
+---------
+
+Help! The Aex server is not running
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+First of all, try to figure out why! You can then start it using the script you
+find on `svn <https://svn.ini.uzh.ch/repos/avlsi/NCS/SW/pyAex/Scripts/Server.py>`_
+(I suggest on a new shell). You can stop it typing 'stop' on that shell.
+
+Help! I got 'Error 98: port already in use'
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Did you close all the clients? Did you check if someone else is using a
+client on the same machine? Did you check your processes in background?
+If you did so, just wait a bit before starting the server, it takes a while for
+the kernel to free the port.
+Useful Unix commands:
+
+'who' or 'w'
+    lists all people connected to the machine
+
+'write <user>'
+    write on the user's terminal
+
+'sudo netstat -pt'
+    lists all processes connected to the network
+
+'kill -KILL <pid>'
+    maybe you know this guy!
+
+Help! Raster plot is ok but frequency is strange
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The way NeuroTools computes mean rates doesn't work well. Always specify t_start and t_stop when computing rates, as in::
+
+    rate = train.mean_rate(t_start = 0, t_stop = 1000)
+
+Spectrum Board
+--------------
+
+Help! I dont have appropriate rights
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In order to acquire and send data to the spectrum board you should be a part of SPCM group on the computer. Ask someone with admin rights to add your user id to the group.
+
+
+NeuroTools
+----------
+
+Help! pyST complains about neuron ids the spikelist
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This is an issue related to NeuroTools restricting the neuron ids to int where as we have floats as well. You need to delete the 'int' parameter from the below function's return command.
+
+This function can be found in NeuroTools/src/**signals/spikes.py**
+
+::
+
+  def id_list(self):
+          """
+          Return the list of all the cells ids contained in the
+          SpikeList object
+  
+          Examples
+              >> spklist.id_list()
+                  [0,1,2,3,....,9999]
+          """
+          return numpy.array(self.spiketrains.keys())
+
+
+
+Hardware
+========
+
+All chips
+----------
+
+- Before starting doing measurements on a circuit, check *all* the biases which
+  can influence the input of that circuit and not only the biases of that
+  circuits, in other words you should completely isolate the circuit from the
+  other currents. It is a simple concept but easy to forget...
+  For example, if you want to measure properties of the soma, you have
+  to turn off all the presynaptic currents (Vw, VtauSyn, ...).
+
+- Remember that "turning off a circuit" doens't mean "put all biases to 0 (or Vdd)": in
+  some cases this can lead to floating nodes (usually a voltage on a cap) which in turn leads to 
+  random behaviors! E.g. on synapse circuits turn *off* the synaptic weights but *on* their taus.
+
+- When measuring analog voltages on output pins (for example Vmem, Vimem, Vsyn, ...)
+  always check the FollowBias value. Make sure the pads, buffers, current-converters, etc. are 
+  working correctly.
+
+- If something goes bad you may want to check the pluggers of the boards and all the soldered parts. The schematics are on SVN (you may need appropriate permissions for this) and (currently) can be opened with a Windows machine running Tanner tools. Ask Giacomo for a Windows virtual machine.
+
+Help! LEDs on AMDA start blinking like crazy
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This is very bad. Most probably it's a short-circuit somewhere which is badly powering the device(s) and most probably the problem is in the chip...
+
+Help! When I set the biases the chip get stuck
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Try restarting the AEX board.
+
+CPG chip
+--------
+
+- Remember to short test cell's acknowledge pin to aVdd, otherwise it is floating and chaos will rule on your experiments...
+- Valk = 0 brings cap's node to floating! Valk = 1 disables leak.
+- the chip shows strong mismatch for Vtau > 0, set Vtau=0 and VtauTC=-1 for `if`-curve. This is because Vtau transistor is very (very very very) small.
+
+DACs and bias generators
+~~~~~~~~~~~~~~~~~~~~~~~~
+The chip has DACs *and* bias generators. A DAC converts your digital number on a voltage and applies it to the correspondent
+transistor. Transistors change characteristic with temperature and other factors so the resulting current for the voltage you
+apply can be much different from time to time. That's where a bias generator come to play: it fixes the current directly,
+compensating changes in temperature etc. In the CPG chip you have both DACs and bias generators for some of the biases.
+DACs are identified with a 'TC' suffix (which actually stands for Test Cell), all the others are from bias generators.
+With a bias generator you sweep *linearly* on current. With DAC you sweep *exponentially* on current.
+
+When you set a bias which has both DAC and bias generator (ex. VrestTC and Vrest) you must *disable* DAC if you
+want to use the bias generator or *set to 0* the bias generator if you want to use the DAC.
+
+** When using DACs, always check the corresponding bias generator currents **
+
+Help! The arbiter seems to be slow and events are delayed
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can maybe increase the slope of the raising edges. Connect two probes on two
+pins of the parallel output of the AMDA board (remove the gray caps if you
+need). Play with AEPD bias and explore...
+
+IFSLWTA chip
+-------------
+
+When using the analogue voltage pins to measure things with `pyOsc <../../../projects/py-x/pyosc>`_, you might run into the following troubles
+
+- the chip marked with a pencil '1' has a broken ``Vmem127``; just use the scanner ``Vmem`` instead
+- the 2nd synapse of neuron 127 may behave strangely (does not well integrate AER spikes) -- this is probably due to a border effect
+- ``Vsyn`` and ``Vpls`` are supposed to go to the *global inhibition* synapse of neuron 127; it's the potential that is common all 124 first neurons and that controls the (individual) inhibitory currents in case of spkies of neuron 127 -- but that's not where the pin goes to; it's probably due to a PCB error
+
+Learning:
+
+- if synaerlo is above around 0.2, changing its value to lower values very fast (i.e. with a strong leak, as in getwij() function) affects learning synapses' state -- use a too strong leak (psynaerlk ~ 2.6)
+- UP and DOWN signals for learning synapses is not set before the first spike of the output neuron -- mostly affect learning with long sub-threshold acitivities
+
+2DIFWTA chip
+------------
+
+- please consult `the chip's bugs page <../../circuits-and-pcbs/if2dwta/bugsnquirks>`_
+
+SAC
+--------
+
+Multichip setups
+================
+
+- In multichip setup, the first AEX you connect via usb will be used for I/O with the computer/client. This is because it will be linked to device #0. After the first AEX board you can plug the others. Remember to start AexServer (it won't start before plugging the first AEX).
+
+- Turn off AerServer before disconnecting all boards.
+
+Mapper and Serial bus
+---------------------
+
+Mapper (zanzara/lambdalix or the miniATX zenigata) boot now from a USB stick in which Ubuntu and all needed software (i.e. pyNCS etc.) and all drivers (i.e. AEX and AMDA) are installed. Please check /root/software. It would be nice to create a live cd of this customized distribution, so that if we change machine, lose the hard-disk, or anything else, we are able to restore the mapper in just one click.
+
+To test the mapper create a multichip setup connected to the mapper. You can use also only one AEX board but it has to be specifically programmed for a multichip setup (see "Multi-chip experiments: a general introduction").
+Remember to change the xml/mc.xml file adequately! In /software/testmapper/test.py you find a class for running a test experiment together with the script for starting AEX server, Server.py. Now, run the server and then follow the steps (or please write a script which will do that for you, and for me too...). These steps have been tested with a single AEX board (channel i6o2), amda number 204, ifslwta chip.
+
+[TODO: convert the following to a properly formatted version]
+
+- ipython -i test.py
+- clinteastwood = test_experiment()
+- channel = 'seq' # the channel we want to stimulate from (sequencer)
+- clinteastwood.createmapping_stim() # this maps our sequenced output to the chip input
+- stim = clinteastwood.create_stim() # you may want to change this for your custom stimulus
+- clinteastwood.q.stimulate({channel:stim})
+
+During the stimulation you should see:
+- chip is spiking
+- chip receives events on parallel input
+
+*WARNING* this is not a conclusive test!
+*WARNING* remember to activate the mapper before loading any mapping or doing any experiment. You do this pressing a button on the PCI board (is hard to find on ver. 2 mapper).
+
+PCI Mapper version 1 doesn't work
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Of course, it's broken! Something happened in Capocaccia CNE 2010. Symptoms are:
+- when mapper is active, some buffer gets full after some seconds of normal activity from the chips. This blocks the entire serial chain.
+- as soon as you de-activate the mapper (pressing the button on the board) the chain is free again... Events are correctly mapped.
+We realized that the cause is a burned FPGA. If you mount the PCI board the other way around you burn the FPGA. Don't do it.
+
+Help! No events mapped (mapper output)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Restart AEX boards *and* AexServer in the proper way. Most of times, it works, but if it doesn't remember that there can be events stuck in some place along the serial bus.
+
+Very strange events on the serial chain?! [mapper frozen]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Well, most probably somebody just turned off or on the light... No, the setup is not shielded. Just trash these events. Since they are (most probably) not inside the address space of the multichip setup, your data will not be corrupted. By the way, the strange events could trigger a mapper freeze. A power cycle should fix.

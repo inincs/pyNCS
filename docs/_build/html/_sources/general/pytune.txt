@@ -1,0 +1,252 @@
+Automatic tuning of parameters
+==============================
+
+Introduction
+------------
+
+*What follows is the abstract of [Sheik et al., 2010].*
+
+In the past recent years several research groups have proposed neuromorphic
+devices that implement event-based sensors or bio-physically realistic
+networks of spiking neurons. It has been argued that these devices can be used
+to build event-based systems, for solving real-world applications in real-time,
+with efficiencies and robustness that cannot be achieved with conventional
+computing technologies.
+
+In order to implement complex event-based neuromorphic systems it is
+necessary to interface the neuromorphic sensors and devices
+among each other, to robotic platforms, and to workstations (*e.g.* for 
+data-logging and analysis). This apparently simple goal requires
+painstaking work that spans multiple levels of complexity and 
+disciplines: from the custom layout of microelectronic circuits and 
+asynchronous printed circuit boards, to the development of object
+oriented classes and methods in software; from electrical engineering
+and physics for analog/digital circuit design to neuroscience and 
+computer science for neural computation and spike-based learning
+methods.
+
+Within this context, we present a framework we developed to simplify
+the configuration of multi-chip neuromorphic systems, and 
+automate the mapping of neural network model parameters to
+neuromorphic circuit bias values.
+
+- cost function
+- recurrent structure
+- modularity
+
+A block-box approach
+~~~~~~~~~~~~~~~~~~~~
+
+Many academic groups around the world had already presented their work on the
+development of general tools for the control of neuromorphic systems that are
+system independent. The package pyNN (pron. `pine`) is one of the most
+prominent examples.
+
+Most of these packages where developed with a strong focus on software
+simulators, which means the one can write pyNN code which is simulator
+independent and then choose which simulator to perform all internal operations
+such as integration of differential equations, communication between neurons
+and so on. The structure is more or less common to all software simulators:
+first prepare the parameters and the run the simulations, usually calling a
+``run`` functions. This structure is not compatible with real-time hardware, in
+which the computation is always being performed and a real-time interaction
+with the system (e.g. monitor, control, stimulate) is needed by the user at any
+time.
+
+One of the reason for the independent development of pyTune is its strong focus
+on real-time interactive control of general-purpose systems. For example, with
+the pyNCS plugin of pyTune, every action the user make, e.g. setting biases,
+has an immediate effect. As a consequence, the entire package does not depend
+on a one-time-run-like action, which makes the integration with pyNCS seamless.
+
+Most importantly, parameters of VLSI hardware systems are usually very hard to
+configure because of the non-idealities of the hardware itself. This is
+obviously not a problem with software simulators. Tools like pyNN, which where
+first developed for software simulators and then adapted to interface with
+specific hardware systems, don't contemplate this problem and rely on a
+preliminary calibration to infere the system's hidden non-idealities and be
+able to set -- offline -- parameters such as time constants and so on through a
+set of pre-defined equations. With these equations, setting the system
+parameters resolves in a more or less one-to-one parameter translation which is
+easy and fast.
+
+In addition, calibration procedures can be very time consuming and the high
+number of parameters can make them unpractical. Parameters like dark currents
+of transistors in a VLSI circuit are also strongly dependent on the conditions
+of the environment. For example, even small changes in temperature can affect
+their values. As a consequence, multiple calibration procedures needs to be
+performed in order to have the right estimation of these parameters when the
+environment changes, an aspect that makes this approach even more inefficient
+for hardware which is supposed to work on, for example, robotic platforms.
+
+With these considerations in mind we decided to give pyTune the possibility to
+directly measure the quantities of interest. This approach has the obvious
+drawback of a slower interaction with the system because quantities cannot be
+simply translated but have to be directly measured through complex procedures.
+However, it has the advantage of a pure black-box approach, which means that
+the a complete description of the system is not needed and can be inferred.
+This aspect is the one that gives pyTune the flexibility that real-time
+hardware-based neuromorphic systems require.
+
+Finally, since hardware-based neuromorphic system are still lacking of a
+structure which can be adapted by many groups around the world, every piece of
+software that controls them is very hardware dependent. With pyTune we wanted
+to give the possibility to write plugins for every neuromorphic system with
+minimal effort.
+
+In conclusion, pyTune can be easily interfaced to hardware and software systems
+by providing informations for the direct measure of parameters of interest.
+
+Dependency tree
+~~~~~~~~~~~~~~~
+
+.. role:: raw-latex(raw)
+   :format: latex
+
+.. image:: ../images/pytune.png
+   :width: 400px
+
+The pyTune tool-set relies on the translation of the problem into parameter
+dependencies.  The user defines each parameter by its measurement routine (in
+the form of a ``getValue`` function) and its sub-parameters dependencies. At
+the lowest level, the parameters are defined only by their interaction with the
+hardware, i.e. they represent biases of the circuits. The user can choose a
+minimization algorithm from those available in the package or can define custom
+methods, to do the optimization that sets the parameters value. Optionally one
+can also define a specific cost function, that needs to be minimized. By
+default, the cost function is computed as :raw-latex:`$(p-p_{desired})^2$`
+where :raw-latex:`$p$` is the current measured value of the parameter and
+:raw-lates:`$p_{desired}$` is the desired value. Explicit options (such as
+maximum tolerance for the desired value, maximum number of iteration steps,
+etc.) can also be passed as arguments to the optimization function.
+
+Finally, the sub-parameters' methods are mapped by the appropriate plug-in onto
+the corresponding driver-calls, in the case of an hardware system, or onto
+method calls and variables in the case of a system simulated in software. Each
+mapping specific to a system has to be separately implemented and included in
+pyTune as a plug-in.
+
+Step-by-step example
+--------------------
+
+Here we report an example script that uses pyTune to tune a parameter.
+In this example we will try to set the output frequency of a population of
+leaky-integrate-and-fire neurons on a chip by injecting a constant current to all the neurons.
+The rate at which the neurons fire depends on the amount of current we inject
+through the ``injection_bias`` bias and the leak of the neuron, which we can
+control through the ``leak_bias`` bias.
+
+Let's write the code for it.
+Some import::
+
+    import logging
+    import logging.config
+    import numpy as np
+    import pyNCS
+    from pyTune.plugins.ncs import *
+
+    setup = pyNCS.NeuroSetup('/usr/share/ncs/setupfiles/mc_setuptype.xml',
+                             '/usr/share/ncs/setupfiles/mc.xml')
+
+    setup.chips['ifslwta'].loadBiases('biases/Biases_ifslwta')
+    pop = pyNCS.Population('pop','Population of neurons')
+    pop.populate_by_number(setup, 'ifslwta', 'excitatory', 5)
+
+Now the parameter definition part. Every parameter can usually be created by
+calling its class with only description string arguments::
+
+    rate_param = Rate(paramid='rate')
+
+At this point the parameter is an empty class. We need to tell the system which
+part of the system this parameter belongs to. This is done with a specific
+``set_context`` function of each parameter. This function is like an
+initialization function and obviously each parameter accepts different
+arguments. For example, the ``Rate`` parameter wants a ``pyNCS.Population`` as
+argument::
+
+    rate_param.setContext(pop)
+
+After the declaration, the system has automatically created all the parameters
+on which the rate depends on. Now, the reader should keep in mind that a
+parameter is nothing more than a variable in the RAM of our computer until with
+*set its context*, as we mentioned earlier. This means that also the injection
+bias and the leak bias have to be initialized. Just by chance, also these two
+accept a population as argument::
+
+    rate_param.parameters['injection_bias'].setContext(pop)
+    rate_param.parameters['leak_bias'].setContext(pop)
+
+Now we can set some starting value for the biases::
+
+    rate_param.parameters['injection_bias'].setValue(2.71)
+    rate_param.parameters['leak_bias'].setValue(0.16)
+
+Every parameter has a ``getValue`` and ``setValue`` function. The leak and the
+injection are two special parameters because they don't depend on anything,
+they basically *are* two biases of the chip, while in general each parameter
+(parent) depends on some other parameters (children).  When we want to set a
+parent, the system automatically follows its children and modifies them until
+the parent reaches the value that we wanted to set.
+
+The way the system wanders the dependency tree is specified by a *method* which
+can be specified as an argument to the call of a ``set_value`` function.
+The methods we can use to search in the parameter space accept a
+``searchparams`` python dictionary. The latter collects informations that are
+specific for the method we use. For example, if we use a linear-step search, we
+have to choose the size of the step.
+
+In this example we use a linear search. We have to create the ``searchparams``
+dictionary if we don't want to use default values::
+
+    v = 50.0 # the value we want to set, in Hz
+    delta = .1 * expected # tolerance to 10% of the expected value
+    searchparams= {'rate':{                               
+                           'tolerance':delta, # stop until rate is in the
+                                              # range [v-delta,v+delta]
+                           },
+                   'injection_bias':{
+                           'max':2.9,   # we can limit the parameter space
+                           'min':2.7,
+                           'step':0.0025,
+                           },
+                   'leak_bias':{
+                           'max':0.2,
+                           'min':0.14,
+                           },
+                           #'step':0.005}, # here we use a default value
+                  }
+
+Now we are ready!
+
+::
+
+    x = rate_param.setValue(v, searchparams)
+    if x<(v-delta) or x>(v+delta):
+        raise Error, "pyTune doesn't work..."
+
+Implementation of new parameters
+--------------------------------
+
+With pyTune it is possible to control every parameter of a system
+independently. Each parameter has to be described in a couple of specific files
+that the engine will use to properly handle it. Since pyTune relies on direct
+measure of parameters, there will be one file that explicitly implements the
+way the system can measure one parameter. Technically, it consists of a Python
+Class. A second file contains the informations about the dependencies of the
+parameter on other parameters of the system.
+
+In what follows we show how to implement a new parameter for the pyNCS system.
+
+.. note:: Since it is the set of implemented parameters that constitutes a
+          `plugin` for pyTune, the following sections can be use as a reference
+          also to write new plugins.
+
+The python file template
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: pytune_python_file_template.txt
+
+The xml file template
+~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: pytune_xml_file_template.txt

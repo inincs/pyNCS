@@ -1,0 +1,280 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Python NCS tools documentation &mdash; Python NCS tools 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Python NCS tools 0.2 documentation" href="#" />
+    <link rel="next" title="Introduction" href="general/introduction.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="general/introduction.html" title="Introduction"
+             accesskey="N">next</a> |</li>
+        <li><a href="#">Python NCS tools 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="python-ncs-tools-documentation">
+<h1>Python NCS tools documentation<a class="headerlink" href="#python-ncs-tools-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Please refer to <a class="reference external" href="http://ncs.ethz.ch/ncs">http://ncs.ethz.ch/ncs</a> for more information.</p>
+<div class="section" id="general">
+<h2>General<a class="headerlink" href="#general" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="general/introduction.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="general/introduction.html#neuromorphic-hardware">Neuromorphic hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general/introduction.html#software">Software</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="general/installation.html">Software Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="general/installation.html#preliminary-remarks">Preliminary remarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general/installation.html#installation-of-ncs-python-packages">Installation of NCS python packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general/installation.html#setup-files-and-chip-files-explained">Setup files and chip files explained</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="general/tutorial.html">Step by step tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="general/tutorial.html#import">Import</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general/tutorial.html#loading-a-setup">Loading a setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general/tutorial.html#creating-populations">Creating populations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general/tutorial.html#setting-parameters">Setting parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general/tutorial.html#creating-connections">Creating connections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general/tutorial.html#sending-and-receiving-stimuli">Sending and receiving stimuli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general/tutorial.html#monitors-and-plots">Monitors and plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general/tutorial.html#beyond-this-tutorial">Beyond this tutorial</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="general/pyosc.html">The Python Oscilloscope Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="general/pyosc.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general/pyosc.html#tutorial">Tutorial</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="general/experiments.html">Doing real experiments</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="general/experiments.html#structure">Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general/experiments.html#experiment-tools">Experiment tools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="general/pytune.html">Automatic tuning of parameters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="general/pytune.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general/pytune.html#step-by-step-example">Step-by-step example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general/pytune.html#implementation-of-new-parameters">Implementation of new parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="general/learning.html">Use plastic synapses of <tt class="docutils literal"><span class="pre">ifslwta</span></tt> chip</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="general/learning.html#learning-algorithm">Learning algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general/learning.html#learning-chip">Learning chip</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general/learning.html#synaptic-matrix-class">Synaptic matrix class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general/learning.html#read-the-synaptic-weights">Read the synaptic weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general/learning.html#set-the-synaptic-weights">Set the synaptic weights</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general/learning.html#stop-learning">Stop-learning</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="technical">
+<h2>Technical<a class="headerlink" href="#technical" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="general/hardware_setup.html">How to set up a setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="general/hardware_setup.html#equipment">Equipment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general/hardware_setup.html#installation">Installation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="general/new_hardware.html">Controlling new hardware with pyNCS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="general/new_hardware.html#neuromorphic-chips">Neuromorphic chips</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general/new_hardware.html#new-oscillocope">New oscillocope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general/new_hardware.html#new-anything-else">New anything else</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="general/spcm.html">Spectrum Board installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="general/spcm.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general/spcm.html#installing-updating-the-board">Installing/Updating the board</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general/spcm.html#spectrum-software">Spectrum software</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general/spcm.html#common-problems">Common problems</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="general/troubleshooting.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="general/troubleshooting.html#setup-checklist">Setup checklist</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general/troubleshooting.html#software">Software</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general/troubleshooting.html#hardware">Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="general/troubleshooting.html#multichip-setups">Multichip setups</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/reservoir.html">Reservoir</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="api-reference">
+<h2>API reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="general/modules.html">pyNCS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="general/pyNCS.html">pyNCS Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="general/pyNCS.html#id1"><tt class="docutils literal"><span class="pre">pyNCS</span></tt> Package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="general/pyNCS.html#module-pyNCS.ComAPI"><tt class="docutils literal"><span class="pre">ComAPI</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="general/pyNCS.html#module-pyNCS.ConfAPI"><tt class="docutils literal"><span class="pre">ConfAPI</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="general/pyNCS.html#module-pyNCS.chip_v2"><tt class="docutils literal"><span class="pre">chip_v2</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="general/pyNCS.html#module-pyNCS.connection"><tt class="docutils literal"><span class="pre">connection</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="general/pyNCS.html#module-pyNCS.experimentTools"><tt class="docutils literal"><span class="pre">experimentTools</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="general/pyNCS.html#module-pyNCS.group"><tt class="docutils literal"><span class="pre">group</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="general/pyNCS.html#module-pyNCS.mapping"><tt class="docutils literal"><span class="pre">mapping</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="general/pyNCS.html#module-pyNCS.monitors"><tt class="docutils literal"><span class="pre">monitors</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="general/pyNCS.html#module-pyNCS.neurosetup"><tt class="docutils literal"><span class="pre">neurosetup</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="general/pyNCS.html#module-pyNCS.population"><tt class="docutils literal"><span class="pre">population</span></tt> Module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="general/pyNCS.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="general/pyNCS.AerViewer.html">AerViewer Package</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="general/pyNCS.AerViewer.html#id1"><tt class="docutils literal"><span class="pre">AerViewer</span></tt> Package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="general/pyNCS.AerViewer.html#module-pyNCS.AerViewer.Aer1DViewer"><tt class="docutils literal"><span class="pre">Aer1DViewer</span></tt> Module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="general/pyNCS.AerViewer.html#module-pyNCS.AerViewer.Aer2DViewer"><tt class="docutils literal"><span class="pre">Aer2DViewer</span></tt> Module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="general/pyNCS.AerViewer.html#updater1d-module"><tt class="docutils literal"><span class="pre">Updater1D</span></tt> Module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="general/pyNCS.AerViewer.html#updater2d-module"><tt class="docutils literal"><span class="pre">Updater2D</span></tt> Module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="general/pyNCS.pyST.html">pyST Package</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="general/pyNCS.pyST.html#id1"><tt class="docutils literal"><span class="pre">pyST</span></tt> Package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="general/pyNCS.pyST.html#module-pyNCS.pyST.STas"><tt class="docutils literal"><span class="pre">STas</span></tt> Module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="general/pyNCS.pyST.html#module-pyNCS.pyST.STsl"><tt class="docutils literal"><span class="pre">STsl</span></tt> Module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="general/pyNCS.pyST.html#module-pyNCS.pyST.pyST_globals"><tt class="docutils literal"><span class="pre">pyST_globals</span></tt> Module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="general/pyNCS.pyST.html#module-pyNCS.pyST.spikes"><tt class="docutils literal"><span class="pre">spikes</span></tt> Module</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="general/pyNCS.pyST.html#neurotools-signals-spikes">NeuroTools.signals.spikes</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="general/pyNCS.pyST.html#classes">Classes</a></li>
+<li class="toctree-l7"><a class="reference internal" href="general/pyNCS.pyST.html#functions">Functions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="general/pyNCS.pyST.html#module-pyNCS.pyST.stgen"><tt class="docutils literal"><span class="pre">stgen</span></tt> Module</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="general/pyNCS.pyST.html#neurotools-stgen">NeuroTools.stgen</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="general/pyNCS.pyST.html#id7">Classes</a></li>
+<li class="toctree-l7"><a class="reference internal" href="general/pyNCS.pyST.html#id8">Functions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Python NCS tools documentation</a><ul>
+<li><a class="reference internal" href="#general">General</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#technical">Technical</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#examples">Examples</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#api-reference">API reference</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href="general/introduction.html"
+                        title="next chapter">Introduction</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="general/introduction.html" title="Introduction"
+             >next</a> |</li>
+        <li><a href="#">Python NCS tools 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, University of Zurich, Emre Neftci, Sadique Sheik, Fabio Stefanini, Giacomo Indiveri.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

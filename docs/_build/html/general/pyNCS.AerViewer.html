@@ -1,0 +1,198 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>AerViewer Package &mdash; Python NCS tools 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Python NCS tools 0.2 documentation" href="../index.html" />
+    <link rel="up" title="pyNCS Package" href="pyNCS.html" />
+    <link rel="next" title="pyST Package" href="pyNCS.pyST.html" />
+    <link rel="prev" title="pyNCS Package" href="pyNCS.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pyNCS.pyST.html" title="pyST Package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pyNCS.html" title="pyNCS Package"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Python NCS tools 0.2 documentation</a> &raquo;</li>
+          <li><a href="modules.html" >pyNCS</a> &raquo;</li>
+          <li><a href="pyNCS.html" accesskey="U">pyNCS Package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="aerviewer-package">
+<h1>AerViewer Package<a class="headerlink" href="#aerviewer-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">AerViewer</span></tt> Package<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-pyNCS.AerViewer"></span></div>
+<div class="section" id="module-pyNCS.AerViewer.Aer1DViewer">
+<span id="aer1dviewer-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">Aer1DViewer</span></tt> Module<a class="headerlink" href="#module-pyNCS.AerViewer.Aer1DViewer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pyNCS.AerViewer.Aer1DViewer.Aer1DViewer">
+<em class="property">class </em><tt class="descclassname">pyNCS.AerViewer.Aer1DViewer.</tt><tt class="descname">Aer1DViewer</tt><big>(</big><em>channel=0</em>, <em>port=50001</em>, <em>host='localhost'</em>, <em>dims=(-4</em>, <em>130)</em>, <em>fps=25</em><big>)</big><a class="headerlink" href="#pyNCS.AerViewer.Aer1DViewer.Aer1DViewer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">wx._core.PySimpleApp</span></tt></p>
+<p>Class to monitor and display aer activity</p>
+<dl class="method">
+<dt id="pyNCS.AerViewer.Aer1DViewer.Aer1DViewer.OnInit">
+<tt class="descname">OnInit</tt><big>(</big><em>*args</em>, <em>**kw</em><big>)</big><a class="headerlink" href="#pyNCS.AerViewer.Aer1DViewer.Aer1DViewer.OnInit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.AerViewer.Aer1DViewer.Aer1DViewer.setup_timer">
+<tt class="descname">setup_timer</tt><big>(</big><em>eventsUpdate</em><big>)</big><a class="headerlink" href="#pyNCS.AerViewer.Aer1DViewer.Aer1DViewer.setup_timer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.AerViewer.Aer1DViewer.Aer1DViewer.show">
+<tt class="descname">show</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.AerViewer.Aer1DViewer.Aer1DViewer.show" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function pops up the AerViewer
+Alias to MainLoop() function</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyNCS.AerViewer.Aer2DViewer">
+<span id="aer2dviewer-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">Aer2DViewer</span></tt> Module<a class="headerlink" href="#module-pyNCS.AerViewer.Aer2DViewer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pyNCS.AerViewer.Aer2DViewer.Aer2DViewer">
+<em class="property">class </em><tt class="descclassname">pyNCS.AerViewer.Aer2DViewer.</tt><tt class="descname">Aer2DViewer</tt><big>(</big><em>channel=0</em>, <em>port=50001</em>, <em>host='localhost'</em>, <em>dims=(64</em>, <em>64)</em>, <em>fps=40</em><big>)</big><a class="headerlink" href="#pyNCS.AerViewer.Aer2DViewer.Aer2DViewer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">wx._core.PySimpleApp</span></tt></p>
+<p>Class to monitor and display aer activity</p>
+<dl class="method">
+<dt id="pyNCS.AerViewer.Aer2DViewer.Aer2DViewer.OnInit">
+<tt class="descname">OnInit</tt><big>(</big><em>*args</em>, <em>**kw</em><big>)</big><a class="headerlink" href="#pyNCS.AerViewer.Aer2DViewer.Aer2DViewer.OnInit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.AerViewer.Aer2DViewer.Aer2DViewer.setup_timer">
+<tt class="descname">setup_timer</tt><big>(</big><em>eventsUpdate</em><big>)</big><a class="headerlink" href="#pyNCS.AerViewer.Aer2DViewer.Aer2DViewer.setup_timer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.AerViewer.Aer2DViewer.Aer2DViewer.show">
+<tt class="descname">show</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.AerViewer.Aer2DViewer.Aer2DViewer.show" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function pops up the AerViewer
+Alias to MainLoop() function</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="updater1d-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">Updater1D</span></tt> Module<a class="headerlink" href="#updater1d-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="updater2d-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">Updater2D</span></tt> Module<a class="headerlink" href="#updater2d-module" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">AerViewer Package</a><ul>
+<li><a class="reference internal" href="#id1"><tt class="docutils literal"><span class="pre">AerViewer</span></tt> Package</a></li>
+<li><a class="reference internal" href="#module-pyNCS.AerViewer.Aer1DViewer"><tt class="docutils literal"><span class="pre">Aer1DViewer</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-pyNCS.AerViewer.Aer2DViewer"><tt class="docutils literal"><span class="pre">Aer2DViewer</span></tt> Module</a></li>
+<li><a class="reference internal" href="#updater1d-module"><tt class="docutils literal"><span class="pre">Updater1D</span></tt> Module</a></li>
+<li><a class="reference internal" href="#updater2d-module"><tt class="docutils literal"><span class="pre">Updater2D</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pyNCS.html"
+                        title="previous chapter">pyNCS Package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pyNCS.pyST.html"
+                        title="next chapter">pyST Package</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/general/pyNCS.AerViewer.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pyNCS.pyST.html" title="pyST Package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pyNCS.html" title="pyNCS Package"
+             >previous</a> |</li>
+        <li><a href="../index.html">Python NCS tools 0.2 documentation</a> &raquo;</li>
+          <li><a href="modules.html" >pyNCS</a> &raquo;</li>
+          <li><a href="pyNCS.html" >pyNCS Package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, University of Zurich, Emre Neftci, Sadique Sheik, Fabio Stefanini, Giacomo Indiveri.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

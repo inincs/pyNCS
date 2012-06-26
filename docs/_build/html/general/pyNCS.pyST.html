@@ -1,0 +1,2410 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pyST Package &mdash; Python NCS tools 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Python NCS tools 0.2 documentation" href="../index.html" />
+    <link rel="up" title="pyNCS Package" href="pyNCS.html" />
+    <link rel="prev" title="AerViewer Package" href="pyNCS.AerViewer.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pyNCS.AerViewer.html" title="AerViewer Package"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Python NCS tools 0.2 documentation</a> &raquo;</li>
+          <li><a href="modules.html" >pyNCS</a> &raquo;</li>
+          <li><a href="pyNCS.html" accesskey="U">pyNCS Package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pyst-package">
+<h1>pyST Package<a class="headerlink" href="#pyst-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">pyST</span></tt> Package<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-pyNCS.pyST"></span><dl class="function">
+<dt id="pyNCS.pyST.loadtxt">
+<tt class="descclassname">pyNCS.pyST.</tt><tt class="descname">loadtxt</tt><big>(</big><em>filename</em>, <em>comments</em>, <em>format='t'</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.loadtxt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-pyNCS.pyST.STas">
+<span id="stas-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">STas</span></tt> Module<a class="headerlink" href="#module-pyNCS.pyST.STas" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pyNCS.pyST.STas.RawOutput">
+<em class="property">class </em><tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">RawOutput</tt><big>(</big><em>raw_data</em>, <em>id_data</em>, <em>decoder_dict</em>, <em>t_start=0</em>, <em>t_stop=1000</em>, <em>filter_duplicates=False</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.RawOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>RawOutPut is a class which contains raw AER data per channel (Physical addresses).</p>
+<p>It decodes the AER data &#8220;just in time&#8221;</p>
+<p>Inputs:
+<em>raw_data</em>: events with physical addresses
+<em>id_data</em>: all addresses in given channel
+<em>decoder_dict</em>: Dictionary of functions for decoding addresses. Key designates the channel
+<em>t_start</em>: start time of all spikelists in ms
+<em>t_stop</em>: end time of all spikelists in ms
+<em>filter_duplicates</em>: If True erases in all channels double events within the a 0.01ms time-frame (buggy hw)</p>
+<p>Usage:
+#In conjunction with pyAex.netClient</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">netClient</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s">&#39;localhost&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">raw_out</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">stimulate</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">sl</span> <span class="ow">in</span> <span class="n">raw_output</span><span class="p">:</span> <span class="n">sl</span><span class="o">.</span><span class="n">raster_plot</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="pyNCS.pyST.STas.RawOutput.check_has_key_somewhere">
+<tt class="descname">check_has_key_somewhere</tt><big>(</big><em>*args</em>, <em>**kwds</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.RawOutput.check_has_key_somewhere" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.RawOutput.decode_all_channels">
+<tt class="descname">decode_all_channels</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.RawOutput.decode_all_channels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.RawOutput.decode_data">
+<tt class="descname">decode_data</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.RawOutput.decode_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.RawOutput.iterchannels">
+<tt class="descname">iterchannels</tt><big>(</big><em>channels</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.RawOutput.iterchannels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.RawOutput.iteritems">
+<tt class="descname">iteritems</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.RawOutput.iteritems" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.RawOutput.print_num_events">
+<tt class="descname">print_num_events</tt><big>(</big><em>raw_data</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.RawOutput.print_num_events" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyNCS.pyST.STas.STChannelAddressing">
+<tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">STChannelAddressing</tt><a class="headerlink" href="#pyNCS.pyST.STas.STChannelAddressing" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#pyNCS.pyST.STas.channelAddressing" title="pyNCS.pyST.STas.channelAddressing"><tt class="xref py py-class docutils literal"><span class="pre">channelAddressing</span></tt></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.STas.addrBuildHashTable">
+<tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">addrBuildHashTable</tt><big>(</big><em>stas</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.addrBuildHashTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>addrBuildHashTable(stas) constructs all possible physical addresses of the given address specification and stores it internally in its hash table (stas.addrExtractFast). This function is typically used for real-time monitoring</p>
+<p><em>stas:</em> addrSpec object.</p>
+<p><em>Hash tables are not used anymore</em></p>
+<p>This function does not scale well.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.STas.addrLogicalConstruct">
+<tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">addrLogicalConstruct</tt><big>(</big><em>stas</em>, <em>addr</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.addrLogicalConstruct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs Logical addresses, <em>i.e.</em> addresses in float format useful for plotting because they keep the neuron - synapse order.</p>
+<p><strong>NOTE:</strong> Logical addresses do not contain channel information</p>
+<p><em>addr</em>: address (in a form <a class="reference external" href="pyst.isValidAddress">isValidAddress</a> can understand)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.STas.addrLogicalExtract">
+<tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">addrLogicalExtract</tt><big>(</big><em>stas</em>, <em>addrLogical</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.addrLogicalExtract" title="Permalink to this definition">¶</a></dt>
+<dd><p>Description here</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.STas.addrLogicalPhysical">
+<tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">addrLogicalPhysical</tt><big>(</big><em>stas</em>, <em>addrLogical</em>, <em>checkLevel=1</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.addrLogicalPhysical" title="Permalink to this definition">¶</a></dt>
+<dd><p>Direct translation from Logical Addresses to Physical addresses using a hash table</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.STas.addrLogicalPhysicalDecode">
+<tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">addrLogicalPhysicalDecode</tt><big>(</big><em>stas</em>, <em>addrLog</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.addrLogicalPhysicalDecode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes logical addresses and fills the logical to physical hash table</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.STas.addrPhysicalConstruct">
+<tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">addrPhysicalConstruct</tt><big>(</big><em>stas</em>, <em>addr</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.addrPhysicalConstruct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Description here</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.STas.addrPhysicalExtract">
+<tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">addrPhysicalExtract</tt><big>(</big><em>stas</em>, <em>addrPhys</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.addrPhysicalExtract" title="Permalink to this definition">¶</a></dt>
+<dd><p>addrPhysicalExtract takes a physical address as argument and returns a numpy array containing the human readable list of addresses. First dimension is the field type, second dimension is the address.
+Uses hash tables for accelerating look-up.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.STas.addrPhysicalExtractDecode">
+<tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">addrPhysicalExtractDecode</tt><big>(</big><em>stas</em>, <em>addrPhys</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.addrPhysicalExtractDecode" title="Permalink to this definition">¶</a></dt>
+<dd><p>addrPhysicalExtract takes a physical address as argument and returns a list containing the addresses in human readable form.
+This is called only the first time the physical address is decoded.</p>
+<p><em>stas:</em> addrSpec object.</p>
+<p><em>addrPhys</em>: an integer or an iterable containing integers representing physical addresses</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.STas.addrPhysicalLogical">
+<tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">addrPhysicalLogical</tt><big>(</big><em>stas</em>, <em>addrPhys</em>, <em>checkLevel=1</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.addrPhysicalLogical" title="Permalink to this definition">¶</a></dt>
+<dd><p>Direct translation from Physical Addresses to Logical addresses using a hash table</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.STas.addrPhysicalLogicalDecode">
+<tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">addrPhysicalLogicalDecode</tt><big>(</big><em>stas</em>, <em>addrPhys</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.addrPhysicalLogicalDecode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes physical addresses and fills the physical to logical hash table</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pyNCS.pyST.STas.addrSpec">
+<em class="property">class </em><tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">addrSpec</tt><big>(</big><em>addrStr=''</em>, <em>addrConf=</em><span class="optional">[</span><span class="optional">]</span>, <em>addrPinConf=''</em>, <em>id='NoName'</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.addrSpec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Address specification class
+# NOTE : Documentation is outdated!!</p>
+<p><em>addrConf</em>: should be a list of dicts. Each dict should contain the following fields:</p>
+<ul class="simple">
+<li>&#8216;id&#8217;, whose value is equal to a single, unique, lowercase character.</li>
+<li>&#8216;range&#8217;, an iterable containing the possible values the address field can take</li>
+<li>&#8216;type&#8217;, which is either 1 (Neuron) or -1 (Synapse).</li>
+</ul>
+<p><em>addrStr</em>: should contain a list of space-separated pins with a number follwing an uppercase character defining the position on the chip. For example: &#8220;X0 X1 X2 X3 X4 X5 X6 Y4 Y3 Y2 Y1 Y0&#8221;</p>
+<p><em>fe</em>: extraction function. this should be a string like &#8216;[X,Y*2]&#8217;, The letters must correspond to those in addrStr
+<em>fc</em>: construction function &#8216;[x,y/2]&#8217;, the letters must corrspond to those in addrConf</p>
+<p>fe(fc(a)) should be the identity function</p>
+<p><em>IMPORTANT:</em> fe and fc are called vectorally (using numpy arrays), so check that the given functions also work with vectors (otherwise numpy.vstack will complain)</p>
+<p><em>Example</em>:</p>
+<dl class="method">
+<dt id="pyNCS.pyST.STas.addrSpec.iter_fields">
+<tt class="descname">iter_fields</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.addrSpec.iter_fields" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.addrSpec.iter_fields_by_pin">
+<tt class="descname">iter_fields_by_pin</tt><big>(</big><em>pin_order=None</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.addrSpec.iter_fields_by_pin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.addrSpec.iter_hrf_index">
+<tt class="descname">iter_hrf_index</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.addrSpec.iter_hrf_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterates over the indexes of addrConf</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.addrSpec.iter_hrfs">
+<tt class="descname">iter_hrfs</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.addrSpec.iter_hrfs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterates over the list addrConf</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.addrSpec.update">
+<tt class="descname">update</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.addrSpec.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>(Re)Generates the object based on the addrStr, addrConf and addrPinConf</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyNCS.pyST.STas.addressEncoder">
+<em class="property">class </em><tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">addressEncoder</tt><big>(</big><em>addr_conf</em>, <em>addr_str</em>, <em>addr_pinconf</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.addressEncoder" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="pyNCS.pyST.STas.addressEncoder.decode">
+<tt class="descname">decode</tt><big>(</big><em>addr</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.addressEncoder.decode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.addressEncoder.decode_field">
+<tt class="descname">decode_field</tt><big>(</big><em>field</em>, <em>addr</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.addressEncoder.decode_field" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.addressEncoder.encode">
+<tt class="descname">encode</tt><big>(</big><em>addr</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.addressEncoder.encode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.addressEncoder.encode_field">
+<tt class="descname">encode_field</tt><big>(</big><em>field</em>, <em>addr</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.addressEncoder.encode_field" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyNCS.pyST.STas.channelAddressing">
+<em class="property">class </em><tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">channelAddressing</tt><big>(</big><em>stasList, nChannelBits=[15, 16]</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelAddressing" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class contains the information defining the Channel Addressing Scheme for a multichip setup, i.e. definition of which chips are found on which channel</p>
+<p>channelAddressing(stasList,nChannelBits)</p>
+<p><em>nChannelBits</em>: Positions of channel bits in the hardware addresses. Default nChannelBits=[15,16]</p>
+<p><em>stasList</em>: list of address specification objects, of the same length as len(nChannelBits)**2</p>
+<p>See also:
+<a class="reference external" href="#pyST.STas.addrSpec">addrSpec</a></p>
+<dl class="method">
+<dt id="pyNCS.pyST.STas.channelAddressing.addrLogicalConstruct">
+<tt class="descname">addrLogicalConstruct</tt><big>(</big><em>addr</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelAddressing.addrLogicalConstruct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs Logical addresses, <em>i.e.</em> addresses in float format useful for plotting because they keep the neuron - synapse order.</p>
+<p>Returns a float32 numpy array.</p>
+<p><strong>NOTE:</strong> Logical addresses do not contain channel information</p>
+<p><em>addr</em>: address (in a form isChannelAddrList() can understand), such as <tt class="docutils literal"><span class="pre">{0:[range(15),2]}</span></tt></p>
+<p>See also:</p>
+<blockquote>
+<div>addrLogicalConstruct, addrLogicalExtract</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.channelAddressing.addrLogicalExtract">
+<tt class="descname">addrLogicalExtract</tt><big>(</big><em>addr</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelAddressing.addrLogicalExtract" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts Logical Address with channel information</p>
+<p><em>addr</em>: address (in a form isChannelAddrList() can understand), such as <tt class="docutils literal"><span class="pre">{0:[1.,2.,3.]}</span></tt></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.channelAddressing.addrPhysicalConstruct">
+<tt class="descname">addrPhysicalConstruct</tt><big>(</big><em>addr</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelAddressing.addrPhysicalConstruct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs Physical addresses to human readable addresses</p>
+<p><em>addr</em>: numpy array of human readable numbers ( the physical addresses )</p>
+<p><em>channel</em>: which channel addressing should be appended.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.channelAddressing.addrPhysicalExtract">
+<tt class="descname">addrPhysicalExtract</tt><big>(</big><em>addr</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelAddressing.addrPhysicalExtract" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts Physical addresses to human readable addresses</p>
+<p><em>addr</em>: numpy array of uint32 numbers ( the physical addresses )</p>
+<p>Output is channelAddrList, channel where channelEventsList is a list of arrays which contain the addresses and channel is an array of channels.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.channelAddressing.addrPhysicalLogical">
+<tt class="descname">addrPhysicalLogical</tt><big>(</big><em>addr</em>, <em>checkLevel=1</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelAddressing.addrPhysicalLogical" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts Physical addresses to logical addresses (directly)</p>
+<p><em>addr</em>: numpy array of uint32 numbers ( the physical addresses )</p>
+<p>Output is channelAddrList, channel where channelEventsList is a list of arrays which contain the addresses and channel is an array of channels.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.channelAddressing.buildAllHashTables">
+<tt class="descname">buildAllHashTables</tt><big>(</big><em>channels=None</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelAddressing.buildAllHashTables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.channelAddressing.exportAER">
+<tt class="descname">exportAER</tt><big>(</big><em>spikeLists</em>, <em>filename=None</em>, <em>format='a'</em>, <em>isi=True</em>, <em>sep='t'</em>, <em>addr_format='%u'</em>, <em>time_format='%u'</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelAddressing.exportAER" title="Permalink to this definition">¶</a></dt>
+<dd><p>spikeLists can be a spikeList, a list of spikelists of dimension nChannels, a dictionary i.e.{channel: spikeList}. If a SpikeList is given, it will be equivalent to {0: spikeLists}.
+format specifies whether timestamps (format=&#8217;t&#8217;) or addresses (format=&#8217;a&#8217;) should be on the first column.
+<em>addr_format</em> and <em>time_format</em> format to be used by np.savetxt</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.channelAddressing.extract">
+<tt class="descname">extract</tt><big>(</big><em>ev</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelAddressing.extract" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts the channel information from an array of hardware events. Returns a channelEvents object. Use addrPhysicalExtract for decoding the adresses instead.</p>
+<p><em>eventsArray</em>: numpy array of hardware events (uint32)</p>
+<dl class="docutils">
+<dt>See also:</dt>
+<dd>addrPhysicalExtract</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.channelAddressing.generateST">
+<tt class="descname">generateST</tt><big>(</big><em>ch_events</em>, <em>normalize=True</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelAddressing.generateST" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts events from eventsChannel, using the address specification specified for the given channels, returns a list of SpikeList</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.channelAddressing.getValue">
+<tt class="descname">getValue</tt><big>(</big><em>channel</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelAddressing.getValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns the channel mask</p>
+<p>channel: int between 0 and len(nChannelBits)**2</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.channelAddressing.importAER">
+<tt class="descname">importAER</tt><big>(</big><em>input=None</em>, <em>sep='t'</em>, <em>dt=1e-06</em>, <em>format='a'</em>, <em>isi=False</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelAddressing.importAER" title="Permalink to this definition">¶</a></dt>
+<dd><p>Internal function for extracting, translating events from a numpy array. Output is a channelEvents dict</p>
+<p><em>input</em>: if a string, will be treated as a filenam, if a numpy array, will be considered as events of dimension 2 x Nevents . By default addresses are on [:,0]</p>
+<p><em>format</em>: either &#8216;t&#8217; or &#8216;a&#8217; respectively meaning timestamps and addresses on the first column. (&#8216;a&#8217; by default)</p>
+<p><em>kwargs</em> are passed to np.loadtxt</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.channelAddressing.isChannelAddrList">
+<tt class="descname">isChannelAddrList</tt><big>(</big><em>addr</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelAddressing.isChannelAddrList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mostly internal function</p>
+<p>Check whether addr is a valid channelAddr list/dict</p>
+<p><em>addr</em>: Either list of dimension channelAddressing.nChannels, containing arrays of addresses. The list index is the channel number, or dict whose keys are the channel numbers.</p>
+<p>See also:</p>
+<blockquote>
+<div>Stas.isValidAddress</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.channelAddressing.normalizeAER">
+<tt class="descname">normalizeAER</tt><big>(</big><em>ch_events</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelAddressing.normalizeAER" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called before extract to throw away pre-stimulus data</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.channelAddressing.rawoutput_from_chevents">
+<tt class="descname">rawoutput_from_chevents</tt><big>(</big><em>ch_events</em>, <em>func=None</em>, <em>normalize=True</em>, <em>filter_duplicates=False</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelAddressing.rawoutput_from_chevents" title="Permalink to this definition">¶</a></dt>
+<dd><p>this function acts like generateST, but constructs a RawOutput object which delays the decoding until it is necessary.
+<em>ch_events</em> is a channelEvents object of type &#8216;p&#8217; (Physical)</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd><em>func</em> - a dictionary of functions with channels as keys to decode the addresses. If omitted, all the channels are considered</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyNCS.pyST.STas.channelEvents">
+<em class="property">class </em><tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">channelEvents</tt><big>(</big><em>channel_events=None</em>, <em>atype='Physical'</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelEvents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="http://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">dict</span></tt></a></p>
+<dl class="method">
+<dt id="pyNCS.pyST.STas.channelEvents.add_adtmch">
+<tt class="descname">add_adtmch</tt><big>(</big><em>channel</em>, <em>ad</em>, <em>tm</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelEvents.add_adtmch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.channelEvents.add_ch">
+<tt class="descname">add_ch</tt><big>(</big><em>channel</em>, <em>ev</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelEvents.add_ch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an events object to a channel
+Remark: Creates a reference to the provided events! In place changes also affect the events!</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyNCS.pyST.STas.channelEvents.atype">
+<tt class="descname">atype</tt><a class="headerlink" href="#pyNCS.pyST.STas.channelEvents.atype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.channelEvents.copy">
+<tt class="descname">copy</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelEvents.copy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.channelEvents.filter_all_by_channel_mapping">
+<tt class="descname">filter_all_by_channel_mapping</tt><big>(</big><em>mapping</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelEvents.filter_all_by_channel_mapping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modifies, in-place, the encapsulated events acccording to the one-to-many mapping (key is int/float, value is iterable)
+In this function, a different mapping is used for each channel (useful for address that do not contain channel information, for example)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.channelEvents.filter_all_by_mapping">
+<tt class="descname">filter_all_by_mapping</tt><big>(</big><em>mapping</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelEvents.filter_all_by_mapping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modifies, in-place, the encapsulated events acccording to the one-to-many mapping (key is int/float, value is iterable)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.channelEvents.filter_channel">
+<tt class="descname">filter_channel</tt><big>(</big><em>channel_list=None</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelEvents.filter_channel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes (in-place) all channels with are not in channel_list.
+If channel_list is omitted, the ch_events is left unchanged</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.channelEvents.flatten">
+<tt class="descname">flatten</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelEvents.flatten" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.channelEvents.get_all_ad">
+<tt class="descname">get_all_ad</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelEvents.get_all_ad" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.channelEvents.get_all_adtmev">
+<tt class="descname">get_all_adtmev</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelEvents.get_all_adtmev" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.channelEvents.get_all_tm">
+<tt class="descname">get_all_tm</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelEvents.get_all_tm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.channelEvents.get_all_tmadev">
+<tt class="descname">get_all_tmadev</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelEvents.get_all_tmadev" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.channelEvents.get_nev">
+<tt class="descname">get_nev</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelEvents.get_nev" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.channelEvents.iter_by_timeslice">
+<tt class="descname">iter_by_timeslice</tt><big>(</big><em>tm</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelEvents.iter_by_timeslice" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyNCS.pyST.STas.events">
+<em class="property">class </em><tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">events</tt><big>(</big><em>ev=None</em>, <em>atype='p'</em>, <em>isISI=False</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.events" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="attribute">
+<dt id="pyNCS.pyST.STas.events.NF">
+<tt class="descname">NF</tt><em class="property"> = 2</em><a class="headerlink" href="#pyNCS.pyST.STas.events.NF" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyNCS.pyST.STas.events.ad">
+<tt class="descname">ad</tt><a class="headerlink" href="#pyNCS.pyST.STas.events.ad" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.events.add_adtm">
+<tt class="descname">add_adtm</tt><big>(</big><em>ad</em>, <em>tm</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.events.add_adtm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.events.add_adtmev">
+<tt class="descname">add_adtmev</tt><big>(</big><em>ev</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.events.add_adtmev" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyNCS.pyST.STas.events.atype">
+<tt class="descname">atype</tt><a class="headerlink" href="#pyNCS.pyST.STas.events.atype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyNCS.pyST.STas.events.data">
+<tt class="descname">data</tt><a class="headerlink" href="#pyNCS.pyST.STas.events.data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.events.demultiplex">
+<tt class="descname">demultiplex</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.events.demultiplex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a dictionary with addesses as keys and a list of timestamps as values.
+Used internally for generating SpikeLists</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyNCS.pyST.STas.events.dtype">
+<tt class="descname">dtype</tt><a class="headerlink" href="#pyNCS.pyST.STas.events.dtype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.events.empty">
+<tt class="descname">empty</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.events.empty" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.events.filter_by_mapping">
+<tt class="descname">filter_by_mapping</tt><big>(</big><em>mapping</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.events.filter_by_mapping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Map the events, given a mapping dictionary like:
+map[src]=[target1,target2,...,targetn],</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.events.get_ad">
+<tt class="descname">get_ad</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.events.get_ad" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.events.get_adISI">
+<tt class="descname">get_adISI</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.events.get_adISI" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.events.get_adtm">
+<tt class="descname">get_adtm</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.events.get_adtm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.events.get_adtmev">
+<tt class="descname">get_adtmev</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.events.get_adtmev" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.events.get_nev">
+<tt class="descname">get_nev</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.events.get_nev" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.events.get_t_stop">
+<tt class="descname">get_t_stop</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.events.get_t_stop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.events.get_tdur">
+<tt class="descname">get_tdur</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.events.get_tdur" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.events.get_tm">
+<tt class="descname">get_tm</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.events.get_tm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.events.get_tmad">
+<tt class="descname">get_tmad</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.events.get_tmad" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.events.get_tmadev">
+<tt class="descname">get_tmadev</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.events.get_tmadev" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.events.iter_by_timeslice">
+<tt class="descname">iter_by_timeslice</tt><big>(</big><em>tm</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.events.iter_by_timeslice" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyNCS.pyST.STas.events.nev">
+<tt class="descname">nev</tt><a class="headerlink" href="#pyNCS.pyST.STas.events.nev" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.events.normalize_tm">
+<tt class="descname">normalize_tm</tt><big>(</big><em>t0=0</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.events.normalize_tm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.events.set_abs_tm">
+<tt class="descname">set_abs_tm</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.events.set_abs_tm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.events.set_ad">
+<tt class="descname">set_ad</tt><big>(</big><em>ad</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.events.set_ad" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.events.set_data">
+<tt class="descname">set_data</tt><big>(</big><em>ad</em>, <em>tm</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.events.set_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.events.set_isi">
+<tt class="descname">set_isi</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.events.set_isi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.events.set_tm">
+<tt class="descname">set_tm</tt><big>(</big><em>tm</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.events.set_tm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.STas.events.sort">
+<tt class="descname">sort</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.events.sort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort events by addresses and timestamps (in this order).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyNCS.pyST.STas.events.t_stop">
+<tt class="descname">t_stop</tt><a class="headerlink" href="#pyNCS.pyST.STas.events.t_stop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyNCS.pyST.STas.events.tdur">
+<tt class="descname">tdur</tt><a class="headerlink" href="#pyNCS.pyST.STas.events.tdur" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyNCS.pyST.STas.events.tm">
+<tt class="descname">tm</tt><a class="headerlink" href="#pyNCS.pyST.STas.events.tm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.STas.extract_id_list">
+<tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">extract_id_list</tt><big>(</big><em>addr_conf</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.extract_id_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.STas.generateST">
+<tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">generateST</tt><big>(</big><em>stas</em>, <em>events</em>, <em>normalize=True</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.generateST" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts events from eventsChannel, using the address specification specified for the given channels, returns a list of SpikeList
+Inputs:
+<em>stas</em>: STas.addrSpec object
+<em>events</em>: STas.events object
+<em>normalize</em>: if True (default), the timestamp of the first event is set to zeros and all the timestamps of the subsequent events are shifted accordingly.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.STas.getDefaultMonChannelAddress">
+<tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">getDefaultMonChannelAddress</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.getDefaultMonChannelAddress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the default Monitoring Channel Addressing Scheme (i.e. AER Output). No arguments</p>
+<p>See also:
+<a class="reference external" href="#pyST.STas.setDefaultMonChannelAddress">setDefaultMonChannelAddress</a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.STas.getDefaultSeqChannelAddress">
+<tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">getDefaultSeqChannelAddress</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.getDefaultSeqChannelAddress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the default Monitoring Channel Addressing Scheme (i.e. AER Input). No arguments</p>
+<p>See also:
+<a class="reference external" href="#pyST.STas.setDefaultSeqChannelAddress">setDefaultSeqChannelAddress</a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.STas.isValidAddress">
+<tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">isValidAddress</tt><big>(</big><em>stas</em>, <em>addrList</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.isValidAddress" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is an internal function which verifies that the given &#8220;human readable&#8221; address is consistent with the address specification. It also takes care of &#8220;filling in&#8221; the addresses: for example [range(15),2] is understood as [range(15),[2]*15].</p>
+<p>Raises AssertionError if addrList has incorrect data</p>
+<p><em>stas</em>: an address specification object <a class="reference external" href="pyST.addrSpec">addrSpec</a>
+<em>addrList</em>: a list of human readable addresses such as [range(15), 5]. It also accepts numpy arrays and transforms it accordingly</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.STas.isValidPhysicalAddress">
+<tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">isValidPhysicalAddress</tt><big>(</big><em>stas</em>, <em>addrPhys</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.isValidPhysicalAddress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the given list, int, numpy array is a valid physical address and outputs a numpy array</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pyNCS.pyST.STas.layoutFieldEncoder">
+<em class="property">class </em><tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">layoutFieldEncoder</tt><big>(</big><em>aspec</em>, <em>nWidth</em>, <em>position=0</em>, <em>pin=''</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.layoutFieldEncoder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Internal struct used for addrSpec, performing the pin layout permutation (the information contained in addrSr)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.STas.load_stas_from_csv">
+<tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">load_stas_from_csv</tt><big>(</big><em>CSVfile</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.load_stas_from_csv" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a reduced version of pyNCS.Chip._readCSV, which reads only the addressing information
+Inputs:
+<em>CSVfile</em> - A csv file describing the chip (a &#8220;chipfile&#8221;).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.STas.setDefaultMonChannelAddress">
+<tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">setDefaultMonChannelAddress</tt><big>(</big><em>cs</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.setDefaultMonChannelAddress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the default Monitoring Channel Addressing scheme (i.e. AER Output) in pyST globals, and used by pyAex. The argument is then returned when getDefaultMonChannelAddress is called</p>
+<p>cs: The Channel Addressing Scheme, instance of the channelAddressing class</p>
+<p>See also:
+<a class="reference external" href="#pyST.STas.getDefaultMonChannelAddress">getDefaultMonChannelAddress</a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.STas.setDefaultSeqChannelAddress">
+<tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">setDefaultSeqChannelAddress</tt><big>(</big><em>cs</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.setDefaultSeqChannelAddress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the default Sequencer Channel Addressing scheme (i.e. AER Input) in pyST globals, and used by pyAex. The argument is then returned when getDefaultMonChannelAddress is called</p>
+<p>cs: The Channel Addressing Scheme, instance of the channelAddressing class</p>
+<p>See also:
+<a class="reference external" href="#pyST.STas.getDefaultSeqChannelAddress">pyST.getDefaultSeqChannelAddress</a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyNCS.pyST.STsl">
+<span id="stsl-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">STsl</span></tt> Module<a class="headerlink" href="#module-pyNCS.pyST.STsl" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pyNCS.pyST.STsl.STCompositePlot">
+<tt class="descclassname">pyNCS.pyST.STsl.</tt><tt class="descname">STCompositePlot</tt><big>(</big><em>SL</em>, <em>id_list=None</em>, <em>t_start=None</em>, <em>t_stop=None</em>, <em>t_start_rate=None</em>, <em>t_stop_rate=None</em>, <em>display=True</em>, <em>kwargs={}</em>, <em>kwargs_bar={}</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STsl.STCompositePlot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a nice Composite plot, <em>i.e.</em> a raster plot combined with a vertical rate plot.</p>
+<p>The arguments are identical to STPlotRaster, except for display.
+<em>display</em> If True is given a new figure is created. If [axS,axR] is given, where axS and axR are pylab.axes objects, then the spike rater and the rate plot are plotted there.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.STsl.STPlotRaster">
+<tt class="descclassname">pyNCS.pyST.STsl.</tt><tt class="descname">STPlotRaster</tt><big>(</big><em>SL</em>, <em>id_list=None</em>, <em>t_start=None</em>, <em>t_stop=None</em>, <em>display=True</em>, <em>id_color=None</em>, <em>kwargs={}</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STsl.STPlotRaster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same as spikelist.raster_plot() but with pretty plot options</p>
+<p>id_color is used to customize colors according to neuron address (for example inhibitory vs. excitatory)</p>
+<p>Example:
+&gt;&gt;&gt; id_color = [{&#8216;ids&#8217;:range(124),&#8217;color&#8217;:&#8217;blue&#8217;},{&#8216;ids&#8217;:range(124,128),&#8217;color&#8217;:&#8217;red&#8217;}]
+&gt;&gt;&gt; plot_raster(chipout[158],id_color=id_color)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.STsl.composite_plot">
+<tt class="descclassname">pyNCS.pyST.STsl.</tt><tt class="descname">composite_plot</tt><big>(</big><em>SL</em>, <em>id_list=None</em>, <em>t_start=None</em>, <em>t_stop=None</em>, <em>t_start_rate=None</em>, <em>t_stop_rate=None</em>, <em>display=True</em>, <em>kwargs={}</em>, <em>kwargs_bar={}</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STsl.composite_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a nice Composite plot, <em>i.e.</em> a raster plot combined with a vertical rate plot.</p>
+<p>The arguments are identical to STPlotRaster, except for display.
+<em>display</em> If True is given a new figure is created. If [axS,axR] is given, where axS and axR are pylab.axes objects, then the spike rater and the rate plot are plotted there.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.STsl.composite_plot_movie">
+<tt class="descclassname">pyNCS.pyST.STsl.</tt><tt class="descname">composite_plot_movie</tt><big>(</big><em>SL</em>, <em>time_bin=10</em>, <em>t_start=None</em>, <em>t_stop=None</em>, <em>output='animation.mpg'</em>, <em>bounds=(0</em>, <em>5)</em>, <em>fps=10</em>, <em>display=True</em>, <em>maxrate=None</em>, <em>ratebin=None</em>, <em>kwargs={}</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STsl.composite_plot_movie" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.STsl.composite_plot_superimposed">
+<tt class="descclassname">pyNCS.pyST.STsl.</tt><tt class="descname">composite_plot_superimposed</tt><big>(</big><em>st_pre, st_post, kwargs={}, colors=['blue', 'k'], id_list=None, t_start=None, t_stop=None, t_start_rate=None, t_stop_rate=None, pre_rate_mult=1.0</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STsl.composite_plot_superimposed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a nice Composite plot superimposing two spike trains, a raster plot combined with a vertical rate plot.
+<em>st_pre</em> and <em>st_post</em> are two SpikeLists. st_post will be plotted above st_pre
+<em>colors</em> is a list specifying the respective colors for the bars and spikes for st_pre and st_post
+<em>kwargs</em> are the keyword arguments for common plot arguments in the raster plots. Default is {&#8216;alpha&#8217;:0.7,&#8217;marker&#8217;:&#8217;,&#8217;} for st_pre and plot_raster defaults for st_post
+<em>pre_rate_mult</em> is a float used for plotting the rates of st_pre on a different scale
+other arguments are the same as in composite_plot</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.STsl.ksi">
+<tt class="descclassname">pyNCS.pyST.STsl.</tt><tt class="descname">ksi</tt><big>(</big><em>SL</em>, <em>t_stop=800</em>, <em>pow_freq=None</em>, <em>t_bin=10.0</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STsl.ksi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Kuramoto Synchronization Index (KSI) (Kuaramoto 1984) for measuring phase coherency with respect to the strongest    freqeuncy of the population activity.</p>
+<p>Returns ksi in the range (0,1). 0 meaning no cohrency and 1 meaning entirely coherent</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>SL      - SpikeList of duration of at least t_stop
+t_stop  - the end of the SpikeTrain (in ms)
+t_bin   - time bin for computing population activity and spectrum
+pow_freq- if given, this frequency is taken as the strongest frequency</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.STsl.mapSpikeListAddresses">
+<tt class="descclassname">pyNCS.pyST.STsl.</tt><tt class="descname">mapSpikeListAddresses</tt><big>(</big><em>SL</em>, <em>mapping=None</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STsl.mapSpikeListAddresses" title="Permalink to this definition">¶</a></dt>
+<dd><p>this function maps the addresses of a spike list into another using the given mapping. Useful for logical to physical translation and vice versa
+SL=original spike list
+mapping=dictionary containing address mapping, If mapping is None, then the addresses will be mapped onto a linear scale, i.e. range(len(SL.id_list()))</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.STsl.plot_raster">
+<tt class="descclassname">pyNCS.pyST.STsl.</tt><tt class="descname">plot_raster</tt><big>(</big><em>SL</em>, <em>id_list=None</em>, <em>t_start=None</em>, <em>t_stop=None</em>, <em>display=True</em>, <em>id_color=None</em>, <em>kwargs={}</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STsl.plot_raster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same as spikelist.raster_plot() but with pretty plot options</p>
+<p>id_color is used to customize colors according to neuron address (for example inhibitory vs. excitatory)</p>
+<p>Example:
+&gt;&gt;&gt; id_color = [{&#8216;ids&#8217;:range(124),&#8217;color&#8217;:&#8217;blue&#8217;},{&#8216;ids&#8217;:range(124,128),&#8217;color&#8217;:&#8217;red&#8217;}]
+&gt;&gt;&gt; plot_raster(chipout[158],id_color=id_color)</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyNCS.pyST.pyST_globals">
+<span id="pyst-globals-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">pyST_globals</span></tt> Module<a class="headerlink" href="#module-pyNCS.pyST.pyST_globals" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pyNCS.pyST.spikes">
+<span id="spikes-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">spikes</span></tt> Module<a class="headerlink" href="#module-pyNCS.pyST.spikes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="neurotools-signals-spikes">
+<h3>NeuroTools.signals.spikes<a class="headerlink" href="#neurotools-signals-spikes" title="Permalink to this headline">¶</a></h3>
+<p>A collection of functions to create, manipulate and play with spikes signals.</p>
+<div class="section" id="classes">
+<h4>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h4>
+<dl class="docutils">
+<dt>SpikeTrain       - object representing a spike train, for one cell. Useful for plots,</dt>
+<dd>calculations such as ISI, CV, mean rate(), ...</dd>
+<dt>SpikeList        - object representing the activity of a population of neurons. Functions as a</dt>
+<dd>dictionary of SpikeTrain objects, with methods to compute firing rate,
+ISI, CV, cross-correlations, and so on.</dd>
+</dl>
+</div>
+<div class="section" id="functions">
+<h4>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h4>
+<dl class="docutils">
+<dt>load_spikelist       - load a SpikeList object from a file. Expects a particular format.</dt>
+<dd>Can also load data in a different format, but then you have
+to write your own File object that will know how to read the data (see io.py)</dd>
+</dl>
+<p>load                 - a generic loader for all the previous load methods.</p>
+<p>See also NeuroTools.signals.analogs</p>
+<dl class="class">
+<dt id="pyNCS.pyST.spikes.SpikeList">
+<em class="property">class </em><tt class="descclassname">pyNCS.pyST.spikes.</tt><tt class="descname">SpikeList</tt><big>(</big><em>spikes=</em><span class="optional">[</span><span class="optional">]</span>, <em>id_list=</em><span class="optional">[</span><span class="optional">]</span>, <em>t_start=None</em>, <em>t_stop=None</em>, <em>dims=None</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>SpikeList(spikes, id_list, t_start=None, t_stop=None, dims=None)</p>
+<p>Return a SpikeList object which will be a dict of SpikeTrain objects.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>spikes  - a list of (id,time) tuples (id being in id_list)
+id_list - the list of the ids of all recorded cells (needed for silent cells)
+t_start - begining of the SpikeList, in ms. If None, will be infered from the data
+t_stop  - end of the SpikeList, in ms. If None, will be infered from the data
+dims    - dimensions of the recorded population, if not 1D population</dd>
+</dl>
+<p>t_start and t_stop are shared for all SpikeTrains object within the SpikeList</p>
+<dl class="docutils">
+<dt>Examples:</dt>
+<dd><p class="first">&gt;&gt; sl = SpikeList([(0, 0.1), (1, 0.1), (0, 0.2)], range(2))
+&gt;&gt; type( sl[0] )</p>
+<blockquote class="last">
+<div>&lt;type SpikeTrain&gt;</div></blockquote>
+</dd>
+<dt>See also</dt>
+<dd>load_spikelist</dd>
+</dl>
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.append">
+<tt class="descname">append</tt><big>(</big><em>id</em>, <em>spktrain</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a SpikeTrain object to the SpikeList</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>id       - the id of the new cell
+spktrain - the SpikeTrain object representing the new cell</dd>
+</dl>
+<p>The SpikeTrain object is sliced according to the t_start and t_stop times
+of the SpikeLlist object</p>
+<dl class="docutils">
+<dt>Examples</dt>
+<dd><p class="first">&gt;&gt; st=SpikeTrain(range(0,100,5),0.1,0,100)
+&gt;&gt; spklist.append(999, st)</p>
+<blockquote class="last">
+<div>spklist[999]</div></blockquote>
+</dd>
+<dt>See also</dt>
+<dd>concatenate, __setitem__</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.complete">
+<tt class="descname">complete</tt><big>(</big><em>id_list</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.complete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Complete the SpikeList by adding Sempty SpikeTrain for all the ids present in
+ids that will not already be in the SpikeList</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>Inputs:</dt>
+<dd>id_list - The id_list that should be completed</dd>
+</dl>
+</div></blockquote>
+<dl class="docutils">
+<dt>Examples:</dt>
+<dd><dl class="first docutils">
+<dt>&gt;&gt; spklist.id_list()</dt>
+<dd>[0,2,5]</dd>
+</dl>
+<p>&gt;&gt; spklist.complete(arange(5))
+&gt;&gt; spklist.id_list()</p>
+<blockquote class="last">
+<div>[0,1,2,3,4]</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.composite_plot">
+<tt class="descname">composite_plot</tt><big>(</big><em>id_list=None</em>, <em>t_start=None</em>, <em>t_stop=None</em>, <em>t_start_rate=None</em>, <em>t_stop_rate=None</em>, <em>display=True</em>, <em>kwargs={}</em>, <em>kwargs_bar={}</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.composite_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a nice Composite plot, <em>i.e.</em> a raster plot combined with a vertical rate plot.</p>
+<p>The arguments are identical to STPlotRaster, except for display. If True is given a new figure is created. If [axS,axR] is given, where axS and axR are pylab.axes objects, then the spike rater and the rate plot are plotted there.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.concatenate">
+<tt class="descname">concatenate</tt><big>(</big><em>spklists</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.concatenate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concatenation of SpikeLists to the current SpikeList.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>spklists - could be a single SpikeList or a list of SpikeLists</dd>
+</dl>
+<p>The concatenated SpikeLists must have similar (t_start, t_stop), and
+they can&#8217;t shared similar cells. All their ids have to be different.</p>
+<dl class="docutils">
+<dt>See also</dt>
+<dd>append, merge, __setitem__</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.convert">
+<tt class="descname">convert</tt><big>(</big><em>format='[times</em>, <em>ids]'</em>, <em>relative=False</em>, <em>quantized=False</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.convert" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Return a new representation of the SpikeList object, in a user designed format.</dt>
+<dd>format is an expression containing either the keywords times and ids,
+time and id.</dd>
+<dt>Inputs:</dt>
+<dd><dl class="first docutils">
+<dt>relative -  a boolean to say if a relative representation of the spikes</dt>
+<dd>times compared to t_start is needed</dd>
+</dl>
+<p class="last">quantized - a boolean to round the spikes_times.</p>
+</dd>
+<dt>Examples:</dt>
+<dd><dl class="first docutils">
+<dt>&gt;&gt; spk.convert(&#8220;[times, ids]&#8221;) will return a list of two elements, the</dt>
+<dd>first one being the array of all the spikes, the second the array of all the
+corresponding ids</dd>
+</dl>
+<p class="last">&gt;&gt; spk.convert(&#8220;[(time,id)]&#8221;) will return a list of tuples (time, id)</p>
+</dd>
+<dt>See also</dt>
+<dd>SpikeTrain.format</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.copy">
+<tt class="descname">copy</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy of the SpikeList object</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.cv_isi">
+<tt class="descname">cv_isi</tt><big>(</big><em>float_only=False</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.cv_isi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of all the CV coefficients for each SpikeTrains object
+within the SpikeList. Return NaN when not enough spikes are present</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd><dl class="first last docutils">
+<dt>float_only - False by default. If true, NaN values are automatically</dt>
+<dd>removed</dd>
+</dl>
+</dd>
+<dt>Examples:</dt>
+<dd><dl class="first last docutils">
+<dt>&gt;&gt; spklist.cv_isi()</dt>
+<dd>[0.2,0.3,Nan,2.5,Nan,1.,2.5]</dd>
+<dt>&gt;&gt; spklist.cv_isi(True)</dt>
+<dd>[0.2,0.3,2.5,1.,2.5]</dd>
+</dl>
+</dd>
+<dt>See also:</dt>
+<dd>cv_isi_hist, cv_local, cv_kl, SpikeTrain.cv_isi</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.fano_factor">
+<tt class="descname">fano_factor</tt><big>(</big><em>time_bin</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.fano_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the Fano Factor of the population activity.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd><dl class="first last docutils">
+<dt>time_bin   - the number of bins (between the min and max of the data)</dt>
+<dd>or a list/array containing the lower edges of the bins.</dd>
+</dl>
+</dd>
+</dl>
+<p>The Fano Factor is computed as the variance of the averaged activity divided by its
+mean</p>
+<dl class="docutils">
+<dt>See also</dt>
+<dd>spike_histogram, firing_rate</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.fano_factors_isi">
+<tt class="descname">fano_factors_isi</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.fano_factors_isi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list containing the fano factors for each neuron</p>
+<dl class="docutils">
+<dt>See also</dt>
+<dd>isi, isi_cv</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.filter_duplicates">
+<tt class="descname">filter_duplicates</tt><big>(</big><em>sl</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.filter_duplicates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.firing_rate">
+<tt class="descname">firing_rate</tt><big>(</big><em>time_bin</em>, <em>display=False</em>, <em>average=False</em>, <em>kwargs={}</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.firing_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate an array with all the instantaneous firing rates along time (in Hz)
+of all the SpikeTrains objects within the SpikeList. If average is True, it gives the
+average firing rate over the whole SpikeList</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd><p class="first">time_bin   - the time bin used to gather the data
+average    - If True, return a single vector of the average firing rate over the whole SpikeList
+display    - if True, a new figure is created. Could also be a subplot. The averaged</p>
+<blockquote>
+<div>spike_histogram over the whole population is then plotted</div></blockquote>
+<dl class="last docutils">
+<dt>kwargs     - dictionary contening extra parameters that will be sent to the plot</dt>
+<dd>function</dd>
+</dl>
+</dd>
+<dt>See also</dt>
+<dd>spike_histogram, time_axis</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.first_spike_time">
+<tt class="descname">first_spike_time</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.first_spike_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the time of the first real spike in the SpikeList</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.flatten">
+<tt class="descname">flatten</tt><big>(</big><em>id=0.0</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.flatten" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a SpikeList with only one address <em>id</em> which is the sum of all SpikeTrains in the SpikeList
+Returns a new SpikeList.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.id2position">
+<tt class="descname">id2position</tt><big>(</big><em>id</em>, <em>offset=0</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.id2position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a position (x,y) from an id if the cells are aranged on a
+grid of size dims, as defined in the dims attribute of the SpikeList object.
+This assumes that cells are ordered from left to right, top to bottom,
+and that dims specifies (height, width), i.e. if dims = (10,12), this is
+an array with 10 rows and 12 columns, and hence has width 12 units and
+height 10 units.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>id - the id of the cell</dd>
+</dl>
+<p>The &#8216;dimensions&#8217; attribute of the SpikeList must be defined</p>
+<dl class="docutils">
+<dt>See also</dt>
+<dd>activity_map, activity_movie</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.id_list">
+<tt class="descname">id_list</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.id_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the sorted list of all the cells ids contained in the
+SpikeList object</p>
+<dl class="docutils">
+<dt>Examples</dt>
+<dd><dl class="first last docutils">
+<dt>&gt;&gt; spklist.id_list()</dt>
+<dd>[0,1,2,3,....,9999]</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.id_offset">
+<tt class="descname">id_offset</tt><big>(</big><em>offset</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.id_offset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an offset to the whole SpikeList object. All the id are shifted
+according to an offset value.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>offset - the id offset</dd>
+<dt>Examples:</dt>
+<dd><dl class="first docutils">
+<dt>&gt;&gt; spklist.id_list()</dt>
+<dd>[0,1,2,3,4]</dd>
+</dl>
+<p>&gt;&gt; spklist.id_offset(10)
+&gt;&gt; spklist.id_list()</p>
+<blockquote class="last">
+<div>[10,11,12,13,14]</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.id_slice">
+<tt class="descname">id_slice</tt><big>(</big><em>id_list</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.id_slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a new SpikeList obtained by selecting particular ids</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd><dl class="first last docutils">
+<dt>id_list - Can be an integer (and then N random cells will be selected)</dt>
+<dd>or a sublist of the current ids</dd>
+</dl>
+</dd>
+</dl>
+<p>The new SpikeList inherits the time parameters (t_start, t_stop)</p>
+<dl class="docutils">
+<dt>Examples:</dt>
+<dd><dl class="first docutils">
+<dt>&gt;&gt; spklist.id_list()</dt>
+<dd>[830, 1959, 1005, 416, 1011, 1240, 729, 59, 1138, 259]</dd>
+</dl>
+<p>&gt;&gt; new_spklist = spklist.id_slice(5)
+&gt;&gt; new_spklist.id_list()</p>
+<blockquote class="last">
+<div>[1011, 729, 1138, 416, 59]</div></blockquote>
+</dd>
+<dt>See also</dt>
+<dd>time_slice, interval_slice</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.isi">
+<tt class="descname">isi</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.isi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of all the isi vectors for all the SpikeTrains objects
+within the SpikeList.</p>
+<dl class="docutils">
+<dt>See also:</dt>
+<dd>isi_hist</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.isi_hist">
+<tt class="descname">isi_hist</tt><big>(</big><em>bins=50</em>, <em>display=False</em>, <em>kwargs={}</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.isi_hist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the histogram of the ISI.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd><dl class="first docutils">
+<dt>bins    - the number of bins (between the min and max of the data)</dt>
+<dd>or a list/array containing the lower edges of the bins.</dd>
+</dl>
+<p>display - if True, a new figure is created. Could also be a subplot
+kwargs  - dictionary contening extra parameters that will be sent to the plot</p>
+<blockquote class="last">
+<div>function</div></blockquote>
+</dd>
+<dt>Examples:</dt>
+<dd>&gt;&gt; z = subplot(221)
+&gt;&gt; spklist.isi_hist(10, display=z, kwargs={&#8216;color&#8217;:&#8217;r&#8217;})</dd>
+<dt>See also:</dt>
+<dd>isi</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.last_spike_time">
+<tt class="descname">last_spike_time</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.last_spike_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the time of the last real spike in the SpikeList</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.mean_rate">
+<tt class="descname">mean_rate</tt><big>(</big><em>t_start=None</em>, <em>t_stop=None</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.mean_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the mean firing rate averaged accross all SpikeTrains between t_start and t_stop.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>t_start - begining of the selected area to compute mean_rate, in ms
+t_stop  - end of the selected area to compute mean_rate, in ms</dd>
+</dl>
+<p>If t_start or t_stop are not defined, those of the SpikeList are used</p>
+<dl class="docutils">
+<dt>Examples:</dt>
+<dd>&gt;&gt; spklist.mean_rate()
+&gt;&gt; 12.63</dd>
+<dt>See also</dt>
+<dd>mean_rates, mean_rate_std</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.mean_rate_covariance">
+<tt class="descname">mean_rate_covariance</tt><big>(</big><em>spikelist</em>, <em>time_bin</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.mean_rate_covariance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the covariance of the firing rate along time,
+if events are binned with a time bin.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>spikelist - the other spikelist to compute covariance
+time_bin  - time bin to bin events</dd>
+<dt>See also</dt>
+<dd>mean_rate, mean_rates, mean_rate_variance, firing_rate</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.mean_rate_std">
+<tt class="descname">mean_rate_std</tt><big>(</big><em>t_start=None</em>, <em>t_stop=None</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.mean_rate_std" title="Permalink to this definition">¶</a></dt>
+<dd><p>Standard deviation of the firing rates accross all SpikeTrains
+between t_start and t_stop</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>t_start - begining of the selected area to compute std(mean_rate), in ms
+t_stop  - end of the selected area to compute std(mean_rate), in ms</dd>
+</dl>
+<p>If t_start or t_stop are not defined, those of the SpikeList are used</p>
+<dl class="docutils">
+<dt>Examples:</dt>
+<dd>&gt;&gt; spklist.mean_rate_std()
+&gt;&gt; 13.25</dd>
+<dt>See also</dt>
+<dd>mean_rate, mean_rates</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.mean_rate_variance">
+<tt class="descname">mean_rate_variance</tt><big>(</big><em>time_bin</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.mean_rate_variance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the standard deviation of the firing rate along time,
+if events are binned with a time bin.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>time_bin - time bin to bin events</dd>
+<dt>See also</dt>
+<dd>mean_rate, mean_rates, mean_rate_covariance, firing_rate</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.mean_rates">
+<tt class="descname">mean_rates</tt><big>(</big><em>t_start=None</em>, <em>t_stop=None</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.mean_rates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a vector of the size of id_list giving the mean firing rate for each neuron</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>t_start - begining of the selected area to compute std(mean_rate), in ms
+t_stop  - end of the selected area to compute std(mean_rate), in ms</dd>
+</dl>
+<p>If t_start or t_stop are not defined, those of the SpikeList are used</p>
+<dl class="docutils">
+<dt>See also</dt>
+<dd>mean_rate, mean_rate_std</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.merge">
+<tt class="descname">merge</tt><big>(</big><em>spikelist</em>, <em>relative=False</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.merge" title="Permalink to this definition">¶</a></dt>
+<dd><p>For each cell id in spikelist that matches an id in this SpikeList,
+merge the two SpikeTrains and save the result in this SpikeList.
+Note that SpikeTrains with ids not in this SpikeList are appended to it.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd><p class="first">spikelist - the SpikeList that should be merged to the current one
+relative  - if True, spike times are expressed in a relative</p>
+<blockquote class="last">
+<div>time compared to the previsous one</div></blockquote>
+</dd>
+<dt>Examples:</dt>
+<dd>&gt;&gt; spklist.merge(spklist2)</dd>
+<dt>See also:</dt>
+<dd>concatenate, append, __setitem__</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.position2id">
+<tt class="descname">position2id</tt><big>(</big><em>position</em>, <em>offset=0</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.position2id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the id of the cell at position (x,y) if the cells are aranged on a
+grid of size dims, as defined in the dims attribute of the SpikeList object</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>position - a tuple with the position of the cell</dd>
+</dl>
+<p>The &#8216;dimensions&#8217; attribute of the SpikeList must be defined and have the same shape
+as the position argument</p>
+<dl class="docutils">
+<dt>See also</dt>
+<dd>activity_map, activity_movie, id2position</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.raster_plot">
+<tt class="descname">raster_plot</tt><big>(</big><em>id_list=None</em>, <em>t_start=None</em>, <em>t_stop=None</em>, <em>display=True</em>, <em>kwargs={}</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.raster_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a raster plot for the SpikeList in a subwindow of interest,
+defined by id_list, t_start and t_stop.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd><dl class="first docutils">
+<dt>id_list - can be a integer (and then N cells are randomly selected) or a list of ids. If None,</dt>
+<dd>we use all the ids of the SpikeList</dd>
+</dl>
+<p>t_start - in ms. If not defined, the one of the SpikeList object is used
+t_stop  - in ms. If not defined, the one of the SpikeList object is used
+display - if True, a new figure is created. Could also be a subplot
+kwargs  - dictionary contening extra parameters that will be sent to the plot</p>
+<blockquote class="last">
+<div>function</div></blockquote>
+</dd>
+<dt>Examples:</dt>
+<dd>&gt;&gt; z = subplot(221)
+&gt;&gt; spikelist.raster_plot(display=z, kwargs={&#8216;color&#8217;:&#8217;r&#8217;})</dd>
+<dt>See also</dt>
+<dd>SpikeTrain.raster_plot</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.raster_plot_flat">
+<tt class="descname">raster_plot_flat</tt><big>(</big><em>id=0.0</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.raster_plot_flat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flattern SpikeList with flatten(), then plot the raster</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>id - id of the flattened SpikeList. Can be any hashable type
+kwargs - dictionary contening extra parameters that will be passed to raster_plot</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.rate_distribution">
+<tt class="descname">rate_distribution</tt><big>(</big><em>nbins=25</em>, <em>normalize=True</em>, <em>display=False</em>, <em>kwargs={}</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.rate_distribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a vector with all the mean firing rates for all SpikeTrains.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd><dl class="first docutils">
+<dt>bins    - the number of bins (between the min and max of the data)</dt>
+<dd>or a list/array containing the lower edges of the bins.</dd>
+</dl>
+<p>display - if True, a new figure is created. Could also be a subplot
+kwargs  - dictionary contening extra parameters that will be sent to the plot</p>
+<blockquote class="last">
+<div>function</div></blockquote>
+</dd>
+<dt>See also</dt>
+<dd>mean_rate, mean_rates</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.raw_data">
+<tt class="descname">raw_data</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.raw_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to return a N by 2 array of all times and ids.</p>
+<dl class="docutils">
+<dt>Examples:</dt>
+<dd><p class="first">&gt;&gt; spklist.raw_data()
+&gt;&gt; array([[  1.00000000e+00,   1.00000000e+00],</p>
+<blockquote class="last">
+<div><p>[  1.00000000e+00,   1.00000000e+00],
+[  2.00000000e+00,   2.00000000e+00],</p>
+<blockquote>
+<div>...,</div></blockquote>
+<p>[  2.71530000e+03,   2.76210000e+03]])</p>
+</div></blockquote>
+</dd>
+<dt>See also:</dt>
+<dd>convert()</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.save">
+<tt class="descname">save</tt><big>(</big><em>user_file</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save raw data to user_file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.select_ids">
+<tt class="descname">select_ids</tt><big>(</big><em>criteria</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.select_ids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of all the cells in the SpikeList that will match the criteria
+expressed with the following syntax.</p>
+<dl class="docutils">
+<dt>Inputs :</dt>
+<dd><dl class="first last docutils">
+<dt>criteria - a string that can be evaluated on a SpikeTrain object, where the</dt>
+<dd>SpikeTrain should be named <a href="#id3"><span class="problematic" id="id4">``</span></a>cell&#8217;&#8216;.</dd>
+</dl>
+</dd>
+<dt>Exemples:</dt>
+<dd>&gt;&gt; spklist.select_ids(&#8220;cell.mean_rate() &gt; 0&#8221;) (all the active cells)
+&gt;&gt; spklist.select_ids(&#8220;cell.mean_rate() == 0&#8221;) (all the silent cells)
+&gt;&gt; spklist.select_ids(&#8220;len(cell.spike_times) &gt; 10&#8221;)
+&gt;&gt; spklist.select_ids(&#8220;mean(cell.isi()) &lt; 1&#8221;)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.sort_by">
+<tt class="descname">sort_by</tt><big>(</big><em>criteria</em>, <em>descending=False</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.sort_by" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an array with all the ids of the cells in the SpikeList,
+sorted according to a particular criteria.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd><dl class="first docutils">
+<dt>criteria   - the criteria used to sort the cells. It should be a string</dt>
+<dd>that can be evaluated on a SpikeTrain object, where the
+SpikeTrain should be named <a href="#id5"><span class="problematic" id="id6">``</span></a>cell&#8217;&#8216;.</dd>
+</dl>
+<p class="last">descending - if True, then the cells are sorted from max to min.</p>
+</dd>
+<dt>Examples:</dt>
+<dd>&gt;&gt; spk.sort_by(&#8216;cell.mean_rate()&#8217;)
+&gt;&gt; spk.sort_by(&#8216;cell.cv_isi()&#8217;, descending=True)
+&gt;&gt; spk.sort_by(&#8216;cell.distance_victorpurpura(target, 0.05)&#8217;)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.spike_histogram">
+<tt class="descname">spike_histogram</tt><big>(</big><em>time_bin</em>, <em>normalized=False</em>, <em>display=False</em>, <em>kwargs={}</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.spike_histogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate an array with all the spike_histograms of all the SpikeTrains
+objects within the SpikeList.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd><p class="first">time_bin   - the time bin used to gather the data
+normalized - if True, the histogram are in Hz (spikes/second), otherwise they are</p>
+<blockquote>
+<div>in spikes/bin</div></blockquote>
+<dl class="last docutils">
+<dt>display    - if True, a new figure is created. Could also be a subplot. The averaged</dt>
+<dd>spike_histogram over the whole population is then plotted</dd>
+<dt>kwargs     - dictionary contening extra parameters that will be sent to the plot</dt>
+<dd>function</dd>
+</dl>
+</dd>
+<dt>See also</dt>
+<dd>firing_rate, time_axis</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyNCS.pyST.spikes.SpikeList.t_start">
+<tt class="descname">t_start</tt><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.t_start" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyNCS.pyST.spikes.SpikeList.t_stop">
+<tt class="descname">t_stop</tt><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.t_stop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.time_axis">
+<tt class="descname">time_axis</tt><big>(</big><em>time_bin</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.time_axis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a time axis between t_start and t_stop according to a time_bin</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>time_bin - the bin width</dd>
+<dt>See also</dt>
+<dd>spike_histogram</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.time_offset">
+<tt class="descname">time_offset</tt><big>(</big><em>offset</em>, <em>t_start=None</em>, <em>t_stop=None</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.time_offset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an offset to the whole SpikeList object. t_start and t_stop are
+shifted from offset, so does all the SpikeTrain.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>offset - the time offset, in ms</dd>
+<dt>Examples:</dt>
+<dd><dl class="first docutils">
+<dt>&gt;&gt; spklist.t_start</dt>
+<dd>1000</dd>
+</dl>
+<p>&gt;&gt; spklist.time_offset(50)
+&gt;&gt; spklist.t_start</p>
+<blockquote class="last">
+<div>1050</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.time_parameters">
+<tt class="descname">time_parameters</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.time_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the time parameters of the SpikeList (t_start, t_stop)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.time_slice">
+<tt class="descname">time_slice</tt><big>(</big><em>t_start</em>, <em>t_stop</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.time_slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a new SpikeList obtained by slicing between t_start and t_stop</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>t_start - begining of the new SpikeTrain, in ms.
+t_stop  - end of the new SpikeTrain, in ms.</dd>
+<dt>See also</dt>
+<dd>id_slice, interval_slice</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyNCS.pyST.spikes.SpikeTrain">
+<em class="property">class </em><tt class="descclassname">pyNCS.pyST.spikes.</tt><tt class="descname">SpikeTrain</tt><big>(</big><em>spike_times</em>, <em>t_start=None</em>, <em>t_stop=None</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeTrain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>SpikeTrain(spikes_times, t_start=None, t_stop=None)
+This class defines a spike train as a list of times events.</p>
+<p>Event times are given in a list (sparse representation) in milliseconds.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>spike_times - a list/numpy array of spike times (in milliseconds)
+t_start     - beginning of the SpikeTrain (if not, this is infered)
+t_stop      - end of the SpikeTrain (if not, this is infered)</dd>
+<dt>Examples:</dt>
+<dd><p class="first">&gt;&gt; s1 = SpikeTrain([0.0, 0.1, 0.2, 0.5])
+&gt;&gt; s1.isi()</p>
+<blockquote>
+<div>array([ 0.1,  0.1,  0.3])</div></blockquote>
+<dl class="last docutils">
+<dt>&gt;&gt; s1.mean_rate()</dt>
+<dd>8.0</dd>
+<dt>&gt;&gt; s1.cv_isi()</dt>
+<dd>0.565685424949</dd>
+</dl>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeTrain.copy">
+<tt class="descname">copy</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeTrain.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy of the SpikeTrain object</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeTrain.cv_isi">
+<tt class="descname">cv_isi</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeTrain.cv_isi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the coefficient of variation of the isis.</p>
+<dl class="docutils">
+<dt>cv_isi is the ratio between the standard deviation and the mean of the ISI</dt>
+<dd>The irregularity of individual spike trains is measured by the squared</dd>
+</dl>
+<p>coefficient of variation of the corresponding inter-spike interval (ISI)
+distribution normalized by the square of its mean.</p>
+<blockquote>
+<div>In point processes, low values reflect more regular spiking, a</div></blockquote>
+<p>clock-like pattern yields CV2= 0. On the other hand, CV2 = 1 indicates
+Poisson-type behavior. As a measure for irregularity in the network one
+can use the average irregularity across all neurons.</p>
+<p><a class="reference external" href="http://en.wikipedia.org/wiki/Coefficient_of_variation">http://en.wikipedia.org/wiki/Coefficient_of_variation</a></p>
+<dl class="docutils">
+<dt>See also</dt>
+<dd>isi, cv_kl</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeTrain.cv_kl">
+<tt class="descname">cv_kl</tt><big>(</big><em>bins=100</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeTrain.cv_kl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provides a measure for the coefficient of variation to describe the
+regularity in spiking networks. It is based on the Kullback-Leibler
+divergence and decribes the difference between a given
+interspike-interval-distribution and an exponential one (representing
+poissonian spike trains) with equal mean.
+It yields 1 for poissonian spike trains and 0 for regular ones.</p>
+<dl class="docutils">
+<dt>Reference:</dt>
+<dd><a class="reference external" href="http://incm.cnrs-mrs.fr/LaurentPerrinet/Publications/Voges08fens">http://incm.cnrs-mrs.fr/LaurentPerrinet/Publications/Voges08fens</a></dd>
+<dt>Inputs:</dt>
+<dd>bins - the number of bins used to gather the ISI</dd>
+<dt>Examples:</dt>
+<dd><dl class="first last docutils">
+<dt>&gt;&gt; spklist.cv_kl(100)</dt>
+<dd>0.98</dd>
+</dl>
+</dd>
+<dt>See also:</dt>
+<dd>cv_isi</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeTrain.distance_vanrossum">
+<tt class="descname">distance_vanrossum</tt><big>(</big><em>spktrain</em>, <em>tc=5.0</em>, <em>dt=0.1</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeTrain.distance_vanrossum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the van Rossum metric of the two spike trians.
+dt - time bins to calculate the exponentials.
+tc - time constant / cost of the exponentials.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeTrain.distance_victorpurpura">
+<tt class="descname">distance_victorpurpura</tt><big>(</big><em>spktrain</em>, <em>cost=0.5</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeTrain.distance_victorpurpura" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to calculate the Victor-Purpura distance between two spike trains.
+See J. D. Victor and K. P. Purpura,</p>
+<blockquote>
+<div>Nature and precision of temporal coding in visual cortex: a metric-space
+analysis.,
+J Neurophysiol,76(2):1310-1326, 1996</div></blockquote>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>spktrain - the other SpikeTrain
+cost     - The cost parameter. See the paper for more information</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeTrain.duration">
+<tt class="descname">duration</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeTrain.duration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the duration of the SpikeTrain</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeTrain.fano_factor_isi">
+<tt class="descname">fano_factor_isi</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeTrain.fano_factor_isi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the fano factor of this spike trains ISI.</p>
+<p>The Fano Factor is defined as the variance of the isi divided by the mean of the isi</p>
+<p><a class="reference external" href="http://en.wikipedia.org/wiki/Fano_factor">http://en.wikipedia.org/wiki/Fano_factor</a></p>
+<dl class="docutils">
+<dt>See also</dt>
+<dd>isi, cv_isi</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeTrain.format">
+<tt class="descname">format</tt><big>(</big><em>relative=False</em>, <em>quantized=False</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeTrain.format" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an array with a new representation of the spike times</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd><dl class="first docutils">
+<dt>relative  - if True, spike times are expressed in a relative</dt>
+<dd>time compared to the previsous one</dd>
+</dl>
+<p class="last">quantized - a value to divide spike times with before rounding</p>
+</dd>
+<dt>Examples:</dt>
+<dd><p class="first">&gt;&gt; st.spikes_times=[0, 2.1, 3.1, 4.4]
+&gt;&gt; st.format(relative=True)</p>
+<blockquote>
+<div>[0, 2.1, 1, 1.3]</div></blockquote>
+<dl class="last docutils">
+<dt>&gt;&gt; st.format(quantized=2)</dt>
+<dd>[0, 1, 2, 2]</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeTrain.is_equal">
+<tt class="descname">is_equal</tt><big>(</big><em>spktrain</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeTrain.is_equal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the SpikeTrain object is equal to one other SpikeTrain, i.e
+if they have same time parameters and same spikes_times</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>spktrain - A SpikeTrain object</dd>
+<dt>See also:</dt>
+<dd>time_parameters()</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeTrain.isi">
+<tt class="descname">isi</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeTrain.isi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an array with the inter-spike intervals of the SpikeTrain</p>
+<dl class="docutils">
+<dt>Examples:</dt>
+<dd><p class="first">&gt;&gt; st.spikes_times=[0, 2.1, 3.1, 4.4]
+&gt;&gt; st.isi()</p>
+<blockquote class="last">
+<div>[2.1, 1., 1.3]</div></blockquote>
+</dd>
+<dt>See also</dt>
+<dd>cv_isi</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeTrain.jitter">
+<tt class="descname">jitter</tt><big>(</big><em>jitter</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeTrain.jitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new SpikeTrain with spiketimes jittered by a normal distribution.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>jitter - sigma of the normal distribution</dd>
+<dt>Examples:</dt>
+<dd>&gt;&gt; st_jittered = st.jitter(2.0)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeTrain.mean_rate">
+<tt class="descname">mean_rate</tt><big>(</big><em>t_start=None</em>, <em>t_stop=None</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeTrain.mean_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the mean firing rate between t_start and t_stop, in Hz</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>t_start - in ms. If not defined, the one of the SpikeTrain object is used
+t_stop  - in ms. If not defined, the one of the SpikeTrain object is used</dd>
+<dt>Examples:</dt>
+<dd><dl class="first last docutils">
+<dt>&gt;&gt; spk.mean_rate()</dt>
+<dd>34.2</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeTrain.merge">
+<tt class="descname">merge</tt><big>(</big><em>spiketrain</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeTrain.merge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add the spike times from a spiketrain to the current SpikeTrain</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>spiketrain - The SpikeTrain that should be added</dd>
+<dt>Examples:</dt>
+<dd><p class="first">&gt;&gt; a = SpikeTrain(range(0,100,10),0.1,0,100)
+&gt;&gt; b = SpikeTrain(range(400,500,10),0.1,400,500)
+&gt;&gt; a.merge(b)
+&gt;&gt; a.spike_times</p>
+<blockquote>
+<div>[   0.,   10.,   20.,   30.,   40.,   50.,   60.,   70.,   80.,
+90.,  400.,  410.,  420.,  430.,  440.,  450.,  460.,  470.,
+480.,  490.]</div></blockquote>
+<dl class="last docutils">
+<dt>&gt;&gt; a.t_stop</dt>
+<dd>500</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeTrain.relative_times">
+<tt class="descname">relative_times</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeTrain.relative_times" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rescale the spike times to make them relative to t_start.</p>
+<p>Note that the SpikeTrain object itself is modified, t_start
+is substracted to spike_times, t_start and t_stop</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyNCS.pyST.spikes.SpikeTrain.spike_times">
+<tt class="descname">spike_times</tt><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeTrain.spike_times" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeTrain.time_axis">
+<tt class="descname">time_axis</tt><big>(</big><em>time_bin=10</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeTrain.time_axis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a time axis between t_start and t_stop according to a time_bin</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>time_bin - the bin width</dd>
+<dt>Examples:</dt>
+<dd><p class="first">&gt;&gt; st = SpikeTrain(range(100),0.1,0,100)
+&gt;&gt; st.time_axis(10)</p>
+<blockquote class="last">
+<div>[ 0, 10, 20, 30, 40, 50, 60, 70, 80, 90n 100]</div></blockquote>
+</dd>
+<dt>See also</dt>
+<dd>time_histogram</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeTrain.time_histogram">
+<tt class="descname">time_histogram</tt><big>(</big><em>time_bin=10</em>, <em>normalized=True</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeTrain.time_histogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bin the spikes with the specified bin width. The first and last bins
+are calculated from <cite>self.t_start</cite> and <cite>self.t_stop</cite>.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd><p class="first">time_bin   - the bin width for gathering spikes_times
+normalized - if True, the bin values are scaled to represent firing rates</p>
+<blockquote class="last">
+<div>in spikes/second, otherwise otherwise it&#8217;s the number of spikes
+per bin.</div></blockquote>
+</dd>
+<dt>Examples:</dt>
+<dd><p class="first">&gt;&gt; st=SpikeTrain(range(0,100,5),0.1,0,100)
+&gt;&gt; st.time_histogram(10)</p>
+<blockquote>
+<div>[200, 200, 200, 200, 200, 200, 200, 200, 200, 200]</div></blockquote>
+<dl class="last docutils">
+<dt>&gt;&gt; st.time_histogram(10, normalized=False)</dt>
+<dd>[2, 2, 2, 2, 2, 2, 2, 2, 2, 2]</dd>
+</dl>
+</dd>
+<dt>See also</dt>
+<dd>time_axis</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeTrain.time_offset">
+<tt class="descname">time_offset</tt><big>(</big><em>offset</em>, <em>t_start=None</em>, <em>t_stop=None</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeTrain.time_offset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an offset to the SpikeTrain object. t_start and t_stop are
+shifted from offset, so does all the spike times.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>offset - the time offset, in ms</dd>
+<dt>Examples:</dt>
+<dd><p class="first">&gt;&gt; spktrain = SpikeTrain(arange(0,100,10))
+&gt;&gt; spktrain.time_offset(50)
+&gt;&gt; spklist.spike_times</p>
+<blockquote class="last">
+<div>[  50.,   60.,   70.,   80.,   90.,  100.,  110.,
+120.,  130.,  140.]</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeTrain.time_parameters">
+<tt class="descname">time_parameters</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeTrain.time_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the time parameters of the SpikeTrain (t_start, t_stop)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeTrain.time_slice">
+<tt class="descname">time_slice</tt><big>(</big><em>t_start</em>, <em>t_stop</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeTrain.time_slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a new SpikeTrain obtained by slicing between t_start and t_stop. The new
+t_start and t_stop values of the returned SpikeTrain are the one given as arguments</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>t_start - begining of the new SpikeTrain, in ms.
+t_stop  - end of the new SpikeTrain, in ms.</dd>
+<dt>Examples:</dt>
+<dd><p class="first">&gt;&gt; spk = spktrain.time_slice(0,100)
+&gt;&gt; spk.t_start</p>
+<blockquote>
+<div>0</div></blockquote>
+<dl class="last docutils">
+<dt>&gt;&gt; spk.t_stop</dt>
+<dd>100</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyNCS.pyST.spikes.emptySpikeTrain">
+<em class="property">class </em><tt class="descclassname">pyNCS.pyST.spikes.</tt><tt class="descname">emptySpikeTrain</tt><a class="headerlink" href="#pyNCS.pyST.spikes.emptySpikeTrain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyNCS.pyST.spikes.SpikeTrain" title="pyNCS.pyST.spikes.SpikeTrain"><tt class="xref py py-class docutils literal"><span class="pre">pyNCS.pyST.spikes.SpikeTrain</span></tt></a></p>
+<dl class="method">
+<dt id="pyNCS.pyST.spikes.emptySpikeTrain.merge">
+<tt class="descname">merge</tt><big>(</big><em>spiketrain</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.emptySpikeTrain.merge" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyNCS.pyST.spikes.emptySpikeTrain.spike_times">
+<tt class="descname">spike_times</tt><a class="headerlink" href="#pyNCS.pyST.spikes.emptySpikeTrain.spike_times" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.spikes.get_display">
+<tt class="descclassname">pyNCS.pyST.spikes.</tt><tt class="descname">get_display</tt><big>(</big><em>display</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.get_display" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a pylab object with a plot() function to draw the plots.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd><dl class="first last docutils">
+<dt>display - if True, a new figure is created. Otherwise, if display is a</dt>
+<dd>subplot object, this object is returned.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.spikes.load">
+<tt class="descclassname">pyNCS.pyST.spikes.</tt><tt class="descname">load</tt><big>(</big><em>user_file</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a file saved by SpikeList.save</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.spikes.merge">
+<tt class="descclassname">pyNCS.pyST.spikes.</tt><tt class="descname">merge</tt><big>(</big><em>*spiketrains</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.merge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge spike times from a spiketrain</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>spiketrains - The SpikeTrain that should be added</dd>
+<dt>Examples:</dt>
+<dd><p class="first">&gt;&gt; a = SpikeTrain(range(0,100,10),0.1,0,100)
+&gt;&gt; b = SpikeTrain(range(400,500,10),0.1,400,500)
+&gt;&gt; a = merge(a, b)
+&gt;&gt; a.spike_times</p>
+<blockquote>
+<div>[   0.,   10.,   20.,   30.,   40.,   50.,   60.,   70.,   80.,
+90.,  400.,  410.,  420.,  430.,  440.,  450.,  460.,  470.,
+480.,  490.]</div></blockquote>
+<dl class="last docutils">
+<dt>&gt;&gt; a.t_stop</dt>
+<dd>500</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.spikes.merge_spikelists">
+<tt class="descclassname">pyNCS.pyST.spikes.</tt><tt class="descname">merge_spikelists</tt><big>(</big><em>*lspikelist</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.merge_spikelists" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.spikes.set_axis_limits">
+<tt class="descclassname">pyNCS.pyST.spikes.</tt><tt class="descname">set_axis_limits</tt><big>(</big><em>subplot</em>, <em>xmin</em>, <em>xmax</em>, <em>ymin</em>, <em>ymax</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.set_axis_limits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the axis limits of a plot.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>subplot     - the targeted plot
+xmin, xmax  - the limits of the x axis
+ymin, ymax  - the limits of the y axis</dd>
+<dt>Example:</dt>
+<dd>&gt;&gt; x = range(10)
+&gt;&gt; y = []
+&gt;&gt; for i in x: y.append(i*i)
+&gt;&gt; pylab.plot(x,y)
+&gt;&gt; plotting.set_axis_limits(pylab, 0., 10., 0., 100.)</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.spikes.set_labels">
+<tt class="descclassname">pyNCS.pyST.spikes.</tt><tt class="descname">set_labels</tt><big>(</big><em>subplot</em>, <em>xlabel</em>, <em>ylabel</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.set_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the axis labels of a plot.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>subplot - the targeted plot
+xlabel  - a string for the x label
+ylabel  - a string for the y label</dd>
+<dt>Example:</dt>
+<dd>&gt;&gt; x = range(10)
+&gt;&gt; y = []
+&gt;&gt; for i in x: y.append(i*i)
+&gt;&gt; pylab.plot(x,y)
+&gt;&gt; plotting.set_labels(pylab, &#8216;x&#8217;, &#8216;y=x^2&#8217;)</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+</div>
+<div class="section" id="module-pyNCS.pyST.stgen">
+<span id="stgen-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">stgen</span></tt> Module<a class="headerlink" href="#module-pyNCS.pyST.stgen" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="neurotools-stgen">
+<h3>NeuroTools.stgen<a class="headerlink" href="#neurotools-stgen" title="Permalink to this headline">¶</a></h3>
+<p>A collection of tools for stochastic process generation.</p>
+<div class="section" id="id7">
+<h4>Classes<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
+<dl class="docutils">
+<dt>StGen - Object to generate stochastic processes of various kinds</dt>
+<dd>and return them as SpikeTrain or AnalogSignal objects.</dd>
+</dl>
+</div>
+<div class="section" id="id8">
+<h4>Functions<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
+<p>shotnoise_fromspikes - Convolves the provided spike train with shot decaying exponential.</p>
+<p>gamma_hazard - Compute the hazard function for a gamma process with parameters a,b.</p>
+<dl class="class">
+<dt id="pyNCS.pyST.stgen.StGen">
+<em class="property">class </em><tt class="descclassname">pyNCS.pyST.stgen.</tt><tt class="descname">StGen</tt><big>(</big><em>rng=None</em>, <em>seed=None</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.stgen.StGen" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="pyNCS.pyST.stgen.StGen.OU_generator">
+<tt class="descname">OU_generator</tt><big>(</big><em>dt</em>, <em>tau</em>, <em>sigma</em>, <em>y0</em>, <em>t_start=0.0</em>, <em>t_stop=1000.0</em>, <em>array=False</em>, <em>time_it=False</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.stgen.StGen.OU_generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates an Orstein Ulbeck process using the forward euler method. The function returns
+an AnalogSignal object.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd><p class="first">dt      - the time resolution in milliseconds of th signal
+tau     - the correlation time in milliseconds
+sigma   - std dev of the process
+y0      - initial value of the process, at t_start
+t_start - start time in milliseconds
+t_stop  - end time in milliseconds
+array   - if True, the functions returns the tuple (y,t)</p>
+<blockquote class="last">
+<div>where y and t are the OU signal and the time bins, respectively,
+and are both numpy arrays.</div></blockquote>
+</dd>
+<dt>Examples:</dt>
+<dd>&gt;&gt; stgen.OU_generator(0.1, 2, 3, 0, 0, 10000)</dd>
+<dt>See also:</dt>
+<dd>OU_generator_weave1</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.stgen.StGen.OU_generator_weave1">
+<tt class="descname">OU_generator_weave1</tt><big>(</big><em>dt</em>, <em>tau</em>, <em>sigma</em>, <em>y0</em>, <em>t_start=0.0</em>, <em>t_stop=1000.0</em>, <em>time_it=False</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.stgen.StGen.OU_generator_weave1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates an Orstein Ulbeck process using the forward euler method. The function returns
+an AnalogSignal object.</p>
+<p>OU_generator_weave1, as opposed to OU_generator, uses scipy.weave
+and is thus much faster.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd><p class="first">dt      - the time resolution in milliseconds of th signal
+tau     - the correlation time in milliseconds
+sigma   - std dev of the process
+y0      - initial value of the process, at t_start
+t_start - start time in milliseconds
+t_stop  - end time in milliseconds
+array   - if True, the functions returns the tuple (y,t)</p>
+<blockquote class="last">
+<div>where y and t are the OU signal and the time bins, respectively,
+and are both numpy arrays.</div></blockquote>
+</dd>
+<dt>Examples:</dt>
+<dd>&gt;&gt; stgen.OU_generator_weave1(0.1, 2, 3, 0, 0, 10000)</dd>
+<dt>See also:</dt>
+<dd>OU_generator</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.stgen.StGen.inh_2Dadaptingmarkov_generator">
+<tt class="descname">inh_2Dadaptingmarkov_generator</tt><big>(</big><em>a</em>, <em>bq</em>, <em>tau_s</em>, <em>tau_r</em>, <em>qrqs</em>, <em>t</em>, <em>t_stop</em>, <em>array=False</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.stgen.StGen.inh_2Dadaptingmarkov_generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a SpikeList whose spikes are an inhomogeneous
+realization (dynamic rate) of the so-called 2D adapting markov
+process (see references).  2D implies the process has two
+states, an adaptation state, and a refractory state, both of
+which affect its probability to spike.  The implementation
+uses the thinning method, as presented in the references.</p>
+<p>For the 1d implementation, with no relative refractoriness,
+see the inh_adaptingmarkov_generator.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd><dl class="first docutils">
+<dt>a,bq    - arrays of the parameters of the hazard function where a[i] and bq[i]</dt>
+<dd>will be active on interval [t[i],t[i+1]]</dd>
+</dl>
+<p>tau_s    - the time constant of adaptation (in milliseconds).
+tau_r    - the time constant of refractoriness (in milliseconds).
+qrqs     - the ratio of refractoriness conductance to adaptation conductance.</p>
+<blockquote>
+<div>typically on the order of 200.</div></blockquote>
+<dl class="docutils">
+<dt>t      - an array specifying the time bins (in milliseconds) at which to</dt>
+<dd>specify the rate</dd>
+</dl>
+<p>t_stop - length of time to simulate process (in ms)
+array  - if True, a numpy array of sorted spikes is returned,</p>
+<blockquote class="last">
+<div>rather than a SpikeList object.</div></blockquote>
+</dd>
+<dt>Note:</dt>
+<dd><ul class="first last simple">
+<li>t_start=t[0]</li>
+<li>a is in units of Hz.  Typical values are available
+in Fig. 1 of Muller et al 2007, a~5-80Hz (low to high stimulus)</li>
+<li>bq here is taken to be the quantity b*q_s in Muller et al 2007, is thus
+dimensionless, and has typical values bq~3.0-1.0 (low to high stimulus)</li>
+<li>qrqs is the quantity q_r/q_s in Muller et al 2007,
+where a value of qrqs = 3124.0nS/14.48nS = 221.96 was used.</li>
+<li>tau_s has typical values on the order of 100 ms</li>
+<li>tau_r has typical values on the order of 2 ms</li>
+</ul>
+</dd>
+</dl>
+<p>References:</p>
+<p>Eilif Muller, Lars Buesing, Johannes Schemmel, and Karlheinz Meier
+Spike-Frequency Adapting Neural Ensembles: Beyond Mean Adaptation and Renewal Theories
+Neural Comput. 2007 19: 2958-3010.</p>
+<p>Devroye, L. (1986). Non-uniform random variate generation. New York: Springer-Verlag.</p>
+<dl class="docutils">
+<dt>Examples:</dt>
+<dd>See source:trunk/examples/stgen/inh_2Dmarkov_psth.py</dd>
+<dt>See also:</dt>
+<dd>inh_poisson_generator, inh_gamma_generator, inh_adaptingmarkov_generator</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.stgen.StGen.inh_adaptingmarkov_generator">
+<tt class="descname">inh_adaptingmarkov_generator</tt><big>(</big><em>a</em>, <em>bq</em>, <em>tau</em>, <em>t</em>, <em>t_stop</em>, <em>array=False</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.stgen.StGen.inh_adaptingmarkov_generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a SpikeList whose spikes are an inhomogeneous
+realization (dynamic rate) of the so-called adapting markov
+process (see references). The implementation uses the thinning
+method, as presented in the references.</p>
+<p>This is the 1d implementation, with no relative refractoriness.
+For the 2d implementation with relative refractoriness,
+see the inh_2dadaptingmarkov_generator.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd><dl class="first docutils">
+<dt>a,bq    - arrays of the parameters of the hazard function where a[i] and bq[i]</dt>
+<dd>will be active on interval [t[i],t[i+1]]</dd>
+</dl>
+<p>tau    - the time constant of adaptation (in milliseconds).
+t      - an array specifying the time bins (in milliseconds) at which to</p>
+<blockquote>
+<div>specify the rate</div></blockquote>
+<p>t_stop - length of time to simulate process (in ms)
+array  - if True, a numpy array of sorted spikes is returned,</p>
+<blockquote class="last">
+<div>rather than a SpikeList object.</div></blockquote>
+</dd>
+<dt>Note:</dt>
+<dd><ul class="first last simple">
+<li>t_start=t[0]</li>
+<li>a is in units of Hz.  Typical values are available
+in Fig. 1 of Muller et al 2007, a~5-80Hz (low to high stimulus)</li>
+<li>bq here is taken to be the quantity b*q_s in Muller et al 2007, is thus
+dimensionless, and has typical values bq~3.0-1.0 (low to high stimulus)</li>
+<li>tau_s has typical values on the order of 100 ms</li>
+</ul>
+</dd>
+</dl>
+<p>References:</p>
+<p>Eilif Muller, Lars Buesing, Johannes Schemmel, and Karlheinz Meier
+Spike-Frequency Adapting Neural Ensembles: Beyond Mean Adaptation and Renewal Theories
+Neural Comput. 2007 19: 2958-3010.</p>
+<p>Devroye, L. (1986). Non-uniform random variate generation. New York: Springer-Verlag.</p>
+<dl class="docutils">
+<dt>Examples:</dt>
+<dd>See source:trunk/examples/stgen/inh_2Dmarkov_psth.py</dd>
+<dt>See also:</dt>
+<dd>inh_poisson_generator, inh_gamma_generator, inh_2dadaptingmarkov_generator</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.stgen.StGen.inh_gamma_generator">
+<tt class="descname">inh_gamma_generator</tt><big>(</big><em>a</em>, <em>b</em>, <em>t</em>, <em>t_stop</em>, <em>array=False</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.stgen.StGen.inh_gamma_generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a SpikeList whose spikes are a realization of an inhomogeneous gamma process
+(dynamic rate). The implementation uses the thinning method, as presented in the
+references.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd><dl class="first docutils">
+<dt>a,b    - arrays of the parameters of the gamma PDF where a[i] and b[i]</dt>
+<dd>will be active on interval [t[i],t[i+1]]</dd>
+<dt>t      - an array specifying the time bins (in milliseconds) at which to</dt>
+<dd>specify the rate</dd>
+</dl>
+<p>t_stop - length of time to simulate process (in ms)
+array  - if True, a numpy array of sorted spikes is returned,</p>
+<blockquote class="last">
+<div>rather than a SpikeList object.</div></blockquote>
+</dd>
+<dt>Note:</dt>
+<dd>t_start=t[0]
+a is a dimensionless quantity &gt; 0, but typically on the order of 2-10.
+a = 1 results in a poisson process.
+b is assumed to be in units of 1/Hz (seconds).</dd>
+</dl>
+<p>References:</p>
+<p>Eilif Muller, Lars Buesing, Johannes Schemmel, and Karlheinz Meier
+Spike-Frequency Adapting Neural Ensembles: Beyond Mean Adaptation and Renewal Theories
+Neural Comput. 2007 19: 2958-3010.</p>
+<p>Devroye, L. (1986). Non-uniform random variate generation. New York: Springer-Verlag.</p>
+<dl class="docutils">
+<dt>Examples:</dt>
+<dd>See source:trunk/examples/stgen/inh_gamma_psth.py</dd>
+<dt>See also:</dt>
+<dd>inh_poisson_generator, gamma_hazard</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.stgen.StGen.inh_poisson_generator">
+<tt class="descname">inh_poisson_generator</tt><big>(</big><em>rate</em>, <em>t</em>, <em>t_stop</em>, <em>base_generator=None</em>, <em>array=False</em>, <em>**base_generator_kwargs</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.stgen.StGen.inh_poisson_generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a SpikeList whose spikes are a realization of an inhomogeneous
+poisson process (dynamic rate). The implementation uses the thinning
+method, as presented in the references.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd><dl class="first docutils">
+<dt>rate   - an array of the rates (Hz) where rate[i] is active on interval</dt>
+<dd>[t[i],t[i+1]]</dd>
+<dt>t      - an array specifying the time bins (in milliseconds) at which to</dt>
+<dd>specify the rate</dd>
+</dl>
+<p>t_stop - length of time to simulate process (in ms)
+array  - if True, a numpy array of sorted spikes is returned,</p>
+<blockquote class="last">
+<div>rather than a SpikeList object.</div></blockquote>
+</dd>
+<dt>Note:</dt>
+<dd>t_start=t[0]</dd>
+</dl>
+<p>References:</p>
+<p>Eilif Muller, Lars Buesing, Johannes Schemmel, and Karlheinz Meier
+Spike-Frequency Adapting Neural Ensembles: Beyond Mean Adaptation and Renewal Theories
+Neural Comput. 2007 19: 2958-3010.</p>
+<p>Devroye, L. (1986). Non-uniform random variate generation. New York: Springer-Verlag.</p>
+<dl class="docutils">
+<dt>Examples:</dt>
+<dd>&gt;&gt; time = arange(0,1000)
+&gt;&gt; stgen.inh_poisson_generator(time,sin(time), 1000)</dd>
+<dt>See also:</dt>
+<dd>poisson_generator, inh_gamma_generator, inh_adaptingmarkov_generator</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.stgen.StGen.poisson_generator">
+<tt class="descname">poisson_generator</tt><big>(</big><em>rate</em>, <em>t_start=0.0</em>, <em>t_stop=1000.0</em>, <em>array=False</em>, <em>debug=False</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.stgen.StGen.poisson_generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a SpikeTrain whose spikes are a realization of a Poisson process
+with the given rate (Hz) and stopping time t_stop (milliseconds).</p>
+<p>Note: t_start is always 0.0, thus all realizations are as if
+they spiked at t=0.0, though this spike is not included in the SpikeList.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd><p class="first">rate    - the rate of the discharge (in Hz)
+t_start - the beginning of the SpikeTrain (in ms)
+t_stop  - the end of the SpikeTrain (in ms)
+array   - if True, a numpy array of sorted spikes is returned,</p>
+<blockquote class="last">
+<div>rather than a SpikeTrain object.</div></blockquote>
+</dd>
+<dt>Examples:</dt>
+<dd>&gt;&gt; gen.poisson_generator(50, 0, 1000)
+&gt;&gt; gen.poisson_generator(20, 5000, 10000, array=True)</dd>
+<dt>See also:</dt>
+<dd>inh_poisson_generator, inh_gamma_generator, inh_adaptingmarkov_generator</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.stgen.StGen.regular_gaussian_generator">
+<tt class="descname">regular_gaussian_generator</tt><big>(</big><em>rate</em>, <em>phase=0.0</em>, <em>scale=5.0</em>, <em>t_start=0.0</em>, <em>t_stop=1000.0</em>, <em>array=False</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.stgen.StGen.regular_gaussian_generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a SpikeTrain whose spikes are regularly spaced, but jittered
+according to a Gaussian distribution around the spiking period, with
+the given rate (Hz) and stopping time t_stop (milliseconds).</p>
+<p>Note: t_start is always 0.0, thus all realizations are as if they
+spiked at t=0.0, though this spike is not included in the SpikeList.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd><p class="first">rate    - the rate of the discharge (in Hz)
+t_start - the beginning of the SpikeTrain (in ms)
+t_stop  - the end of the SpikeTrain (in ms)
+phase   - Offset the spiketrain by this number (in ms.)
+scale   - width of the Gaussian distribution placed at the regular</p>
+<blockquote>
+<div>spike times, according to which the spike will be drawn (in ms)</div></blockquote>
+<dl class="last docutils">
+<dt>array   - if True, a numpy array of sorted spikes is returned,</dt>
+<dd>rather than a SpikeTrain object.</dd>
+</dl>
+</dd>
+<dt>Examples:</dt>
+<dd>&gt;&gt; regular_generator(50, 0, 1000)
+&gt;&gt; regular_generator(20, 5000, 10000, array=True)</dd>
+<dt>See also:</dt>
+<dd>inh_poisson_generator, inh_gamma_generator, inh_adaptingmarkov_generator</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.stgen.StGen.regular_generator">
+<tt class="descname">regular_generator</tt><big>(</big><em>rate</em>, <em>phase=0.0</em>, <em>jitter=True</em>, <em>t_start=0.0</em>, <em>t_stop=1000.0</em>, <em>array=False</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.stgen.StGen.regular_generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a SpikeTrain whose spikes are regularly spaced
+with the given rate (Hz) and stopping time t_stop (milliseconds).</p>
+<p>Note: t_start is always 0.0, thus all realizations are as if
+they spiked at t=0.0, though this spike is not included in the SpikeList.</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd><p class="first">rate    - the rate of the discharge (in Hz)
+t_start - the beginning of the SpikeTrain (in ms)
+phase   - Offset the spiketrain by this number (in ms.)
+jitter  - whether the spiketrain should be jittered by an amount numpy.random.rand()/rate
+t_stop  - the end of the SpikeTrain (in ms)
+array   - if True, a numpy array of sorted spikes is returned,</p>
+<blockquote class="last">
+<div>rather than a SpikeTrain object.</div></blockquote>
+</dd>
+<dt>Examples:</dt>
+<dd>&gt;&gt; regular_generator(50, 0, 1000)
+&gt;&gt; regular_generator(20, 5000, 10000, array=True)</dd>
+<dt>See also:</dt>
+<dd>inh_poisson_generator, inh_gamma_generator, inh_adaptingmarkov_generator</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.pyST.stgen.StGen.seed">
+<tt class="descname">seed</tt><big>(</big><em>seed</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.stgen.StGen.seed" title="Permalink to this definition">¶</a></dt>
+<dd><p>seed the gsl rng with a given seed</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.stgen.gamma_hazard">
+<tt class="descclassname">pyNCS.pyST.stgen.</tt><tt class="descname">gamma_hazard</tt><big>(</big><em>x</em>, <em>a</em>, <em>b</em>, <em>dt=0.0001</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.stgen.gamma_hazard" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the hazard function for a gamma process with parameters a,b
+where a and b are the parameters of the gamma PDF:
+y(t) = x^(a-1) exp(-x/b) / (Gamma(a)*b^a)</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>x   - in units of seconds
+a   - dimensionless
+b   - in units of seconds</dd>
+<dt>See also:</dt>
+<dd>inh_gamma_generator</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.stgen.gamma_hazard_scipy">
+<tt class="descclassname">pyNCS.pyST.stgen.</tt><tt class="descname">gamma_hazard_scipy</tt><big>(</big><em>x</em>, <em>a</em>, <em>b</em>, <em>dt=0.0001</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.stgen.gamma_hazard_scipy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the hazard function for a gamma process with parameters a,b
+where a and b are the parameters of the gamma PDF:
+y(t) = x^(a-1) exp(-x/b) / (Gamma(a)*b^a)</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>x   - in units of seconds
+a   - dimensionless
+b   - in units of seconds</dd>
+<dt>See also:</dt>
+<dd>inh_gamma_generator</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pyST Package</a><ul>
+<li><a class="reference internal" href="#id1"><tt class="docutils literal"><span class="pre">pyST</span></tt> Package</a></li>
+<li><a class="reference internal" href="#module-pyNCS.pyST.STas"><tt class="docutils literal"><span class="pre">STas</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-pyNCS.pyST.STsl"><tt class="docutils literal"><span class="pre">STsl</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-pyNCS.pyST.pyST_globals"><tt class="docutils literal"><span class="pre">pyST_globals</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-pyNCS.pyST.spikes"><tt class="docutils literal"><span class="pre">spikes</span></tt> Module</a><ul>
+<li><a class="reference internal" href="#neurotools-signals-spikes">NeuroTools.signals.spikes</a><ul>
+<li><a class="reference internal" href="#classes">Classes</a></li>
+<li><a class="reference internal" href="#functions">Functions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-pyNCS.pyST.stgen"><tt class="docutils literal"><span class="pre">stgen</span></tt> Module</a><ul>
+<li><a class="reference internal" href="#neurotools-stgen">NeuroTools.stgen</a><ul>
+<li><a class="reference internal" href="#id7">Classes</a></li>
+<li><a class="reference internal" href="#id8">Functions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pyNCS.AerViewer.html"
+                        title="previous chapter">AerViewer Package</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/general/pyNCS.pyST.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pyNCS.AerViewer.html" title="AerViewer Package"
+             >previous</a> |</li>
+        <li><a href="../index.html">Python NCS tools 0.2 documentation</a> &raquo;</li>
+          <li><a href="modules.html" >pyNCS</a> &raquo;</li>
+          <li><a href="pyNCS.html" >pyNCS Package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, University of Zurich, Emre Neftci, Sadique Sheik, Fabio Stefanini, Giacomo Indiveri.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

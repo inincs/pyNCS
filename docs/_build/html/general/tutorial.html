@@ -1,0 +1,377 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Step by step tutorial &mdash; Python NCS tools 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Python NCS tools 0.2 documentation" href="../index.html" />
+    <link rel="next" title="The Python Oscilloscope Module" href="pyosc.html" />
+    <link rel="prev" title="Software Installation" href="installation.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pyosc.html" title="The Python Oscilloscope Module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Software Installation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Python NCS tools 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="step-by-step-tutorial">
+<h1>Step by step tutorial<a class="headerlink" href="#step-by-step-tutorial" title="Permalink to this headline">¶</a></h1>
+<p>In this example we will guide you to the first use of the hardware setup. The
+neural network we will build has the following structure:</p>
+<ul class="simple">
+<li>a population of 50 neurons</li>
+<li>a DVS sensor that sends excitatory input to the population</li>
+</ul>
+<p>We will assume the hardware setup is on and working properly. If this is not
+the case, please refer to the hardware section of the documentation.</p>
+<div class="section" id="import">
+<h2>Import<a class="headerlink" href="#import" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pyNCS</span>
+</pre></div>
+</div>
+<p>That&#8217;s it.</p>
+</div>
+<div class="section" id="loading-a-setup">
+<h2>Loading a setup<a class="headerlink" href="#loading-a-setup" title="Permalink to this headline">¶</a></h2>
+<p>With <em>setup</em> we refer to the set of chips, boards, mapper, server, clients...
+everything that is used in the hardware experiment. To control the setup we
+implemented a <cite>pyNCS.NeuroSetup</cite> class. First copy the contents of <cite>chipfiles</cite>, <cite>biases</cite> and <cite>setupfiles</cite> directory from the pyNCS module to a local folder where you want to the experiments. Then run:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#Specifies the path to the setupfiles directory</span>
+<span class="n">setupdir</span> <span class="o">=</span> <span class="s">&#39;./setupfiles/&#39;</span>
+<span class="c">#Constructs the nsetup object.</span>
+<span class="n">nsetup</span> <span class="o">=</span> <span class="n">pyNCS</span><span class="o">.</span><span class="n">NeuroSetupAPI</span><span class="p">(</span><span class="n">setupdir</span><span class="o">+</span><span class="s">&#39;zenzero_setuptype.xml&#39;</span><span class="p">,</span>
+                          <span class="n">setupdir</span><span class="o">+</span><span class="s">&#39;zenzero.xml&#39;</span><span class="p">,</span>
+                          <span class="n">prefix</span><span class="o">=</span><span class="s">&#39;./&#39;</span>
+                          <span class="p">)</span>
+</pre></div>
+</div>
+<p>The setup is needed to create all the elements of the experiment, such as
+populations, connections, stimuli etc. It encapsulates all the informations
+about the hardware used. These informations are contained in xml files.</p>
+<p>The first xml file contains the setuptype. In this example, the setuptype is a
+setup with 4 AER channels: 4 chips can be connected in a loop.
+The second xml file contains informations about which chip is connected to
+which AEX board and which AMDA board. These informations are needed by the
+system to access chips, i.e. get/set biases, send/receive as well as
+encode/decode AER events, get/set mapping tables implementing the connectivity
+of the network, etc. (see <a class="reference internal" href="installation.html"><em>Software Installation</em></a> for more details).</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>If you run through the network, which means for this tutorial any computer besides zenzero, then you must have an account on zenzero and copied your public key to it. You can conveniently do this with:</p>
+<p class="last">ssh-copy-id -i ~/.ssh/id_rsa.pub <a class="reference external" href="mailto:username&#37;&#52;&#48;zenzero">username<span>&#64;</span>zenzero</a></p>
+</div>
+<p>For example, to get all the parameters of a chip:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">parameters</span> <span class="o">=</span> <span class="n">nsetup</span><span class="o">.</span><span class="n">chips</span><span class="p">[</span><span class="s">&#39;ifslwta0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In case there are problems in loading the setup, you may want to take a look at <cite>:doc:</cite> to fix or prevent errors.</p>
+</div>
+</div>
+<div class="section" id="creating-populations">
+<h2>Creating populations<a class="headerlink" href="#creating-populations" title="Permalink to this headline">¶</a></h2>
+<p>A population is a group of neurons on a chip. Each chip contains a certain
+number of neuronal circuits (somata). Each neuron has a certain number of
+synapses. If the chip is a neuromorphic sensor, it is very unlikely to have
+synapses...</p>
+<p>Let&#8217;s create a population of neurons:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">my_pop</span> <span class="o">=</span> <span class="n">pyNCS</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span> <span class="s">&#39;my_pop&#39;</span><span class="p">,</span> <span class="s">&#39;My first population&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The population is empty until we <em>populate</em> it, which means we have to fill it
+up:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">my_pop</span><span class="o">.</span><span class="n">populate_by_number</span><span class="p">(</span> <span class="n">nsetup</span><span class="p">,</span> <span class="s">&#39;ifslwta0&#39;</span><span class="p">,</span> <span class="s">&#39;excitatory&#39;</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>There are several ways of populating. In this example we don&#8217;t care about the
+position of the neurons on the chip, we just want to use 50 neurons. To do
+this, we called the <cite>populate_by_number</cite> function with the following
+arguments:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">nsetup</span></tt>: the setup</li>
+<li><tt class="docutils literal"><span class="pre">'ifslwta0'</span></tt>: this is the name of the chip containing the neurons we want to
+use</li>
+<li><tt class="docutils literal"><span class="pre">'excitatory'</span></tt>: in a neuromorphic chip there are in general several groups of
+neurons, sharing biases, connectivity or other properties. We have to tell
+the system which one of these groups we want to pick-up neurons from.</li>
+<li><tt class="docutils literal"><span class="pre">50</span></tt>: the number of neurons we need</li>
+</ul>
+<p>Neurons and synapses are represented as digital addresses. This means that the
+population is basically a container of addresses.</p>
+<p>Let&#8217;s create the input population:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">input_pop</span> <span class="o">=</span> <span class="n">pyNCS</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="s">&#39;input&#39;</span><span class="p">,</span> <span class="s">&#39;Virtual input neurons&#39;</span><span class="p">)</span>
+<span class="n">input_pop</span><span class="o">.</span><span class="n">populate_by_number</span><span class="p">(</span><span class="n">nsetup</span><span class="p">,</span> <span class="s">&#39;seq&#39;</span><span class="p">,</span> <span class="s">&#39;excitatory&#39;</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The virtual chip &#8216;seq&#8217; has 4096 neurons, but the corresponding population will have 100 neurons. You can check this by typing:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">len</span><span class="p">(</span><span class="n">input_pop</span><span class="p">)</span> <span class="c">#Should output 100</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="setting-parameters">
+<h2>Setting parameters<a class="headerlink" href="#setting-parameters" title="Permalink to this headline">¶</a></h2>
+<p>Each chip has a certain amount of parameters that can be set. Parameters are
+mostly biases and we can control them by changing gate voltages of the
+corresponding transistors. Normally there is a voltage that controls the leak
+of the neuron, one that controls the weight of the excitatory synapses, one for
+the time constants, and so on and so forth. Before starting any experiment with
+the hardware one has to <em>set</em> the biases, which more or less corresponds to the
+<em>boot</em> operation of traditional computers.</p>
+<p>The relation between a voltage and
+the corresponding physical quantity that it controls is what is called
+parameter translation. There are several theoretical and empirical methods that
+try to operate this translation in a systematic and reliable way in order to
+adjust the parameters to each experiment. We will not cover the problem here
+and will assume you are already in possess of basic sets of biases. What this
+practically means is explained as follows.</p>
+<p>The set of parameters can be very large. Usually we handle this parameters
+using text files. We already have bias files for default sets of parameters for
+basic experiments but each experiments has usually its own set. Most probably
+you have already copied the biase files into the <tt class="docutils literal"><span class="pre">biases</span></tt> folder. Now you
+would like to load this biases to <em>boot</em> the system in the proper
+configuration. The operation is as simple as the following:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">nsetup</span><span class="o">.</span><span class="n">chips</span><span class="p">[</span><span class="s">&#39;ifslwta0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">load_parameters</span><span class="p">(</span><span class="s">&#39;biases/ifslwta_default.biases&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The DVS sensor doesn&#8217;t have digital biases but physical potentiometers
+on the board it is soldered on. Do not change them unless you know what you are doing.</p>
+</div>
+</div>
+<div class="section" id="creating-connections">
+<h2>Creating connections<a class="headerlink" href="#creating-connections" title="Permalink to this headline">¶</a></h2>
+<p>We now need to connect the sensor output the excitatory synapses of our
+population of 50 neurons. This will be done using the <tt class="docutils literal"><span class="pre">pyNCS.Connection</span></tt>
+class:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">C</span> <span class="o">=</span> <span class="n">pyNCS</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="n">input_pop</span><span class="p">,</span> <span class="n">my_pop</span><span class="p">,</span> <span class="s">&#39;excitatory0&#39;</span><span class="p">,</span> <span class="s">&#39;all2all&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">excitatory0</span></tt> string is the name of the excitatory synapses the each
+neuron of the <tt class="docutils literal"><span class="pre">ifslwta0</span></tt> chip has. The last argument is the connectivity
+<em>fashion</em>, the default one is a one-to-one connectivity. With an all-to-all
+connectivity, our 50 neurons will represent the average activity of the whole
+input array.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>There is also a lower level <a class="reference external" href="pymap.html">pyMap module</a> which also has a very
+nice interactive GUI. You may want to use it to check that the
+mapping is correct. (As of Jan 2012, pyMAP is broken). Try the following:</p>
+<div class="last highlight-python"><div class="highlight"><pre><span class="n">mapper_hostname</span> <span class="o">=</span> <span class="s">&#39;zanzara2&#39;</span> <span class="c"># change this to the real hostname!</span>
+<span class="n">M</span> <span class="o">=</span> <span class="n">pyMap</span><span class="o">.</span><span class="n">Mapping</span><span class="p">(</span><span class="n">setup</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="n">mapper_hostname</span><span class="p">)</span><span class="o">.</span><span class="n">gui</span><span class="p">()</span>
+<span class="n">M</span><span class="o">.</span><span class="n">mainloop</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="sending-and-receiving-stimuli">
+<h2>Sending and receiving stimuli<a class="headerlink" href="#sending-and-receiving-stimuli" title="Permalink to this headline">¶</a></h2>
+<p>In some experiments you want to interact in real-time with the system. For
+example, you might have sets of recordings of calcium concentrations that you
+want to convert into spikes and send to the system. Here we will show how to
+send and receive events from the hardware.</p>
+<p>Suppose you have vectors of mean-rates of a population of
+neurons. You can now create poisson trains with constant mean-rates
+corresponding to those of your vector. Let&#8217;s than turn off the DVS (power off)
+to replace the real-time input with the input we will send to the system.</p>
+<p>There are several functions to create trains of spikes. These functions are
+usually methods of the <tt class="docutils literal"><span class="pre">population.soma</span></tt> group.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">random</span>
+<span class="c">#Generate a list of random numbers uniformly distributed in [20,30]</span>
+<span class="n">meanrates</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">input_pop</span><span class="p">))</span><span class="o">*</span><span class="mi">10</span> <span class="o">+</span> <span class="mi">20</span>
+
+<span class="n">stim</span> <span class="o">=</span> <span class="n">input_pop</span><span class="o">.</span><span class="n">soma</span><span class="o">.</span><span class="n">spiketrains_poisson</span><span class="p">(</span><span class="n">meanrates</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The variable <tt class="docutils literal"><span class="pre">stim</span></tt> now contains our spike-trains (a <tt class="docutils literal"><span class="pre">SpikeList</span></tt> instance from
+<tt class="docutils literal"><span class="pre">pyST.spikes</span></tt>) with poisson trains of random mean-rates between 20Hz and 30Hz
+lasting for 2000ms.</p>
+<p>By default, the input synapse &#8216;excitatory0&#8217; is initially turned off by setting its weight to zero. You can increase the weight by setting the appropriate bias as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">nsetup</span><span class="o">.</span><span class="n">chips</span><span class="p">[</span><span class="s">&#39;ifslwta0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">set_parameter</span><span class="p">(</span><span class="s">&#39;nsynstdw0&#39;</span><span class="p">,</span><span class="mf">0.4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can not send the input and monitor some output using nsetup.run:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">output</span> <span class="o">=</span> <span class="n">nsetup</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">stim</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>If you are using the &#8216;pyAex.api.com_aextcpclient&#8217; as the communicator (see <a class="reference internal" href="installation.html"><em>Software Installation</em></a>), you must be sure that the server is started on the host:</p>
+<div class="highlight-python"><pre>#Go to your pyAex direction in a shell on the host computer
+cd pyAex/Script/
+#Start the server
+python Server.py</pre>
+</div>
+<p class="last">To stop the server, type <tt class="docutils literal"><span class="pre">stop</span></tt></p>
+</div>
+</div>
+<div class="section" id="monitors-and-plots">
+<h2>Monitors and plots<a class="headerlink" href="#monitors-and-plots" title="Permalink to this headline">¶</a></h2>
+<p>There are several ways to visualize spiketrains. Assuming stim is a SpikeList object, the most basic vizualization is as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="n">show</span>
+
+<span class="n">stim</span><span class="p">[</span><span class="n">input_pop</span><span class="o">.</span><span class="n">soma</span><span class="o">.</span><span class="n">channel</span><span class="p">]</span><span class="o">.</span><span class="n">raster_plot</span><span class="p">()</span>
+<span class="n">show</span><span class="p">()</span>
+
+<span class="n">output</span><span class="p">[</span><span class="n">my_pop</span><span class="o">.</span><span class="n">soma</span><span class="o">.</span><span class="n">channel</span><span class="p">]</span><span class="o">.</span><span class="n">raster_plot</span><span class="p">()</span>
+<span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Monitors are a much more convenient way of visualizing data when dealing with
+several populations of neurons. A monitor will slice addresses and times according to the Population it is monitoring.</p>
+<p>Create a monitor with the following:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pyNCS.monitors</span> <span class="kn">import</span> <span class="n">SpikeMonitor</span>
+<span class="n">my_mon</span> <span class="o">=</span> <span class="n">SpikeMonitor</span><span class="p">(</span><span class="n">my_pop</span><span class="o">.</span><span class="n">soma</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then import it to the setup with:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">nsetup</span><span class="o">.</span><span class="n">monitors</span><span class="o">.</span><span class="n">import_monitors</span><span class="p">([</span><span class="n">my_mon</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>When <tt class="docutils literal"><span class="pre">nsetup.run</span></tt> is run, <tt class="docutils literal"><span class="pre">my_mon</span></tt> gets automatically populated with the relevant output spikes. You will have to run <tt class="docutils literal"><span class="pre">nsetup.run</span></tt> again or <tt class="docutils literal"><span class="pre">nsetup.monitors.populate_monitors(output)</span></tt>.
+Raster plots and rate plots can be convienently obtained with:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="n">show</span>
+<span class="kn">from</span> <span class="nn">pyNCS.monitors</span> <span class="kn">import</span> <span class="n">RasterPlot</span><span class="p">,</span> <span class="n">MeanRatePlot</span>
+<span class="n">RasterPlot</span><span class="p">(</span><span class="n">my_mon</span><span class="p">)</span>
+<span class="n">MeanRatePlot</span><span class="p">(</span><span class="n">my_mon</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The results should look like this:</p>
+<img alt="../_images/meanrate_tutorial.png" src="../_images/meanrate_tutorial.png" style="width: 400px;" />
+<img alt="../_images/raster_tutorial.png" src="../_images/raster_tutorial.png" style="width: 400px;" />
+<p>You can also use SpikeMonitors to vizualize inputs:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">input_mon</span> <span class="o">=</span> <span class="n">SpikeMonitor</span><span class="p">(</span><span class="n">input_pop</span><span class="o">.</span><span class="n">soma</span><span class="p">)</span>
+<span class="n">input_mon</span><span class="o">.</span><span class="n">populate</span><span class="p">(</span><span class="n">stim</span><span class="p">[</span><span class="n">input_pop</span><span class="o">.</span><span class="n">soma</span><span class="o">.</span><span class="n">channel</span><span class="p">])</span>
+<span class="n">RasterPlot</span><span class="p">(</span><span class="n">input_mon</span><span class="p">)</span>
+<span class="n">MeanRatePlot</span><span class="p">(</span><span class="n">input_mon</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="beyond-this-tutorial">
+<h2>Beyond this tutorial<a class="headerlink" href="#beyond-this-tutorial" title="Permalink to this headline">¶</a></h2>
+<p>Congratulations, you have completed the first NCS tutorial and began your neuromorphic hardware career.
+If you want to see furhter examples, download the zenzero_unittest folder from the svn repository <a class="reference external" href="https://svn.ini.uzh.ch/repos/ncs/ini/code/python/ncs_unittests/zenzero_unittest">https://svn.ini.uzh.ch/repos/ncs/ini/code/python/ncs_unittests/zenzero_unittest</a>, and take a look at the folders in the test directory. Each test can be run independently by typing:</p>
+<div class="highlight-python"><pre>cd tests/test_swta_ifslwta0
+ipython
+run expRun</pre>
+</div>
+<p>The entire unittests can be run with:</p>
+<div class="highlight-python"><pre>python zenzero_unittest.py</pre>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Step by step tutorial</a><ul>
+<li><a class="reference internal" href="#import">Import</a></li>
+<li><a class="reference internal" href="#loading-a-setup">Loading a setup</a></li>
+<li><a class="reference internal" href="#creating-populations">Creating populations</a></li>
+<li><a class="reference internal" href="#setting-parameters">Setting parameters</a></li>
+<li><a class="reference internal" href="#creating-connections">Creating connections</a></li>
+<li><a class="reference internal" href="#sending-and-receiving-stimuli">Sending and receiving stimuli</a></li>
+<li><a class="reference internal" href="#monitors-and-plots">Monitors and plots</a></li>
+<li><a class="reference internal" href="#beyond-this-tutorial">Beyond this tutorial</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="installation.html"
+                        title="previous chapter">Software Installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pyosc.html"
+                        title="next chapter">The Python Oscilloscope Module</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/general/tutorial.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pyosc.html" title="The Python Oscilloscope Module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Software Installation"
+             >previous</a> |</li>
+        <li><a href="../index.html">Python NCS tools 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, University of Zurich, Emre Neftci, Sadique Sheik, Fabio Stefanini, Giacomo Indiveri.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

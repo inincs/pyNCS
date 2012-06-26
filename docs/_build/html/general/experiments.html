@@ -1,0 +1,220 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Doing real experiments &mdash; Python NCS tools 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Python NCS tools 0.2 documentation" href="../index.html" />
+    <link rel="next" title="Automatic tuning of parameters" href="pytune.html" />
+    <link rel="prev" title="The Python Oscilloscope Module" href="pyosc.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pytune.html" title="Automatic tuning of parameters"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pyosc.html" title="The Python Oscilloscope Module"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Python NCS tools 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="doing-real-experiments">
+<h1>Doing real experiments<a class="headerlink" href="#doing-real-experiments" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="structure">
+<h2>Structure<a class="headerlink" href="#structure" title="Permalink to this headline">¶</a></h2>
+<p>For highly complex experiments it is useful to split the scripts
+into several files. We normally try to follow the scheme below.</p>
+<p>Folders:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Results:</th><td class="field-body">contains pickles of the results under nicely-named folders</td>
+</tr>
+<tr class="field-even field"><th class="field-name">biases:</th><td class="field-body">bias (text) files of the chips</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">setupfiles:</th><td class="field-body">xml files of the setups (*)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">chipfiles:</th><td class="field-body">csv and xml files representing the chips (*)</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>(*) these folders are usually in a common folder somewhere else because they are</dt>
+<dd>not experiment dependent.</dd>
+</dl>
+<p>Files and correspondent actions:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">expSetup:</th><td class="field-body">load the setup</td>
+</tr>
+<tr class="field-even field"><th class="field-name">expMap:</th><td class="field-body">prepare connectivity</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">expPop:</th><td class="field-body">create populations</td>
+</tr>
+<tr class="field-even field"><th class="field-name">expStim:</th><td class="field-body">load data set and convert into AER</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">expTools:</th><td class="field-body">useful functions, code snippets, ...</td>
+</tr>
+<tr class="field-even field"><th class="field-name">expOsc:</th><td class="field-body">prepare acquisition of analog signals if needed</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">expMon:</th><td class="field-body">define monitors (?)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">expRun:</th><td class="field-body">run the experiment and save values</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">expData:</th><td class="field-body">analysis of the data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">expPlot:</th><td class="field-body">plot data</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="experiment-tools">
+<h2>Experiment tools<a class="headerlink" href="#experiment-tools" title="Permalink to this headline">¶</a></h2>
+<p>We developed a specific class to save the data of our experiments.</p>
+<div class="section" id="save">
+<h3>Save<a class="headerlink" href="#save" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">et</span> <span class="o">=</span> <span class="n">pyNCS</span><span class="o">.</span><span class="n">et</span>
+<span class="n">et</span><span class="o">.</span><span class="n">mksavedir</span><span class="p">()</span> <span class="c"># creates a new folder under Results/</span>
+<span class="n">et</span><span class="o">.</span><span class="n">globaldata</span><span class="o">.</span><span class="n">variable_to_be_saved</span> <span class="o">=</span> <span class="n">v1</span>
+<span class="n">et</span><span class="o">.</span><span class="n">globaldata</span><span class="o">.</span><span class="n">an_other_one</span> <span class="o">=</span> <span class="n">v4</span>
+<span class="n">et</span><span class="o">.</span><span class="n">save</span><span class="p">()</span> <span class="c"># saves everything from globaldata and all expXXX scripts.</span>
+</pre></div>
+</div>
+<p>Some comments. The <tt class="docutils literal"><span class="pre">Results</span></tt> folder has to be created in advance. The function
+<tt class="docutils literal"><span class="pre">mksavedir</span></tt> creates, by default, a folder of the format <tt class="docutils literal"><span class="pre">NNN__DD-MM-YYYY</span></tt>.
+You can assign every <cite>pickable</cite> variable you want to globaldata attributes. The
+<tt class="docutils literal"><span class="pre">save</span></tt> function saves:</p>
+<ul class="simple">
+<li>all the python files starting by <tt class="docutils literal"><span class="pre">exp</span></tt> in a single <tt class="docutils literal"><span class="pre">tar.gz</span></tt>
+file inside the new folder</li>
+<li>a single pickle of <tt class="docutils literal"><span class="pre">et.globaldata</span></tt></li>
+<li>an empty file with the time of the experiment as name</li>
+</ul>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Don&#8217;t forget to save chip biases!</p>
+</div>
+</div>
+<div class="section" id="load">
+<h3>Load<a class="headerlink" href="#load" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">loaded_data</span> <span class="o">=</span> <span class="n">pyNCS</span><span class="o">.</span><span class="n">et</span>
+<span class="n">et</span><span class="o">.</span><span class="n">globaldata</span><span class="o">.</span><span class="n">directory</span> <span class="o">=</span> <span class="s">&#39;Results/128__19-04-2011&#39;</span>
+<span class="n">et</span><span class="o">.</span><span class="n">globaldata</span> <span class="o">=</span> <span class="n">et</span><span class="o">.</span><span class="n">globaldata</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">load</span></tt> functions grabs the pickle from the specified directory. You can
+find the variables you saved in <tt class="docutils literal"><span class="pre">et.globaldata</span></tt>.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Doing real experiments</a><ul>
+<li><a class="reference internal" href="#structure">Structure</a></li>
+<li><a class="reference internal" href="#experiment-tools">Experiment tools</a><ul>
+<li><a class="reference internal" href="#save">Save</a></li>
+<li><a class="reference internal" href="#load">Load</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pyosc.html"
+                        title="previous chapter">The Python Oscilloscope Module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pytune.html"
+                        title="next chapter">Automatic tuning of parameters</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/general/experiments.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pytune.html" title="Automatic tuning of parameters"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pyosc.html" title="The Python Oscilloscope Module"
+             >previous</a> |</li>
+        <li><a href="../index.html">Python NCS tools 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, University of Zurich, Emre Neftci, Sadique Sheik, Fabio Stefanini, Giacomo Indiveri.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

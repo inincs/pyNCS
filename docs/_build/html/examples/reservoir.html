@@ -1,0 +1,217 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Reservoir &mdash; Python NCS tools 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Python NCS tools 0.2 documentation" href="../index.html" />
+    <link rel="next" title="pyNCS" href="../general/modules.html" />
+    <link rel="prev" title="Troubleshooting" href="../general/troubleshooting.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../general/modules.html" title="pyNCS"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../general/troubleshooting.html" title="Troubleshooting"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Python NCS tools 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="reservoir">
+<h1>Reservoir<a class="headerlink" href="#reservoir" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>A reservoir is a pool of units with random connections. The connections are
+such that the activity of the network is &#8220;at the edge of chaos&#8221;. This concept
+forms the basis of a particular type of neural networks called
+liquid-state-machines (LSM).</p>
+<ul class="simple">
+<li>liquid state machine</li>
+<li>input</li>
+<li>read-out</li>
+<li>LSM with LIF neurons?</li>
+</ul>
+</div>
+<div class="section" id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">preliminary operations:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">blabla</span>
+<span class="kn">import</span> <span class="nn">pyNCS</span>
+
+<span class="n">nsetup</span> <span class="o">=</span> <span class="n">pyNCS</span><span class="o">.</span><span class="n">NeuroSetup</span><span class="p">(</span><span class="s">&#39;my_setuptype.xml&#39;</span><span class="p">,</span> <span class="s">&#39;my_setup.xml&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">create a population:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">number_of_units</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">pyNCS</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+<span class="n">res</span><span class="o">.</span><span class="n">populate_by_number</span><span class="p">(</span><span class="n">nsetup</span><span class="p">,</span>
+                       <span class="s">&#39;my_chip&#39;</span><span class="p">,</span>
+                       <span class="s">&#39;my_neuron&#39;</span><span class="p">,</span>
+                       <span class="n">number_of_units</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">connect the units:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">C_res</span> <span class="o">=</span> <span class="n">pyNCS</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="s">&#39;excitatory0&#39;</span><span class="p">,</span> <span class="n">fashion</span><span class="o">=</span><span class="s">&#39;random_all2all&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">create input:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">inp</span> <span class="o">=</span> <span class="n">pyNCS</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+<span class="n">inp</span><span class="o">.</span><span class="n">populate_by_id</span><span class="p">(</span><span class="n">nsetup</span><span class="p">,</span>
+                   <span class="s">&#39;my_sequencer&#39;</span><span class="p">,</span>
+                   <span class="s">&#39;my_neuron&#39;</span><span class="p">,</span>
+                   <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">connect the input to the reservoir:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">C_inp</span> <span class="o">=</span> <span class="n">pyNCS</span><span class="o">.</span><span class="n">Connection</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="s">&#39;excitatory1&#39;</span><span class="p">)</span> <span class="c"># default fashion is one2one</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">make the input spike:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">pattern1</span> <span class="o">=</span> <span class="n">inp</span><span class="o">.</span><span class="n">soma</span><span class="o">.</span><span class="n">spiketrains_poisson</span><span class="p">(</span><span class="n">random</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">inp</span><span class="p">)),</span> <span class="n">duration</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">prepare the hardware:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">nsetup</span><span class="o">.</span><span class="n">chips</span><span class="p">[</span><span class="n">res</span><span class="o">.</span><span class="n">neuronblock</span><span class="o">.</span><span class="n">neurochip</span><span class="o">.</span><span class="n">id</span><span class="p">]</span><span class="o">.</span><span class="n">loadBiases</span><span class="p">(</span><span class="s">&#39;biases/reservoir.biases&#39;</span><span class="p">)</span>
+<span class="c"># the following is equivalent to the previous statement</span>
+<span class="n">res</span><span class="o">.</span><span class="n">neuronblock</span><span class="o">.</span><span class="n">neurochip</span><span class="o">.</span><span class="n">loadBiases</span><span class="p">(</span><span class="s">&#39;biases/reservoir.biases&#39;</span><span class="p">)</span>
+
+<span class="n">nsetup</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">write</span><span class="p">()</span> <span class="c"># connections where automatically appended</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">unleash hell:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># stimulus lasts for 500ms but we want to record more, say 5s</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">nsetup</span><span class="o">.</span><span class="n">stimulate</span><span class="p">(</span><span class="n">pattern1</span><span class="p">,</span> <span class="n">tDuration</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">plot (with monitors is a lot easier and faster!):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># the output</span>
+<span class="n">out</span><span class="p">[</span><span class="n">out</span><span class="o">.</span><span class="n">soma</span><span class="o">.</span><span class="n">channel</span><span class="p">]</span><span class="o">.</span><span class="n">raster_plot</span><span class="p">()</span>
+<span class="c"># external input and recurrent input</span>
+<span class="n">imshow</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="n">out</span><span class="o">.</span><span class="n">synapses</span><span class="o">.</span><span class="n">channel</span><span class="p">]</span><span class="o">.</span><span class="n">firing_rate</span><span class="p">(</span><span class="mi">50</span><span class="p">))</span> <span class="c"># 50ms time-bin</span>
+<span class="c"># input stimulus</span>
+<span class="n">pattern1</span><span class="p">[</span><span class="n">inp</span><span class="o">.</span><span class="n">soma</span><span class="o">.</span><span class="n">channel</span><span class="p">]</span><span class="o">.</span><span class="n">raster_plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h2>
+<p>The parameters for a good reservoir are... ?</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Reservoir</a><ul>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#implementation">Implementation</a></li>
+<li><a class="reference internal" href="#parameters">Parameters</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../general/troubleshooting.html"
+                        title="previous chapter">Troubleshooting</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../general/modules.html"
+                        title="next chapter">pyNCS</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/examples/reservoir.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../general/modules.html" title="pyNCS"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../general/troubleshooting.html" title="Troubleshooting"
+             >previous</a> |</li>
+        <li><a href="../index.html">Python NCS tools 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, University of Zurich, Emre Neftci, Sadique Sheik, Fabio Stefanini, Giacomo Indiveri.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>
