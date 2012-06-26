@@ -1,0 +1,13 @@
+::
+
+    <?xml version="1.0" ?>
+    <parameter paramid='example_parameter' class='ExampleParameter'>
+        <MAX>inf</MAX>
+        <MIN>0</MIN>
+        <units>Hz</units>
+        <!--<method>linearSweep</method>-->
+        <deps>
+            <parameter paramid='efficacy' class='Efficacy'/>
+            <parameter paramid='injection_bias' class='Bias'/>
+        </deps>
+    </parameter>

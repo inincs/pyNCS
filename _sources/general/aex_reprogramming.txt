@@ -1,0 +1,100 @@
+Reprogram routing of AEX boards
+===============================
+
+Those who want to create their own AEX version, have to first checkout the code
+from https://x.ethz.ch/svn/aer/fpga
+
+Therein, the AEX project file for Xilinx ISE is: ``aex/aex.ise``.
+The top VHDL file is: ``aextop/z_top.vhd``.
+
+Once you downladed the fpga code you can open the file 'aex/aex.ise'. On the
+left panel, 'Sources', blablabla.
+
+.. note:: If you encounter problems you can always go back to revision 1564 of
+          the ``aex.ise`` file, rename it as you want, for example ``aex2.ise``,
+          and go on with your modifications
+
+In the top file, at the beginning, just after the entity declaration, you find
+all the configuration settings. The configuration is with respect to paths
+between the three interfaces, denoted as P, S, U for Parallel, Serial and USB.
+There are 3^3 = 9 combinations so 9 possible path to configure. At first, each
+path can be enabled or disabled completely. These are the first nine constants,
+with the names ``confPathEnableXYxS``, with XY being PP, PS, PU, SP, and so on...
+
+If ``0`` is assigned to a path, it is disabled.
+Then there are four configuration values for each path,
+
+- confXYFilterRangeMinxDI with default x"00000000"
+- confXYFilterRangeMaxxDI with default x"FFFFFFFF"
+- confXYOutMaskAndxDI with default x"FFFFFFFF"
+- confXYOutMaskOrxDI with default x"00000000"
+
+with XY being the same as before.
+An address A coming to the path is checked to be in the range::
+
+    A >= confXYFilterRangeMinxDI and A >= confFilterRangeMaxxDI
+
+If not, the address is discarded. If the filter check is passed, A is used to
+calculate Anew in the following way::
+
+    Anew <= (A and confXYOutMaskAndxDI) or confXYOutMaskOrxDI
+
+This gives us the possibility to make the trick. Notice first that we have to
+distinguish if an event is input for a chip or output from a chip, because of
+monitoring purposes. This reduces the address space. The range filtering is
+used by an AEX for checking if an address has to be sent to its chip. The 'or'
+mask is used for adding the stamp. The 'and' mask is used for cleaning the bits
+before stamping.
+
+For example, if we had 8 bits, 5 for neurons addressing:
+
+#. 01011010 (0x5A) comes from the mapper
+#. it is for chip number 010 (0x40)
+#. this cause activity on chip 010
+#. chip 010 stamp its activity with 110 (add 0xC0 to the address)
+#. mapper finds 0xC0 + 0x14 and then knows who is the sender
+#. mapper maps this activity to someone else...
+
+Note that each event add an address in the communication loop. If nobody removed
+it, the chain would soon saturate. The idea is then to stamp a chip output
+address in a different way of a chip input address. * better explanation
+please...*
+
+Each AEX board will have its own configuration because the filter and stamp
+change. For example, for Chip1::
+
+    constant confSPFilterRangeMinxDI : std_logic_vector(31 downto 0) :=x"0000A000";
+    constant confSPFilterRangeMaxxDI : std_logic_vector(31 downto 0) :=x"0000AFFF";
+    constant confSPOutMaskAndxDI     : std_logic_vector(31 downto 0) :=x"FFFF1FFF";
+    constant confSPOutMaskOrxDI      : std_logic_vector(31 downto 0) :=x"00002000";
+
+The path enabled are PS, PU, SP, SU, US for all the AEXs.
+
+The files created are in 'fpga/aextop' folder:
+
+- ``z_top_CH1.vhd``
+- ``z_top_CH2.vhd``
+- ``z_top_CH3.vhd``
+- ``z_top_RS.vhd``
+
+Notes and common problems in programming AEX
+--------------------------------------------
+
+The ise project file is automagically saved in any moment... If you do
+something wrong like removing all the sources on the left panel, this change
+will persist even if you close the project without explicitly saving.  - At the
+end of the process, be sure that only D2 led is on and the others are off. Once
+you connect the board to the USB you should se D1 and D3 on and D2 off. Please
+notice that this is a possible check but is *not* exhaustive.
+
+Going further
+-------------
+
+The loop design we described before is the simplest one can think of. This
+setup will work with an input (retina or sequencer) and 3 chips, 2Difwta or
+ifslwta.  An other possibility is to use the fact that ifslwta chips use a
+lower number of bits for neurons and synapses addressing. This means that in
+principal it is possible to use one retina and up to 6 ifslwta *is it true?*. 
+
+Anyway we implemented this before in order to see if everything is going to
+work or not, then after we can think about something more general.

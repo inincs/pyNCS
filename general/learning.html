@@ -1,0 +1,252 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Use plastic synapses of ifslwta chip &mdash; Python NCS tools 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Python NCS tools 0.2 documentation" href="../index.html" />
+    <link rel="next" title="How to set up a setup" href="hardware_setup.html" />
+    <link rel="prev" title="Automatic tuning of parameters" href="pytune.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="hardware_setup.html" title="How to set up a setup"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pytune.html" title="Automatic tuning of parameters"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Python NCS tools 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="use-plastic-synapses-of-ifslwta-chip">
+<h1>Use plastic synapses of <tt class="docutils literal"><span class="pre">ifslwta</span></tt> chip<a class="headerlink" href="#use-plastic-synapses-of-ifslwta-chip" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="learning-algorithm">
+<h2>Learning algorithm<a class="headerlink" href="#learning-algorithm" title="Permalink to this headline">¶</a></h2>
+<p>Read <cite>Fusi et al. 2000, Brader et al. 2007</cite>.</p>
+</div>
+<div class="section" id="learning-chip">
+<h2>Learning chip<a class="headerlink" href="#learning-chip" title="Permalink to this headline">¶</a></h2>
+<p>The algorithm above is implemented in the <tt class="docutils literal"><span class="pre">ifslwta</span></tt> chip. Input spikes
+trigger the update of the synaptic weight of that synapse. This operation is
+done by an analog circuit which changes the amount of charge stored in a
+capacitance which constitutes the weight of that synape.</p>
+<p>Each of the 128 neurons of the ifslwta chip has 32 synapses. Synapses 4 to 31
+are plastic, thus there are 32x128=3584 plastic synapses. One can use the
+multiplexer to use more synapses for each neuron, thus reducing the number of
+neurons (see hardware page of ifslwta for more details). For example, one can
+use a multiplexer of 1-0-1 to have 4 neurons with 28*32 learning synapses each.
+Notice that also non-plastic synapses will be multiplexed.</p>
+</div>
+<div class="section" id="synaptic-matrix-class">
+<h2>Synaptic matrix class<a class="headerlink" href="#synaptic-matrix-class" title="Permalink to this headline">¶</a></h2>
+<p>We created a class that represent the matrix of synaptic weights on a chip
+(tested on <tt class="docutils literal"><span class="pre">ifslwta</span></tt> chip). Its structure is similar to a
+<tt class="docutils literal"><span class="pre">pyTune.Parameter</span></tt> structure. We explain here only the interesting parts of
+it. A <tt class="docutils literal"><span class="pre">Wij</span></tt> class is already written, ask <a class="reference external" href="mailto:fabio&#46;stefanini&#37;&#52;&#48;ini&#46;phys&#46;ethz&#46;ch">Fabio</a>.</p>
+<p>By creating the matrix we mean creating all the populations and connections
+that we will need to probe the synaptic weights.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">We first need to import the <tt class="docutils literal"><span class="pre">Wij</span></tt> class because it is not yet
+included in the base pyNCS package. We&#8217;ll assume this class is
+implemented in the <tt class="docutils literal"><span class="pre">wij.py</span></tt> file somewhere.</p>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">wij</span> <span class="kn">import</span> <span class="n">Wij</span>
+
+<span class="n">wij</span> <span class="o">=</span> <span class="n">Wij</span><span class="p">(</span><span class="s">&#39;wij1&#39;</span><span class="p">,</span> <span class="s">&#39;This is the matrix of synaptic weights on chip1.&#39;</span><span class="p">)</span>
+<span class="n">wij</span><span class="o">.</span><span class="n">set_context</span><span class="p">(</span><span class="n">nsetup</span><span class="p">,</span> <span class="s">&#39;ifslwta&#39;</span><span class="p">,</span> <span class="s">&#39;excitatory&#39;</span><span class="p">,</span>
+                <span class="n">neurons</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">28</span><span class="p">),</span>
+                <span class="n">synapses</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">28</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>As you may have noticed, the weights the class will look at the 28 synapses
+of the first 28 <tt class="docutils literal"><span class="pre">excitatory</span></tt> neurons in <tt class="docutils literal"><span class="pre">ifslwta</span></tt> chip of the <tt class="docutils literal"><span class="pre">nsetup</span></tt>
+setup.</p>
+</div>
+<div class="section" id="read-the-synaptic-weights">
+<h2>Read the synaptic weights<a class="headerlink" href="#read-the-synaptic-weights" title="Permalink to this headline">¶</a></h2>
+<p>In order to read the matrix of synaptic weights we have to do some...
+electrophysiology because there is no way of direct access to them. The way to
+do it is to set the parameters of the learning such that the synapses are kept
+frozen and then send a stimulus to each synapse. If the synapse state is high
+we expect an output from the neuron that is connected to it. If the state is
+low we expect no output.</p>
+<p>This procedure relys on &#8211; a lot of &#8211; parameters that has to be set before
+doing the actual measure. Explain here...</p>
+<p>Most basic thing, we want to <tt class="docutils literal"><span class="pre">get</span></tt> the synaptic matrix. There is a method
+that does this for us:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">wij_status</span> <span class="o">=</span> <span class="n">wij</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Notice you don&#8217;t need to assign the value to a variable because the <tt class="docutils literal"><span class="pre">get</span></tt>
+function automatically updates the <tt class="docutils literal"><span class="pre">wij.state</span></tt> variable for you. During the
+probing, the system performs the following operations:</p>
+<blockquote>
+<div><ul class="simple">
+<li>set multiplexer to [0,0,0]</li>
+<li>prepare stimulus and write mapping on mapper</li>
+<li>&#8220;turn off&#8221; learning (read below)</li>
+<li>stimulate all the synapses of each neuron sequencially (1 spike per
+synapse)</li>
+<li>translate output into binary matrix.</li>
+</ul>
+</div></blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">A specific set of biases should be applied in a specific sequence
+prior to the stimulation. Ask <a class="reference external" href="mailto:fabio&#46;stefanini&#37;&#52;&#48;ini&#46;phys&#46;ethz&#46;ch">Fabio</a> for these biases.</p>
+</div>
+<p>The output of the get function is a 28x28 matrix, i.e. the dimensions we
+initilized the matrix with. The weights can be visualized by:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">wij</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="set-the-synaptic-weights">
+<h2>Set the synaptic weights<a class="headerlink" href="#set-the-synaptic-weights" title="Permalink to this headline">¶</a></h2>
+<p>In order to set each synaptic weight to a specific value we must run an
+experiment that drives it to the value we want it to be. Even though the
+learning algorithm is not deterministic in general (i.e. it relies on the
+stochastic behaviour of pre- and post-synaptic activities), we can use it in a
+deterministic way by setting some parameter to specific values. For example, if
+we want to drive the weight to the high state, we will set the threshold of the
+membrane potential to 0 and send some high frequency input: the weight will
+receive only potentiation jumps and eventually cross the bi-stability
+threshold.</p>
+<p>There is a useful function that sets the weights to all-high or all-low by just
+applying a sequence of biases:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">wij</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c"># set all to high</span>
+<span class="n">wij</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c"># set all to zero</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="stop-learning">
+<h2>Stop-learning<a class="headerlink" href="#stop-learning" title="Permalink to this headline">¶</a></h2>
+<p>The stop-learning features depends on the post-synaptic neuron&#8217;s firing rate.
+In other words, it depends on something like a Calcium concentration variable.
+In the chip, there is a capacitor that integrates the post-synaptic spikes and
+3 comparators modeling the 3 thresholds described on the learning algorithm.
+The weight of the plastic synapse is modified by the pre-synaptic spikes only
+when the Calcium variable lies within a certain range determined by those
+threshold. One can use these threshold to <em>turn off</em> the learning when it is
+not needed, e.g. we don&#8217;t want to modify the synaptic weights when we send the
+<tt class="docutils literal"><span class="pre">get</span></tt> stimulus. Use:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">wij</span><span class="o">.</span><span class="n">set_learning</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>to turn-off synaptic plasticity.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">There is no <tt class="docutils literal"><span class="pre">set_learning(1)</span></tt> because the value of each threshold
+could depend on the specific experiment.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Use plastic synapses of <tt class="docutils literal"><span class="pre">ifslwta</span></tt> chip</a><ul>
+<li><a class="reference internal" href="#learning-algorithm">Learning algorithm</a></li>
+<li><a class="reference internal" href="#learning-chip">Learning chip</a></li>
+<li><a class="reference internal" href="#synaptic-matrix-class">Synaptic matrix class</a></li>
+<li><a class="reference internal" href="#read-the-synaptic-weights">Read the synaptic weights</a></li>
+<li><a class="reference internal" href="#set-the-synaptic-weights">Set the synaptic weights</a></li>
+<li><a class="reference internal" href="#stop-learning">Stop-learning</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pytune.html"
+                        title="previous chapter">Automatic tuning of parameters</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="hardware_setup.html"
+                        title="next chapter">How to set up a setup</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/general/learning.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="hardware_setup.html" title="How to set up a setup"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pytune.html" title="Automatic tuning of parameters"
+             >previous</a> |</li>
+        <li><a href="../index.html">Python NCS tools 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2009, Emre Neftci, Sadique Sheik, Daniel Sonnleithner, Giacomo Indiveri.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

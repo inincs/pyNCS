@@ -1,0 +1,396 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Troubleshooting &mdash; Python NCS tools 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Python NCS tools 0.2 documentation" href="../index.html" />
+    <link rel="next" title="Reservoir" href="../examples/reservoir.html" />
+    <link rel="prev" title="Spectrum Board installation" href="spcm.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../examples/reservoir.html" title="Reservoir"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="spcm.html" title="Spectrum Board installation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Python NCS tools 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="troubleshooting">
+<h1>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h1>
+<p>Here you should find solutions to common problems you may encounter while running experiments with our VLSI hardware.</p>
+<div class="section" id="setup-checklist">
+<h2>Setup checklist<a class="headerlink" href="#setup-checklist" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>Make sure you read the <a class="reference external" href="introduction">General Introduction</a> page before you start with a new experiment.</li>
+<li>Make sure you all your boards (AMDA, AEX, Mapper, daughterboard) are all firmly plugged in and all cables are connected. Power everything up. Remember that the first AEX you plug-in will be the one used for monithoring/stimulating.</li>
+<li>Check that the proper device files are created (in /dev/) after you plug your boards (proper &#8216;udev rules&#8217; should be installed on our machine). All Amda boards are hardware numbered. You can check the number with  <tt class="docutils literal"><span class="pre">ls</span> <span class="pre">/dev/amdaboard*</span></tt>.</li>
+<li>Check that the Amda server is started: <tt class="docutils literal"><span class="pre">ps</span> <span class="pre">aux</span> <span class="pre">|</span> <span class="pre">grep</span> <span class="pre">Amda</span></tt>. Use <tt class="docutils literal"><span class="pre">dmesg</span></tt> to check the kernel log.</li>
+<li>Start the Aer server using the script in pyAEX svn.</li>
+<li>Check that your setupfiles and chipfiles are consistent with the actual
+setup (read the setupfiles section in <tt class="xref doc docutils literal"><span class="pre">installation.txt</span></tt>)</li>
+<li>Run your experiments following the protocols defined <a class="reference external" href="experimental-protocol">here</a>.</li>
+</ol>
+</div>
+<div class="section" id="software">
+<h2>Software<a class="headerlink" href="#software" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="pyncs">
+<h3>pyNCS<a class="headerlink" href="#pyncs" title="Permalink to this headline">¶</a></h3>
+<p>See <a class="reference external" href="http://ncs.ethz.ch/ncs/internal/experiments-with-ncs-vlsi-chips/experimental-protocol">python scripts page</a></p>
+</div>
+<div class="section" id="amda-board">
+<h3>AMDA board<a class="headerlink" href="#amda-board" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="help-the-amda-server-is-not-running">
+<h4>Help! The AMDA server is not running<a class="headerlink" href="#help-the-amda-server-is-not-running" title="Permalink to this headline">¶</a></h4>
+<p>First of all, try to figure out why! You can then start it typing (I suggest in a new shell):</p>
+<div class="highlight-python"><pre>python -c 'import pyAMDA; pyAMDA.Server.run()'</pre>
+</div>
+</div>
+<div class="section" id="help-bias-generator-not-available">
+<h4>Help! &#8220;Bias generator not available&#8221;<a class="headerlink" href="#help-bias-generator-not-available" title="Permalink to this headline">¶</a></h4>
+<p>We don&#8217;t why and when it happens. Try restarting AmdaServer and carefully power cycle the hardware. In normal case it will fix. If it doesn&#8217;t, you may want to check pin #46 which should be at Vdd, in particular it&#8217;s short-circuited to pin #48, which is at Vdd. Pin #46 tells the firmware to use the bias generator.</p>
+</div>
+<div class="section" id="help-the-scanner-doesn-t-work">
+<h4>Help! The scanner doesn&#8217;t work<a class="headerlink" href="#help-the-scanner-doesn-t-work" title="Permalink to this headline">¶</a></h4>
+<p>There is an unknown bug regarding this. Everytime you power up the AMDA board you have to push
+the reset button for the scanner to work.
+NOTE 2010.02.08: still doesn&#8217;t work on AMDA 205 + CPG.</p>
+</div>
+</div>
+<div class="section" id="aex-board">
+<h3>AEX board<a class="headerlink" href="#aex-board" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="help-the-aex-server-is-not-running">
+<h4>Help! The Aex server is not running<a class="headerlink" href="#help-the-aex-server-is-not-running" title="Permalink to this headline">¶</a></h4>
+<p>First of all, try to figure out why! You can then start it using the script you
+find on <a class="reference external" href="https://svn.ini.uzh.ch/repos/avlsi/NCS/SW/pyAex/Scripts/Server.py">svn</a>
+(I suggest on a new shell). You can stop it typing &#8216;stop&#8217; on that shell.</p>
+</div>
+<div class="section" id="help-i-got-error-98-port-already-in-use">
+<h4>Help! I got &#8216;Error 98: port already in use&#8217;<a class="headerlink" href="#help-i-got-error-98-port-already-in-use" title="Permalink to this headline">¶</a></h4>
+<p>Did you close all the clients? Did you check if someone else is using a
+client on the same machine? Did you check your processes in background?
+If you did so, just wait a bit before starting the server, it takes a while for
+the kernel to free the port.
+Useful Unix commands:</p>
+<dl class="docutils">
+<dt>&#8216;who&#8217; or &#8216;w&#8217;</dt>
+<dd>lists all people connected to the machine</dd>
+<dt>&#8216;write &lt;user&gt;&#8217;</dt>
+<dd>write on the user&#8217;s terminal</dd>
+<dt>&#8216;sudo netstat -pt&#8217;</dt>
+<dd>lists all processes connected to the network</dd>
+<dt>&#8216;kill -KILL &lt;pid&gt;&#8217;</dt>
+<dd>maybe you know this guy!</dd>
+</dl>
+</div>
+<div class="section" id="help-raster-plot-is-ok-but-frequency-is-strange">
+<h4>Help! Raster plot is ok but frequency is strange<a class="headerlink" href="#help-raster-plot-is-ok-but-frequency-is-strange" title="Permalink to this headline">¶</a></h4>
+<p>The way NeuroTools computes mean rates doesn&#8217;t work well. Always specify t_start and t_stop when computing rates, as in:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">rate</span> <span class="o">=</span> <span class="n">train</span><span class="o">.</span><span class="n">mean_rate</span><span class="p">(</span><span class="n">t_start</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">t_stop</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="spectrum-board">
+<h3>Spectrum Board<a class="headerlink" href="#spectrum-board" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="help-i-dont-have-appropriate-rights">
+<h4>Help! I dont have appropriate rights<a class="headerlink" href="#help-i-dont-have-appropriate-rights" title="Permalink to this headline">¶</a></h4>
+<p>In order to acquire and send data to the spectrum board you should be a part of SPCM group on the computer. Ask someone with admin rights to add your user id to the group.</p>
+</div>
+</div>
+<div class="section" id="neurotools">
+<h3>NeuroTools<a class="headerlink" href="#neurotools" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="help-pyst-complains-about-neuron-ids-the-spikelist">
+<h4>Help! pyST complains about neuron ids the spikelist<a class="headerlink" href="#help-pyst-complains-about-neuron-ids-the-spikelist" title="Permalink to this headline">¶</a></h4>
+<p>This is an issue related to NeuroTools restricting the neuron ids to int where as we have floats as well. You need to delete the &#8216;int&#8217; parameter from the below function&#8217;s return command.</p>
+<p>This function can be found in NeuroTools/src/<strong>signals/spikes.py</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">id_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the list of all the cells ids contained in the</span>
+<span class="sd">        SpikeList object</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">            &gt;&gt; spklist.id_list()</span>
+<span class="sd">                [0,1,2,3,....,9999]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spiketrains</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="hardware">
+<h2>Hardware<a class="headerlink" href="#hardware" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="all-chips">
+<h3>All chips<a class="headerlink" href="#all-chips" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Before starting doing measurements on a circuit, check <em>all</em> the biases which
+can influence the input of that circuit and not only the biases of that
+circuits, in other words you should completely isolate the circuit from the
+other currents. It is a simple concept but easy to forget...
+For example, if you want to measure properties of the soma, you have
+to turn off all the presynaptic currents (Vw, VtauSyn, ...).</li>
+<li>Remember that &#8220;turning off a circuit&#8221; doens&#8217;t mean &#8220;put all biases to 0 (or Vdd)&#8221;: in
+some cases this can lead to floating nodes (usually a voltage on a cap) which in turn leads to
+random behaviors! E.g. on synapse circuits turn <em>off</em> the synaptic weights but <em>on</em> their taus.</li>
+<li>When measuring analog voltages on output pins (for example Vmem, Vimem, Vsyn, ...)
+always check the FollowBias value. Make sure the pads, buffers, current-converters, etc. are
+working correctly.</li>
+<li>If something goes bad you may want to check the pluggers of the boards and all the soldered parts. The schematics are on SVN (you may need appropriate permissions for this) and (currently) can be opened with a Windows machine running Tanner tools. Ask Giacomo for a Windows virtual machine.</li>
+</ul>
+<div class="section" id="help-leds-on-amda-start-blinking-like-crazy">
+<h4>Help! LEDs on AMDA start blinking like crazy<a class="headerlink" href="#help-leds-on-amda-start-blinking-like-crazy" title="Permalink to this headline">¶</a></h4>
+<p>This is very bad. Most probably it&#8217;s a short-circuit somewhere which is badly powering the device(s) and most probably the problem is in the chip...</p>
+</div>
+<div class="section" id="help-when-i-set-the-biases-the-chip-get-stuck">
+<h4>Help! When I set the biases the chip get stuck<a class="headerlink" href="#help-when-i-set-the-biases-the-chip-get-stuck" title="Permalink to this headline">¶</a></h4>
+<p>Try restarting the AEX board.</p>
+</div>
+</div>
+<div class="section" id="cpg-chip">
+<h3>CPG chip<a class="headerlink" href="#cpg-chip" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Remember to short test cell&#8217;s acknowledge pin to aVdd, otherwise it is floating and chaos will rule on your experiments...</li>
+<li>Valk = 0 brings cap&#8217;s node to floating! Valk = 1 disables leak.</li>
+<li>the chip shows strong mismatch for Vtau &gt; 0, set Vtau=0 and VtauTC=-1 for <cite>if</cite>-curve. This is because Vtau transistor is very (very very very) small.</li>
+</ul>
+<div class="section" id="dacs-and-bias-generators">
+<h4>DACs and bias generators<a class="headerlink" href="#dacs-and-bias-generators" title="Permalink to this headline">¶</a></h4>
+<p>The chip has DACs <em>and</em> bias generators. A DAC converts your digital number on a voltage and applies it to the correspondent
+transistor. Transistors change characteristic with temperature and other factors so the resulting current for the voltage you
+apply can be much different from time to time. That&#8217;s where a bias generator come to play: it fixes the current directly,
+compensating changes in temperature etc. In the CPG chip you have both DACs and bias generators for some of the biases.
+DACs are identified with a &#8216;TC&#8217; suffix (which actually stands for Test Cell), all the others are from bias generators.
+With a bias generator you sweep <em>linearly</em> on current. With DAC you sweep <em>exponentially</em> on current.</p>
+<p>When you set a bias which has both DAC and bias generator (ex. VrestTC and Vrest) you must <em>disable</em> DAC if you
+want to use the bias generator or <em>set to 0</em> the bias generator if you want to use the DAC.</p>
+<p>** When using DACs, always check the corresponding bias generator currents **</p>
+</div>
+<div class="section" id="help-the-arbiter-seems-to-be-slow-and-events-are-delayed">
+<h4>Help! The arbiter seems to be slow and events are delayed<a class="headerlink" href="#help-the-arbiter-seems-to-be-slow-and-events-are-delayed" title="Permalink to this headline">¶</a></h4>
+<p>You can maybe increase the slope of the raising edges. Connect two probes on two
+pins of the parallel output of the AMDA board (remove the gray caps if you
+need). Play with AEPD bias and explore...</p>
+</div>
+</div>
+<div class="section" id="ifslwta-chip">
+<h3>IFSLWTA chip<a class="headerlink" href="#ifslwta-chip" title="Permalink to this headline">¶</a></h3>
+<p>When using the analogue voltage pins to measure things with <a class="reference external" href="../../../projects/py-x/pyosc">pyOsc</a>, you might run into the following troubles</p>
+<ul class="simple">
+<li>the chip marked with a pencil &#8216;1&#8217; has a broken <tt class="docutils literal"><span class="pre">Vmem127</span></tt>; just use the scanner <tt class="docutils literal"><span class="pre">Vmem</span></tt> instead</li>
+<li>the 2nd synapse of neuron 127 may behave strangely (does not well integrate AER spikes) &#8211; this is probably due to a border effect</li>
+<li><tt class="docutils literal"><span class="pre">Vsyn</span></tt> and <tt class="docutils literal"><span class="pre">Vpls</span></tt> are supposed to go to the <em>global inhibition</em> synapse of neuron 127; it&#8217;s the potential that is common all 124 first neurons and that controls the (individual) inhibitory currents in case of spkies of neuron 127 &#8211; but that&#8217;s not where the pin goes to; it&#8217;s probably due to a PCB error</li>
+</ul>
+<p>Learning:</p>
+<ul class="simple">
+<li>if synaerlo is above around 0.2, changing its value to lower values very fast (i.e. with a strong leak, as in getwij() function) affects learning synapses&#8217; state &#8211; use a too strong leak (psynaerlk ~ 2.6)</li>
+<li>UP and DOWN signals for learning synapses is not set before the first spike of the output neuron &#8211; mostly affect learning with long sub-threshold acitivities</li>
+</ul>
+</div>
+<div class="section" id="difwta-chip">
+<h3>2DIFWTA chip<a class="headerlink" href="#difwta-chip" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>please consult <a class="reference external" href="../../circuits-and-pcbs/if2dwta/bugsnquirks">the chip&#8217;s bugs page</a></li>
+</ul>
+</div>
+<div class="section" id="sac">
+<h3>SAC<a class="headerlink" href="#sac" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="multichip-setups">
+<h2>Multichip setups<a class="headerlink" href="#multichip-setups" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>In multichip setup, the first AEX you connect via usb will be used for I/O with the computer/client. This is because it will be linked to device #0. After the first AEX board you can plug the others. Remember to start AexServer (it won&#8217;t start before plugging the first AEX).</li>
+<li>Turn off AerServer before disconnecting all boards.</li>
+</ul>
+<div class="section" id="mapper-and-serial-bus">
+<h3>Mapper and Serial bus<a class="headerlink" href="#mapper-and-serial-bus" title="Permalink to this headline">¶</a></h3>
+<p>Mapper (zanzara/lambdalix or the miniATX zenigata) boot now from a USB stick in which Ubuntu and all needed software (i.e. pyNCS etc.) and all drivers (i.e. AEX and AMDA) are installed. Please check /root/software. It would be nice to create a live cd of this customized distribution, so that if we change machine, lose the hard-disk, or anything else, we are able to restore the mapper in just one click.</p>
+<p>To test the mapper create a multichip setup connected to the mapper. You can use also only one AEX board but it has to be specifically programmed for a multichip setup (see &#8220;Multi-chip experiments: a general introduction&#8221;).
+Remember to change the xml/mc.xml file adequately! In /software/testmapper/test.py you find a class for running a test experiment together with the script for starting AEX server, Server.py. Now, run the server and then follow the steps (or please write a script which will do that for you, and for me too...). These steps have been tested with a single AEX board (channel i6o2), amda number 204, ifslwta chip.</p>
+<p>[TODO: convert the following to a properly formatted version]</p>
+<ul class="simple">
+<li>ipython -i test.py</li>
+<li>clinteastwood = test_experiment()</li>
+<li>channel = &#8216;seq&#8217; # the channel we want to stimulate from (sequencer)</li>
+<li>clinteastwood.createmapping_stim() # this maps our sequenced output to the chip input</li>
+<li>stim = clinteastwood.create_stim() # you may want to change this for your custom stimulus</li>
+<li>clinteastwood.q.stimulate({channel:stim})</li>
+</ul>
+<p>During the stimulation you should see:
+- chip is spiking
+- chip receives events on parallel input</p>
+<p><em>WARNING</em> this is not a conclusive test!
+<em>WARNING</em> remember to activate the mapper before loading any mapping or doing any experiment. You do this pressing a button on the PCI board (is hard to find on ver. 2 mapper).</p>
+<div class="section" id="pci-mapper-version-1-doesn-t-work">
+<h4>PCI Mapper version 1 doesn&#8217;t work<a class="headerlink" href="#pci-mapper-version-1-doesn-t-work" title="Permalink to this headline">¶</a></h4>
+<p>Of course, it&#8217;s broken! Something happened in Capocaccia CNE 2010. Symptoms are:
+- when mapper is active, some buffer gets full after some seconds of normal activity from the chips. This blocks the entire serial chain.
+- as soon as you de-activate the mapper (pressing the button on the board) the chain is free again... Events are correctly mapped.
+We realized that the cause is a burned FPGA. If you mount the PCI board the other way around you burn the FPGA. Don&#8217;t do it.</p>
+</div>
+<div class="section" id="help-no-events-mapped-mapper-output">
+<h4>Help! No events mapped (mapper output)<a class="headerlink" href="#help-no-events-mapped-mapper-output" title="Permalink to this headline">¶</a></h4>
+<p>Restart AEX boards <em>and</em> AexServer in the proper way. Most of times, it works, but if it doesn&#8217;t remember that there can be events stuck in some place along the serial bus.</p>
+</div>
+<div class="section" id="very-strange-events-on-the-serial-chain-mapper-frozen">
+<h4>Very strange events on the serial chain?! [mapper frozen]<a class="headerlink" href="#very-strange-events-on-the-serial-chain-mapper-frozen" title="Permalink to this headline">¶</a></h4>
+<p>Well, most probably somebody just turned off or on the light... No, the setup is not shielded. Just trash these events. Since they are (most probably) not inside the address space of the multichip setup, your data will not be corrupted. By the way, the strange events could trigger a mapper freeze. A power cycle should fix.</p>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Troubleshooting</a><ul>
+<li><a class="reference internal" href="#setup-checklist">Setup checklist</a></li>
+<li><a class="reference internal" href="#software">Software</a><ul>
+<li><a class="reference internal" href="#pyncs">pyNCS</a></li>
+<li><a class="reference internal" href="#amda-board">AMDA board</a><ul>
+<li><a class="reference internal" href="#help-the-amda-server-is-not-running">Help! The AMDA server is not running</a></li>
+<li><a class="reference internal" href="#help-bias-generator-not-available">Help! &#8220;Bias generator not available&#8221;</a></li>
+<li><a class="reference internal" href="#help-the-scanner-doesn-t-work">Help! The scanner doesn&#8217;t work</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#aex-board">AEX board</a><ul>
+<li><a class="reference internal" href="#help-the-aex-server-is-not-running">Help! The Aex server is not running</a></li>
+<li><a class="reference internal" href="#help-i-got-error-98-port-already-in-use">Help! I got &#8216;Error 98: port already in use&#8217;</a></li>
+<li><a class="reference internal" href="#help-raster-plot-is-ok-but-frequency-is-strange">Help! Raster plot is ok but frequency is strange</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#spectrum-board">Spectrum Board</a><ul>
+<li><a class="reference internal" href="#help-i-dont-have-appropriate-rights">Help! I dont have appropriate rights</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#neurotools">NeuroTools</a><ul>
+<li><a class="reference internal" href="#help-pyst-complains-about-neuron-ids-the-spikelist">Help! pyST complains about neuron ids the spikelist</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#hardware">Hardware</a><ul>
+<li><a class="reference internal" href="#all-chips">All chips</a><ul>
+<li><a class="reference internal" href="#help-leds-on-amda-start-blinking-like-crazy">Help! LEDs on AMDA start blinking like crazy</a></li>
+<li><a class="reference internal" href="#help-when-i-set-the-biases-the-chip-get-stuck">Help! When I set the biases the chip get stuck</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cpg-chip">CPG chip</a><ul>
+<li><a class="reference internal" href="#dacs-and-bias-generators">DACs and bias generators</a></li>
+<li><a class="reference internal" href="#help-the-arbiter-seems-to-be-slow-and-events-are-delayed">Help! The arbiter seems to be slow and events are delayed</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ifslwta-chip">IFSLWTA chip</a></li>
+<li><a class="reference internal" href="#difwta-chip">2DIFWTA chip</a></li>
+<li><a class="reference internal" href="#sac">SAC</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#multichip-setups">Multichip setups</a><ul>
+<li><a class="reference internal" href="#mapper-and-serial-bus">Mapper and Serial bus</a><ul>
+<li><a class="reference internal" href="#pci-mapper-version-1-doesn-t-work">PCI Mapper version 1 doesn&#8217;t work</a></li>
+<li><a class="reference internal" href="#help-no-events-mapped-mapper-output">Help! No events mapped (mapper output)</a></li>
+<li><a class="reference internal" href="#very-strange-events-on-the-serial-chain-mapper-frozen">Very strange events on the serial chain?! [mapper frozen]</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="spcm.html"
+                        title="previous chapter">Spectrum Board installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../examples/reservoir.html"
+                        title="next chapter">Reservoir</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/general/troubleshooting.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../examples/reservoir.html" title="Reservoir"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="spcm.html" title="Spectrum Board installation"
+             >previous</a> |</li>
+        <li><a href="../index.html">Python NCS tools 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2009, Emre Neftci, Sadique Sheik, Daniel Sonnleithner, Giacomo Indiveri.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>
