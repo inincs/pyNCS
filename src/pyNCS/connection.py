@@ -32,11 +32,11 @@ class Connection(object):
         """
         self.mapping = self._create_mapping(popsrc, popdst, synapse)
 
-        if hasattr(self, '__connect_' + fashion + '__'):
-            getattr(self, '__connect_' + fashion + '__')(popsrc, popdst, synapse,
-                                                     **fashion_kwargs)
-        else:
-            self.mapping.connect(popsrc.soma,
+#        if hasattr(self, '__connect_' + fashion + '__'):
+#            getattr(self, '__connect_' + fashion + '__')(popsrc, popdst, synapse,
+#                                                     **fashion_kwargs)
+#        else:
+        self.mapping.connect(popsrc.soma,
                                  popdst.synapses[synapse],
                                  fashion=fashion,
                                  fashion_kwargs=fashion_kwargs)
@@ -60,17 +60,17 @@ class Connection(object):
     def __repr__(self):
         return "Connection object: {0} -> {1} via {2}".format(self.namesrc, self.namedst, self.synapse)
 
-    def __connect_one2one__(self, popsrc, popdst, synapse, syn_ids=[0]):
-        """
-        Connects in a one to one fashion. Every source neuron connects to one
-        synapse on the destination.
-            - syn_ids: array of synapses into which to connect
-        """
-        nsrc = len(syn_ids)
-        ndst = len(popdst[0].synapses[synapse])
-        [self.mapping.connect(popsrc.soma[i::nsrc],
-                              popdst.synapses[synapse][i::ndst])
-                              for i in syn_ids]
+#    def __connect_one2one__(self, popsrc, popdst, synapse, syn_ids=[0]):
+#        """
+#        Connects in a one to one fashion. Every source neuron connects to one
+#        synapse on the destination.
+#            - syn_ids: array of synapses into which to connect
+#        """
+#        nsrc = len(syn_ids)
+#        ndst = len(popdst[0].synapses[synapse])
+#        [self.mapping.connect(popsrc.soma[i::nsrc],
+#                              popdst.synapses[synapse][i::ndst])
+#                              for i in syn_ids]
 
 #    def activate(self, setup=None):
 #        """

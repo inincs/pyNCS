@@ -127,7 +127,7 @@ class Mapping(object):
         self.__toint__()
         return self.mapping
 
-    def __connect_one2one__(self, groupsrc, groupdst,
+    def __connect_one2one__(self, groupsrc, groupdst, p=1.0,
                             expand=True, hide=False):
         """
         Connects in a one to one fashion, from the first of the source to the
@@ -137,18 +137,9 @@ class Mapping(object):
 
         if len(groupsrc) != len(groupdst):
             print "WARNING: source and destination have different sizes"
-        if expand:
-            self.mapping.extend([[groupsrc.paddr[i], groupdst.
-                paddr[i]] for i in range(len(groupsrc.paddr))])
-        else:
-            self.mapping = [[groupsrc.paddr[i], groupdst.paddr[
-                i]] for i in range(len(groupsrc.paddr))]
-
-        if not hide:
-            self.add_edge(groupsrc, groupdst, arrowhead='none')
-
-        self.__toint__()
-        return self.mapping
+        connect_dist = np.eye(len(groupsrc))*p 
+        return self.__connect_by_probability_matrix__(groupsrc, groupdst,
+                                                      connect_dist, expand=True, hide=False)
 
     def __connect_random_all2all__(self, groupsrc, groupdst, p=0.25,
                                    expand=True, hide=False):
