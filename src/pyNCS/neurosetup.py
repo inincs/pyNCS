@@ -237,7 +237,8 @@ class NeuroSetup(object):
 
     def aerDummy(self):
         ''' returns a placeholder pyST.addrSpec '''
-        aerIn, aerOut = pyST.STas.load_stas_from_csv(self.defaultchipfile)
+        aerIn, aerOut = pyST.STas.load_stas_from_csv(self.prefix+\
+                                                     self.defaultchipfile)
         return aerOut
 
     def update(self):
