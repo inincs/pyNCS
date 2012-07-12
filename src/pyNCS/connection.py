@@ -7,10 +7,10 @@
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
 import numpy as np
+import pylab
 
 import pyAex
 from mapping import Mapping, PMapping
-
 
 class Connection(object):
     """
@@ -31,11 +31,6 @@ class Connection(object):
         - setup: specify setup if different from popsrc.setup
         """
         self.mapping = self._create_mapping(popsrc, popdst, synapse)
-
-#        if hasattr(self, '__connect_' + fashion + '__'):
-#            getattr(self, '__connect_' + fashion + '__')(popsrc, popdst, synapse,
-#                                                     **fashion_kwargs)
-#        else:
         self.mapping.connect(popsrc.soma,
                                  popdst.synapses[synapse],
                                  fashion=fashion,
@@ -45,9 +40,9 @@ class Connection(object):
         if append:
             setup.mapping.merge(self.mapping)
 
-        self.namesrc = popsrc.name
-        self.namedst = popdst.name
         self.synapse = synapse
+        self.popsrc = popsrc
+        self.popdst = popdst
 
     def _create_mapping(self, popsrc, popdst, synapse):
         return Mapping(popsrc.name + '_to_' + popdst.name,
@@ -58,8 +53,25 @@ class Connection(object):
         return len(self.mapping.mapping)
 
     def __repr__(self):
-        return "Connection object: {0} -> {1} via {2}".format(self.namesrc, self.namedst, self.synapse)
+        return "Connection object: {0} -> {1} via {2}".format(self.popsrc.name,
+                                                              self.popdst.name,
+                                                              self.synapse)
 
+
+    def plot(self):
+        '''
+        plots the connectivity
+        '''
+        srcindx = {j:i for i,j in enumerate(self.popsrc.soma.paddr)}
+        dstindx = {j:i for i,j in enumerate(self.popdst.synapses[self.synapse].paddr)}
+        conn_matrix = np.zeros((len(self.popdst.synapses[self.synapse]),
+                                len(self.popsrc.soma)))
+        for src, dst in np.array(self.mapping.mapping)[:,:2]:
+            conn_matrix[dstindx[dst], srcindx[src]] += 1
+        pylab.colorbar(pylab.pcolor(conn_matrix))
+        pylab.xlabel(self.popsrc.name)
+        pylab.ylabel(self.popdst.name)
+        
 #    def __connect_one2one__(self, popsrc, popdst, synapse, syn_ids=[0]):
 #        """
 #        Connects in a one to one fashion. Every source neuron connects to one
