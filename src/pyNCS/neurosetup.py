@@ -176,6 +176,18 @@ class NeuroSetup(object):
 
             self.com_api = self._import_module(str(ncom.attrib['module']))
             self.communicator = self.com_api.Communicator(**self.com_kwargs)
+        
+        # Load virtual chips
+        for nchip in nsetup.iterfind('virtualchip'):
+            chipid = str(nchip.attrib['id'])
+            chipfile = prefix + str(nchip.attrib['chipfile'])
+            slot = int(eval(nchip.attrib['slot']))
+            chip = NeuroChip(chipfile, id=chipid, offline=True)
+            #Be sure that the chip is virtual
+            chip.virtual = True
+            self.chips[chipid] = chip
+            self.chipslots[chipid] = slot
+            self.slots[slot] = chipid
 
         #Load configurators and chips
         for nchip in nsetup.iterfind('chip'):
@@ -194,19 +206,6 @@ class NeuroSetup(object):
             self.slots[slot] = chipid
             chip.configurator.register_neurosetup(self)
 
-        for nchip in nsetup.iterfind('virtualchip'):
-            chipid = str(nchip.attrib['id'])
-            chipfile = prefix + str(nchip.attrib['chipfile'])
-            conf_kwargs = xml_parse_parameter(nconf)
-            slot = int(eval(nchip.attrib['slot']))
-            chip = NeuroChip(chipfile, id=chipid, offline=offline,
-                             conf_api=conf_api,
-                             conf_kwargs=conf_kwargs)
-            #Be sure that the chip is virtual
-            chip.virtual = True
-            self.chips[chipid] = chip
-            self.chipslots[chipid] = slot
-            self.slots[slot] = chipid
 
         #Load Mapper
         for nmapper in nsetup.iterfind('mapper'):
