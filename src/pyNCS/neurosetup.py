@@ -206,8 +206,10 @@ class NeuroSetup(object):
             self.slots[slot] = chipid
             chip.configurator.register_neurosetup(self)
 
-
         #Load Mapper
+        # load a virtual mapping table by defauld
+        self.mapping = Mapping('Virtual Mapping') 
+
         for nmapper in nsetup.iterfind('mapper'):
             map_kwargs = xml_parse_parameter(nmapper)
             self.map_kwargs = dict_merge(self.map_kwargs, map_kwargs)
@@ -215,7 +217,7 @@ class NeuroSetup(object):
             self.map_api = self._import_module(str(nmapper.attrib['module']))
             self.mapper = self.map_api.Mappings(**self.map_kwargs)
             if self.map_kwargs.has_key('version'):
-                if float(self.map_kwargs['version']) == 2.0:
+                if float(self.map_kwargs['version']) == 3.0:
                     self.mapping = PMapping('mapping')
                 else:
                     self.mapping = Mapping('mapping')
