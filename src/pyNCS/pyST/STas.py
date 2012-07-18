@@ -18,7 +18,7 @@ import warnings
 from STsl import *
 import itertools
 from contextlib import contextmanager
-import pyST.pyST_globals as pyST_globals
+import pyST_globals
 from lxml import etree
 
 

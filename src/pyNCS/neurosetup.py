@@ -256,8 +256,10 @@ class NeuroSetup(object):
             for ii in self.aerSlot[nslot]['monIn']:
                 try:
                     if self.chips[id].aerIn is not None:
-                        monList[ii] = self.chips[id].aerIn
-                        self.chipsIn[ii] = self.chips[id]
+                        if monList[ii] is self.aerDummyOut or \
+                           not self.chips[id].virtual:
+                            monList[ii] = self.chips[id].aerIn
+                            self.chipsIn[ii] = self.chips[id]
                 except KeyError, e:
                     pass
                 #If mon.aerIn doesn't exist, then skip it
@@ -267,8 +269,10 @@ class NeuroSetup(object):
             for ii in self.aerSlot[nslot]['monOut']:
                 try:
                     if self.chips[id].aerOut is not None:
-                        monList[ii] = self.chips[id].aerOut
-                        self.chipsOut[ii] = self.chips[id]
+                        if monList[ii] is self.aerDummyOut or \
+                           not self.chips[id].virtual:
+                            monList[ii] = self.chips[id].aerOut
+                            self.chipsOut[ii] = self.chips[id]
                 except KeyError, e:
                     raise e
                 except AttributeError, e:
@@ -277,8 +281,10 @@ class NeuroSetup(object):
             for ii in self.aerSlot[nslot]['seqIn']:
                 try:
                     if self.chips[id].aerIn is not None:
-                        seqList[ii] = self.chips[id].aerIn
-                        self.chipsIn[ii] = self.chips[id]
+                        if seqList[ii] is self.aerDummyIn or \
+                           not self.chips[id].virtual:
+                            seqList[ii] = self.chips[id].aerIn
+                            self.chipsIn[ii] = self.chips[id]
                 except KeyError, e:
                     raise e
                 except AttributeError, e:
@@ -288,8 +294,10 @@ class NeuroSetup(object):
             for ii in self.aerSlot[nslot]['seqOut']:
                 try:
                     if self.chips[id].aerOut is not None:
-                        seqList[ii] = self.chips[id].aerOut
-                        self.chipsOut[ii] = self.chips[id]
+                        if seqList[ii] is self.aerDummyIn or \
+                           not self.chips[id].virtual:
+                            seqList[ii] = self.chips[id].aerOut
+                            self.chipsOut[ii] = self.chips[id]
                 except KeyError, e:
                     raise e
                 except AttributeError, e:

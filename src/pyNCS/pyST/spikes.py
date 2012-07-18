@@ -702,9 +702,8 @@ def merge(*spiketrains):
 
 
 def merge_spikelists(*lspikelist):
-    import pyST
     #create stim sequence
-    stStim = pyST.SpikeList([], [])
+    stStim = SpikeList([], [])
 
     #workaround for NeuroTools bug
     tt = []
@@ -720,7 +719,7 @@ def merge_spikelists(*lspikelist):
     tmarray = numpy.fliplr(numpy.vstack(tt))
     adarray = numpy.sort(numpy.unique(adarray))
 
-    stStim = pyST.SpikeList(
+    stStim = SpikeList(
         tmarray, adarray, t_start=0.0, t_stop=max(tmarray[:, 1]))
     return stStim
 
