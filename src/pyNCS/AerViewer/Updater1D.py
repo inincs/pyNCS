@@ -10,28 +10,13 @@
 #Enthougt and Chaco imports
 # Work around for Ubuntu 11.10 (are other. distributions affected by the new
 # package naming?)
-try:
-    import enthought
-    new_version = False
-except ImportError:
-    new_version = True
 
-if not new_version:
-    from enthought.traits.api import HasTraits, Instance, Int, CFloat, Enum, Trait, Callable, Range
-    from enthought.traits.ui.api import View, Item, Group, Handler
-    from enthought.chaco.api import Plot, ArrayPlotData, jet, Greys
-    from enthought.chaco.default_colormaps import *
-    from enthought.enable.component_editor import ComponentEditor
-    from enthought.traits.ui.menu import Action, CloseAction, MenuBar, Menu
-    #Imports for custom marker
-    #from enthought.kiva import CompiledPath
-else:
-    from traits.api import HasTraits, Instance, Int, CFloat, Enum, Trait, Callable, Range
-    from traitsui.api import View, Item, Group, Handler
-    from chaco.api import Plot, ArrayPlotData, jet, Greys
-    from chaco.default_colormaps import *
-    from enable.component_editor import ComponentEditor
-    from traitsui.menu import Action, CloseAction, MenuBar, Menu
+from traits.api import HasTraits, Instance, Int, CFloat, Enum, Trait, Callable, Range
+from traitsui.api import View, Item, Group, Handler
+from chaco.api import Plot, ArrayPlotData, jet, Greys
+from chaco.default_colormaps import *
+from enable.component_editor import ComponentEditor
+from traitsui.menu import Action, CloseAction, MenuBar, Menu
 
 
 #Other imports
@@ -43,7 +28,7 @@ import wx
 
 #Imports for AER monitoring
 import pyAex
-from pyST import *
+from pyNCS.pyST import *
 import pyNCS
 
 

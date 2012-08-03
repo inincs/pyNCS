@@ -10,7 +10,7 @@ from __future__ import with_statement
 from xml.dom import minidom as md
 from urllib2 import urlopen, URLError, HTTPError
 from chip_v2 import NeuroChip
-from mapping import Mapping
+from mapping import Mapping, PMapping
 from monitors import Monitors
 import pyST
 import warnings
