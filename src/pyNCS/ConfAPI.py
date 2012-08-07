@@ -198,7 +198,7 @@ class ConfiguratorBase(ResourceManagerBase):
             self.add_parameter(param)
 
     def add_parameter(self, param):
-        #IMPLEMENT
+        #CONVENIENCE FUNCITON. IMPLEMENTATION NOT REQUIRED
         '''
         Add a parameter to the configurator
         param: dictionary with all attributes of parameter or an xml element or
