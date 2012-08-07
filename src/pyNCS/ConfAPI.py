@@ -56,20 +56,20 @@ class Parameter(HasTraits):
         parameters: dictionary of parameters and values
         This object is designed to be used with the configurator to set parameters
         '''
-        self.params = dict(parameters)
+        self.param_data = dict(parameters)
         self.configurator = configurator
         # Initialize variable for GUI
-        self.SignalName = self.params['SignalName']
+        self.SignalName = self.param_data['SignalName']
 
     def __str__(self):
-        return str(self.params)
+        return str(self.param_data)
 
     def __getXML__(self):
         '''
         Returns lxml.etree.Element representatoin of this parameter
         '''
         doc = etree.Element('parameter')
-        for n, v in self.params.items():
+        for n, v in self.param_data.items():
             doc.attrib[n] = str(v)
         return doc
 
@@ -83,20 +83,20 @@ class Parameter(HasTraits):
         else:
             # assuming doc is an lxml Element object.
             assert doc.tag == 'parameter'
-        self.params = dict(doc.attrib)
-        for k, v in self.params.items():
+        self.param_data = dict(doc.attrib)
+        for k, v in self.param_data.items():
             try:
                 v = float(v)
             except:
                 pass
-            self.params[k] = v
-        self.SignalName = self.params['SignalName']
+            self.param_data[k] = v
+        self.SignalName = self.param_data['SignalName']
 
     def getValue(self):
-        return self.configurator.get_parameter(self.params['SignalName'])
+        return self.configurator.get_parameter(self.param_data['SignalName'])
 
     def setValue(self, value):
-        x = self.configurator.set_parameter(self.params['SignalName'], value)
+        x = self.configurator.set_parameter(self.param_data['SignalName'], value)
         self._v = x  # Update gui
         return x
 
