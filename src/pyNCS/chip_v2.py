@@ -455,7 +455,7 @@ class NeuroChip(Chip):
             Chip.__init__(self, CSVfile, id=id, offline=offline,
                           conf_api=conf_api,
                           conf_kwargs=conf_kwargs)
-            self.load_paramfile(paramfile)
+            self._load_paramfile(paramfile)
         elif chipfile.endswith('.xml'):
             Chip.__init__(self, chipfile, id=id, offline=offline,
                           conf_api=conf_api,
@@ -464,7 +464,7 @@ class NeuroChip(Chip):
         else:
             raise Exception('Unknown file format for chipfile!')
 
-    def load_paramfile(self, paramfile):
+    def _load_paramfile(self, paramfile):
         '''
         Function to parse the xml file with the parameter details of the chip.
         '''
