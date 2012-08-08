@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+<chip chipclass="sac" chipfile="src/pyTune/plugins/ncs/chipfiles/sac.xml"  >
+    <neuron id='excitatory'>
+        <soma id='general'>
+            <!--<dim id='y' range='range(32)'/>-->
+            <dim id='y' range='range(32)' />
+            <dim id='x' range='range(32)'/>
+            <parameter id='leak' biasname='LK' range='' />
+            <parameter id='refractory' biasname='RF' range='' />
+            <parameter id='threshold' biasname='SF' range='' />
+            <parameter id='adaptation' biasname='ADAP' range='' />
+            <parameter id='adaptation_recovery' biasname='LKCA' range='' />
+        </soma>
+        <synapse id='excitatory0' type='excitatory'>
+            <dim id='s' range='[0]'/>
+            <parameter id='tau' biasname='TAU' range='' />
+            <parameter id='weight' biasname='W0exc' range='' />
+            <parameter id='threshold' biasname='THR' range='' />
+        </synapse>
+
+        <!-- TODO: local connections -->
+        <!-- TODO: parameters for learning synapses -->
+    </neuron>
+</chip>

@@ -1,0 +1,249 @@
+<?xml version="1.0" ?>
+<chip chipclass="ifslwta" chipfile="src/pyTune/plugins/ncs/chipfiles/ifslwta.csv"  >
+    <neuron id='excitatory'>
+        <soma id='general'>
+            <dim id='x' range='range(124)'/>
+            <parameter id='leak' biasname='nlk' range='' />
+            <parameter id='injection' biasname='pinj' range='' />
+            <parameter id='refractory' biasname='nrf' range='' />
+            <parameter id='threshold' biasname='nsf' range='' />
+            <parameter id='adaptation' biasname='nadap' range='' />
+            <parameter id='adaptation_recovery' biasname='nlkadap' range='' />
+        </soma>
+        <synapse id='inhibitory' type='inhibitory'>
+            <dim id='s' range='range(2)'/>
+            <parameter id='tau' biasname='nsynaerinhtau' range='' />
+            <parameter id='weight' biasname='psynaerinhw' range='' />
+        </synapse>
+        <synapse id='excitatory0' type='excitatory'>
+            <dim id='s' range='[2]'/>
+            <parameter id='tau' biasname='psynstdtau' range='' />
+            <parameter id='weight' biasname='nsynstdw0' range='' />
+            <parameter id='depression' biasname='nsynstdwd0' range='' />
+        </synapse>
+        <synapse id='excitatory1' type='excitatory'>
+            <dim id='s' range='[3]'/>
+            <parameter id='tau' biasname='psynstdtau' range='' />
+            <parameter id='weight' biasname='nsynstdw1' range='' />
+            <parameter id='depression' biasname='nsynstdwd1' range='' />
+        </synapse>
+        <synapse id='learning' type='excitatory_learn'>
+            <dim id='s' range='range(4, 32)'/>
+            <parameter id='tau' biasname='psynaertau' range='' />
+            <parameter id='weight_hi' biasname='synaerhi' range='' />
+            <parameter id='weight_low' biasname='synaerlo' range='' />
+            <parameter id='weight_th' biasname='synaerth' range='' />
+            <parameter id='weight_leak' biasname='plpftau' range='' />
+        </synapse>
+
+        <!-- TODO: local connections -->
+        <!-- TODO: parameters for learning synapses -->
+
+    </neuron>
+
+     <neuron id='inhibitory'>
+        <!--TODO: general -> constant leak exponential integrate and fire...-->
+        <soma id='general'>
+            <dim id='x' range='range(124, 128)'/>
+            <parameter id='leak' biasname='nlk' range='' />
+            <parameter id='refractory' biasname='nrf' range='' />
+            <parameter id='threshold' biasname='nsf' range='' />
+            <parameter id='adaptation' biasname='nadap' range='' />
+            <parameter id='adaptation_recovery' biasname='nlkadap' range='' />
+        </soma>
+        <synapse id='inhibitory' type='inhibitory'>
+            <dim id='s' range='range(2)'/>
+            <parameter id='tau' biasname='nsynaerinhtau' range='' />
+            <parameter id='weight' biasname='psynaerinhw' range='' />
+        </synapse>
+        <synapse id='excitatory0' type='excitatory'>
+            <dim id='s' range='[2]'/>
+            <parameter id='tau' biasname='psynstdtau' range='' />
+            <parameter id='weight' biasname='nsynstdw0' range='' />
+            <parameter id='depression' biasname='nsynstdwd0' range='' />
+        </synapse>
+        <synapse id='excitatory1' type='excitatory'>
+            <dim id='s' range='[3]'/>
+            <parameter id='tau' biasname='psynstdtau' range='' />
+            <parameter id='weight' biasname='nsynstdw1' range='' />
+            <parameter id='depression' biasname='nsynstdwd1' range='' />
+        </synapse>
+        <synapse id='learning' type='excitatory_learn'>
+            <dim id='s' range='range(4, 32)'/>
+            <parameter id='tau' biasname='psynaertau' range='' />
+            <parameter id='weight_hi' biasname='synaerhi' range='' />
+            <parameter id='weight_low' biasname='synaerlo' range='' />
+            <parameter id='weight_th' biasname='synaerth' range='' />
+            <parameter id='weight_leak' biasname='plpftau' range='' />
+        </synapse>
+
+        <!-- TODO: local connections -->
+        <!-- TODO: parameters for learning synapses -->
+    </neuron>
+
+
+    <neuron id='inhibitory1'>
+        <!--TODO: general -> constant leak exponential integrate and fire...-->
+        <soma id='general'>
+            <dim id='x' range='range(124, 125)'/>
+            <parameter id='leak' biasname='nlk' range='' />
+            <parameter id='injection' biasname='pinj1' range='' />
+            <parameter id='refractory' biasname='nrf' range='' />
+            <parameter id='threshold' biasname='nsf' range='' />
+            <parameter id='adaptation' biasname='nadap' range='' />
+            <parameter id='adaptation_recovery' biasname='nlkadap' range='' />
+        </soma>
+        <synapse id='inhibitory' type='inhibitory'>
+            <dim id='s' range='range(2)'/>
+            <parameter id='tau' biasname='nsynaerinhtau' range='' />
+            <parameter id='weight' biasname='psynaerinhw' range='' />
+        </synapse>
+        <synapse id='excitatory0' type='excitatory'>
+            <dim id='s' range='[2]'/>
+            <parameter id='tau' biasname='psynstdtau' range='' />
+            <parameter id='weight' biasname='nsynstdw0' range='' />
+            <parameter id='depression' biasname='nsynstdwd0' range='' />
+        </synapse>
+        <synapse id='excitatory1' type='excitatory'>
+            <dim id='s' range='[3]'/>
+            <parameter id='tau' biasname='psynstdtau' range='' />
+            <parameter id='weight' biasname='nsynstdw1' range='' />
+            <parameter id='depression' biasname='nsynstdwd1' range='' />
+        </synapse>
+        <synapse id='learning' type='excitatory_learn'>
+            <dim id='s' range='range(4, 32)'/>
+            <parameter id='tau' biasname='psynaertau' range='' />
+            <parameter id='weight_hi' biasname='synaerhi' range='' />
+            <parameter id='weight_low' biasname='synaerlo' range='' />
+            <parameter id='weight_th' biasname='synaerth' range='' />
+            <parameter id='weight_leak' biasname='plpftau' range='' />
+        </synapse>
+
+        <!-- TODO: local connections -->
+        <!-- TODO: parameters for learning synapses -->
+
+    </neuron>
+    <neuron id='inhibitory2'>
+        <!--TODO: general -> constant leak exponential integrate and fire...-->
+        <soma id='general'>
+            <dim id='x' range='range(125, 126)'/>
+            <parameter id='leak' biasname='nlk' range='' />
+            <parameter id='injection' biasname='pinj2' range='' />
+            <parameter id='refractory' biasname='nrf' range='' />
+            <parameter id='threshold' biasname='nsf' range='' />
+            <parameter id='adaptation' biasname='nadap' range='' />
+            <parameter id='adaptation_recovery' biasname='nlkadap' range='' />
+        </soma>
+        <synapse id='inhibitory' type='inhibitory'>
+            <dim id='s' range='range(2)'/>
+            <parameter id='tau' biasname='nsynaerinhtau' range='' />
+            <parameter id='weight' biasname='psynaerinhw' range='' />
+        </synapse>
+        <synapse id='excitatory0' type='excitatory'>
+            <dim id='s' range='[2]'/>
+            <parameter id='tau' biasname='psynstdtau' range='' />
+            <parameter id='weight' biasname='nsynstdw0' range='' />
+            <parameter id='depression' biasname='nsynstdwd0' range='' />
+        </synapse>
+        <synapse id='excitatory1' type='excitatory'>
+            <dim id='s' range='[3]'/>
+            <parameter id='tau' biasname='psynstdtau' range='' />
+            <parameter id='weight' biasname='nsynstdw1' range='' />
+            <parameter id='depression' biasname='nsynstdwd1' range='' />
+        </synapse>
+        <synapse id='learning' type='excitatory_learn'>
+            <dim id='s' range='range(4, 32)'/>
+            <parameter id='tau' biasname='psynaertau' range='' />
+            <parameter id='weight_hi' biasname='synaerhi' range='' />
+            <parameter id='weight_low' biasname='synaerlo' range='' />
+            <parameter id='weight_th' biasname='synaerth' range='' />
+            <parameter id='weight_leak' biasname='plpftau' range='' />
+        </synapse>
+
+        <!-- TODO: local connections -->
+        <!-- TODO: parameters for learning synapses -->
+
+    </neuron>
+    <neuron id='inhibitory3'>
+        <!--TODO: general -> constant leak exponential integrate and fire...-->
+        <soma id='general'>
+            <dim id='x' range='range(126, 127)'/>
+            <parameter id='leak' biasname='nlk' range='' />
+            <parameter id='injection' biasname='pinj3' range='' />
+            <parameter id='refractory' biasname='nrf' range='' />
+            <parameter id='threshold' biasname='nsf' range='' />
+            <parameter id='adaptation' biasname='nadap' range='' />
+            <parameter id='adaptation_recovery' biasname='nlkadap' range='' />
+        </soma>
+        <synapse id='inhibitory' type='inhibitory'>
+            <dim id='s' range='range(2)'/>
+            <parameter id='tau' biasname='nsynaerinhtau' range='' />
+            <parameter id='weight' biasname='psynaerinhw' range='' />
+        </synapse>
+        <synapse id='excitatory0' type='excitatory'>
+            <dim id='s' range='[2]'/>
+            <parameter id='tau' biasname='psynstdtau' range='' />
+            <parameter id='weight' biasname='nsynstdw0' range='' />
+            <parameter id='depression' biasname='nsynstdwd0' range='' />
+        </synapse>
+        <synapse id='excitatory1' type='excitatory'>
+            <dim id='s' range='[3]'/>
+            <parameter id='tau' biasname='psynstdtau' range='' />
+            <parameter id='weight' biasname='nsynstdw1' range='' />
+            <parameter id='depression' biasname='nsynstdwd1' range='' />
+        </synapse>
+        <synapse id='learning' type='excitatory_learn'>
+            <dim id='s' range='range(4, 32)'/>
+            <parameter id='tau' biasname='psynaertau' range='' />
+            <parameter id='weight_hi' biasname='synaerhi' range='' />
+            <parameter id='weight_low' biasname='synaerlo' range='' />
+            <parameter id='weight_th' biasname='synaerth' range='' />
+            <parameter id='weight_leak' biasname='plpftau' range='' />
+        </synapse>
+
+        <!-- TODO: local connections -->
+        <!-- TODO: parameters for learning synapses -->
+    </neuron>
+
+    <neuron id='inhibitory4'>
+        <!--TODO: general -> constant leak exponential integrate and fire...-->
+        <soma id='general'>
+            <dim id='x' range='range(127, 128)'/>
+            <parameter id='leak' biasname='nlk' range='' />
+            <parameter id='injection' biasname='pinj4' range='' />
+            <parameter id='refractory' biasname='nrf' range='' />
+            <parameter id='threshold' biasname='nsf' range='' />
+            <parameter id='adaptation' biasname='nadap' range='' />
+            <parameter id='adaptation_recovery' biasname='nlkadap' range='' />
+        </soma>
+        <synapse id='inhibitory' type='inhibitory'>
+            <dim id='s' range='range(2)'/>
+            <parameter id='tau' biasname='nsynaerinhtau' range='' />
+            <parameter id='weight' biasname='psynaerinhw' range='' />
+        </synapse>
+        <synapse id='excitatory0' type='excitatory'>
+            <dim id='s' range='[2]'/>
+            <parameter id='tau' biasname='psynstdtau' range='' />
+            <parameter id='weight' biasname='nsynstdw0' range='' />
+            <parameter id='depression' biasname='nsynstdwd0' range='' />
+        </synapse>
+        <synapse id='excitatory1' type='excitatory'>
+            <dim id='s' range='[3]'/>
+            <parameter id='tau' biasname='psynstdtau' range='' />
+            <parameter id='weight' biasname='nsynstdw1' range='' />
+            <parameter id='depression' biasname='nsynstdwd1' range='' />
+        </synapse>
+        <synapse id='learning' type='excitatory_learn'>
+            <dim id='s' range='range(4, 32)'/>
+            <parameter id='tau' biasname='psynaertau' range='' />
+            <parameter id='weight_hi' biasname='synaerhi' range='' />
+            <parameter id='weight_low' biasname='synaerlo' range='' />
+            <parameter id='weight_th' biasname='synaerth' range='' />
+            <parameter id='weight_leak' biasname='plpftau' range='' />
+        </synapse>
+
+        <!-- TODO: local connections -->
+        <!-- TODO: parameters for learning synapses -->
+
+    </neuron>
+</chip>

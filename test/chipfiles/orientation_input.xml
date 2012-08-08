@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<chip chipclass="orienation" chipfile="./orientation_input.csv"  >
+        <neuron id='excitatory'>
+                <soma id='general'>
+                        <dim id='x' range='range(256)'/>
+                        <dim id='y' range='range(32)'/>
+                </soma>
+        </neuron>
+</chip>

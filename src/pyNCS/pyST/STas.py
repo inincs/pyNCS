@@ -343,8 +343,7 @@ class events(object):
             self.empty()
 
     def empty(self):
-        self.set_ad(np.array([], self.dtype))
-        self.set_tm(np.array([], self.dtype))
+        self.__data = np.zeros([0], self.dtype)
 
     def iter_by_timeslice(self, tm):
         import bisect
