@@ -29,11 +29,13 @@ from shutil import rmtree
 
 class datacontainer:
     def __init__(self):
-        pass
+        self.directory = '.'
 
 global globaldata
 globaldata = datacontainer()
 
+REC_FN_SEQ = 'seq_address_specification'
+REC_FN_MON = 'mon_address_specification'
 
 def get_figsize(fig_width_pt, ratio='g'):
     """
@@ -181,3 +183,20 @@ def annotate(filename='', text=''):
     f = file(globaldata.directory + filename, 'w')
     f.write(text)
     f.close()
+
+def save_rec_files(nsetup):
+    '''
+    Saves files recorded by the communicator and prepends address specification
+    '''
+    fh_addr_spec_mon = file(globaldata.directory + REC_FN_SEQ, 'w')
+    fh_addr_spec_seq = file(globaldata.directory + REC_FN_MON, 'w')
+    seq_addr_spec_str = nsetup.seq.reprAddressSpecification()
+    mon_addr_spec_str = nsetup.mon.reprAddressSpecification()
+    fh_addr_spec_mon.write(seq_addr_spec_str)
+    fh_addr_spec_seq.write(mon_addr_spec_str)
+    fh_addr_spec_mon.close()
+    fh_addr_spec_seq.close()
+    exp_fns = nsetup.communicator.get_exp_rec()
+    import shutil, os
+    for f in exp_fns:
+        shutil.copyfile(f, globaldata.directory+f.split('/')[-1])
