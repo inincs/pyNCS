@@ -1,17 +1,16 @@
 "chipclass"	"CPGLEARN"
 												
 "aerIn"												
-"id"	"x"	"range"	"range(32)"	"type"	" '1'"							
-"id"	"s"	"range"	"range(64)"	"type"	" '-1'"							
- 
- 
-"addrStr"	"Y5 Y4 Y3 Y2 Y1 Y0 X4 X3 X2 X1 X0 "
+"id"	"x"	"range"	"range(32)"	"type"	" '1'"	func	X
+"id"	"s"	"range"	"range(64)"	"type"	" '-1'"	func	Y
+pinid	X	func	x
+pinid	Y	func	s
+"pinlayout"	"Y5 Y4 Y3 Y2 Y1 Y0 X4 X3 X2 X1 X0 "
 												
 "aerOut"												
-"id"	"x"	"range"	"range(32)"	"type"	" '1'"							
- 
- 
-"addrStr"	"X4 X3 X2 X1 X0"	
+"id"	"x"	"range"	"range(32)"	"type"	" '1'"	func	X					
+pinid	X	func	x
+pinlayout	"X4 X3 X2 X1 X0"	
 
 "Count"	"Pad#"	"Pin#"	"Circuit Block"	"Signal Name"	"FET"	"BIAS type"	"PAD type"	"Range"	"Simulation value"	"Description"	"Channel#"
 1			"SOMA"	"Vgain"	"p"	"bg"				"Spike emission threshold (of all neurons)"	37

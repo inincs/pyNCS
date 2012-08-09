@@ -12,7 +12,7 @@
 "pinid"	"X"	"f"	"x"
 "pinlayout"	"X6 X5 X4 X3 X2 X1 X0"											
 												
-Count	PIN #	PKG #	Circuit Block	Signal Name	FET	Bias Type	Pad Type	Range	Simulation value	Description	Channel	Shared with
+Count	PIN	PKG	CircuitBlock	SignalName	FET	BiasType	PadType	Range	SimulationValue	Description	Channel	Shared with
 1	4	4	Arbiter	TX0 (scx)			LATCH			Transmitter Data		
 2	5	5		TX1 (scx)			LATCH			Transmitter Data		
 3	6	6		TX2 (scx)			LATCH			Transmitter Data		

@@ -19,7 +19,7 @@
 "pinid"	"Y"	"f"	"y
 "pinlayout"	"X4 X3 X2 X1 X0 Y4 Y3 Y2 Y1 Y0" 
 	
-"Count"	"Pad#"	"Pin#"	"Circuit Block"	"Signal Name"	"FET"	"BIAS type"	"PAD type"	"Range"	"Simulation value"	"Description"	"Channel#"
+Count	PIN #	PKG #	Circuit Block	Signal Name	FET	Bias Type	Pad Type	Range	Simulation value	Description	Channel	Shared with
 1		50	aer	ReqpuX		dac			2.2		58
 2		49	aer	ReqpuY		dac			2.2		59
 3		66	aer	AERpd		dac			0.483		56

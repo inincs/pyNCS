@@ -1,0 +1,14 @@
+chipclass	DVS128										
+											
+aerOut											
+id	x	range	range(2**7)	type	1	func	X				
+id	y	range	range(2**7)	type	1	func	Y
+id	p	range	range(2)	type	-1	func	Z
+ 											
+ 											
+pinid	X	func	x								
+pinid	Y	func	y
+pinid	Z	func	p
+pinlayout	Y6 Y5 Y4 Y3 Y2 Y1 Y0 X6 X5 X4 X3 X2 X1 X0 Z0									
+											
+Count	Pad	Pin	CircuitBlock	SignalName	FET	BiasType	PADtype	Range	SimulationValue	Description	Channel

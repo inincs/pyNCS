@@ -2,7 +2,7 @@
 
 "aerIn"												
 "id"	"x"	"range"	"range(2**12)"	"type"	"1"	"f"	"X"
-"id"	"s"	"range"	"range(2)"	"type"	"-1"	"f"	"Y"							
+"id"	"s"	"range"	"range(1)"	"type"	"-1"	"f"	"Y"							
  
  
 "pinid"	"X"	"f"	"x"
@@ -16,5 +16,4 @@
 "pinid"	"X"	"f"	"x"
 "pinlayout"	"X11 X10 X9 X8 X7 X6 X5 X4 X3 X2 X1 X0"
 	
-"Count"	"Pad#"	"Pin#"	"Circuit Block"	"Signal Name"	"FET"	"BIAS type"	"PAD type"	"Range"	"Simulation value"	"Description"	"Channel#"
-
+Count	PIN	PKG	CircuitBlock	SignalName	FET	BiasType	PadType	Range	SimulationValue	Description	Channel	Shared with

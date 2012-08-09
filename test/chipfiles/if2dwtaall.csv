@@ -19,7 +19,7 @@ pinid	X	func	"x"
 pinid	Y	func	"y"
 "pinlayout"	"Y4 Y3 Y2 Y1 Y0 X5 X4 X3 X2 X1 X0"
 	
-"Count"	"Pad#"	"Pin#"	"Circuit Block"	"Signal Name"	"FET"	"BIAS type"	"PAD type"	"Range"	"Simulation value"	"Description"	"Channel#"
+Count	Pad#	Pin#	Circuit Block	Signal Name	FET	Bias Type	PAD type	Range	Simulation value	Description	Channel
 1		80	Arbiter	Aepd		dac			0.8		56
 2		79	Arbiter	req_puY		dac			2.8		58
 3		78	Arbiter	req_puX		dac			2.8		60

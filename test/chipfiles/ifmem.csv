@@ -7,7 +7,7 @@
 pinid	X	func	x
 pinid	Y	func	s
 pinid	Z	func	t
-"pinlayout"	"Z2 Z1 Z0 Y4 Y3 Y2 Y1 Y0 X4 X3 X2 X1 X0 "										
+"pinlayout"	" X4 X3 X2 X1 X0 Y4 Y3 Y2 Y1 Y0 Z2 Z1 Z0 "										
 											
 "aerOut"											
 "id"	"x"	"range"	"range(32)"	"type"	"1"	func	X				
