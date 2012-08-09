@@ -17,7 +17,7 @@ class TestSequenceFunctions(unittest.TestCase):
 
 
         #-------------------------------------stim---- Monitor ----- Unused -- Mon_map ----------------------------
-        self.STcsMon=channelAddressing(nChannelBits=[14,15,16],\
+        self.STcsMon=channelAddressing(channelBits=[14,15,16],\
                         stasList=[\
                         self.stasRetina,\
                         self.stasMon_ifslwta,\
@@ -30,7 +30,7 @@ class TestSequenceFunctions(unittest.TestCase):
                         ],\
                         )
         #-------------------------------------stim---- Stim_map ---- Unused -- Unused ----------------------------
-        self.STcsSeq=channelAddressing(nChannelBits=[14,15,16],\
+        self.STcsSeq=channelAddressing(channelBits=[14,15,16],\
                         stasList=[\
                         self.stasRetina,\
                         self.stasStim_ifslwta,\
@@ -66,10 +66,16 @@ class TestSequenceFunctions(unittest.TestCase):
 
         self.ch_events={0:stin,1:stout}
 
-    def testEvents(self):
+    def testEvents_empty(self):
         evs = events()
         evs.add_adtmev([[100,100]])
         evs.empty()
+
+    def testEvents_copy(self):
+        evs = events()
+        evs.add_adtmev([[100,100],[100,100]])
+        events(evs)
+
 
     def testStas(self):
         a=addrPhysicalExtract(\
