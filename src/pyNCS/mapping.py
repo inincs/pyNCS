@@ -325,11 +325,9 @@ class Mapping(object):
 
     def is_connect_possible(self, groupsrc, groupdst):
         if groupsrc.grouptype != 'out':
-            print "The first Group is not of type 'Out' and therefore cannot connect into somebody. Try with check = False"
-            return False
+            warn("The source group is not of type 'out'")
         if groupdst.grouptype != 'in':
-            print "You can only connect into a Group of type 'in'."
-            return False
+            warn("The target group is not of type 'in'")
         return True
 
     def prepare(self):

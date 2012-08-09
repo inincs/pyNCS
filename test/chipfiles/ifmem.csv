@@ -1,0 +1,67 @@
+"chipclass"	"ifmem"										
+											
+"aerIn"											
+"id"	"x"	"range"	"range(32)"	"type"	"1"	func	X				
+"id"	"s"	"range"	"range(32)"	"type"	"-1"	func	Y				
+"id"	"t"	"range"	"range(8)"	"type"	"-1"	func	Z				
+pinid	X	func	x
+pinid	Y	func	s
+pinid	Z	func	t
+"pinlayout"	" X4 X3 X2 X1 X0 Y4 Y3 Y2 Y1 Y0 Z2 Z1 Z0 "										
+											
+"aerOut"											
+"id"	"x"	"range"	"range(32)"	"type"	"1"	func	X				
+pinid	X	func	x
+"pinlayout"	"X4 X3 X2 X1 X0"										
+											
+											
+											
+"Count"	"Pad#"	"Pin#"	"Circuit Block"	"Signal Name"	"FET"	"BIAS type"	"PAD type"	"Range"	"Simulation value"	"Description"	"Channel#"
+1				"gbNSath"		"dac"					0
+2				"gbSEtau"		"dac"					1
+3				"gbSEnmda"		"dac"					2
+4				"gbSEg"		"dac"					3
+5				"gbSEdh"		"dac"					4
+6				"gbSEdv"		"dac"					5
+7				"gbSItau"		"dac"					6
+8				"gbSIg"		"dac"					7
+9				"gbsynwex"		"dac"					8
+10				"gbsynwex0"		"dac"					9
+11				"gbsynwex1"		"dac"					10
+12				"gbsynwex2"		"dac"					11
+13				"gbsynwex3"		"dac"					12
+14				"gbsynwex4"		"dac"					14
+15				"gbSIdv"		"dac"					15
+16				"gbSIdh"		"dac"					16
+17				"gbNSaw"		"dac"					17
+18				"gbNScas"		"dac"					18
+19				"gbNSin"		"dac"					19
+20				"gbNSrefr"		"dac"					20
+21				"gbNSreset"		"dac"					21
+22				"gbNStau"		"dac"					22
+23				"gbNSth"		"dac"					23
+24				"gbSEthr"		"dac"					24
+25				"gbNSatau"		"dac"					25
+26				"gbSEtauDiff"		"dac"					26
+27				"gbSItauDiff"		"dac"					27
+28				"gbSIthr"		"dac"					28
+29				"gbsynwinh0"		"dac"					35
+30				"gbsynwinh1"		"dac"					34
+31				"gbsynwinh2"		"dac"					33
+32				"gbsynwinh3"		"dac"					32
+33				"gbsynwinh4"		"dac"					32
+34				"folbias"		"dac"					29
+35				"gbAEpd"		"dac"					36
+36				"b0"		"dac"					52
+37				"b1"		"dac"					51
+38				"b2"		"dac"					50
+39				"b3"		"dac"					49
+40				"b4"		"dac"					48
+41				"currentconv"		"dac"					47
+42				"scanbias"		"bg"					14
+43				"bsynwex0"		"bg"					25
+44				"bsynwex1"		"bg"					28
+45				"bsynwex2"		"bg"					31
+46				"bsynwex3"		"bg"					32
+47				"bsynwex4"		"bg"					37
+48				"inject"		"bg"					9

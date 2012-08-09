@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<paramtrans version="0.1" chipclass="IFSLWTA">
+    <field id="constants">
+        <parameter id="Cap" value="1.0569e-12"/>
+        <parameter id="CapsynLoc"  value="4.3525e-13" />
+        <parameter id="v_init"     value="0"/>
+        <parameter id="v_reset"    value="0"/>
+        <parameter id="Vdd"        value="3.3"/>
+        <parameter id="llVdd"      value="3.2"/>
+        <parameter id="gnd"        value="0"/>
+        <parameter id="Kappap"     value="0.6904"/>
+        <parameter id="Kappan"     value="0.757"/>
+        <parameter id="Ut"         value="0.0261"/>
+        <parameter id="I0p"        value="3.1226e-16"/>
+        <parameter id="I0n"        value="5.5122e-14"/>
+        <parameter id="RLatTau"    value="1e-14"/>
+        <parameter id="CapsynAER"  value="3.2578e-13"/>
+        <parameter id="CapsynLRN"  value="3.2435e-13"/>
+        <parameter id="CapsynExcI" value="5.3399e-13"/>
+        <parameter id="CapsynInhE" value="4.0281e-12"/>
+        <parameter id="RTau"       value="1.0440"/>
+        <parameter id="RLrnTau "   value="1.3571"/>
+        <parameter id="RInhETau"   value="3.8889"/>
+        <parameter id="RInhEW"	   value="5.55/1.8"/>
+        <parameter id="RInhESyn"   value="2.15/1.2"/>
+        <parameter id="RLatW"      value="1.6154"/>
+        <parameter id="RLat2W"     value="1.6154"/>
+        <parameter id="RLat3W"     value="1.6154"/>
+        <parameter id="RLatSyn"    value="1.9167"/>
+        <parameter id="RLat2Syn"   value="1.9600"/>
+        <parameter id="RLat3Syn"   value="0.98"/>
+        <parameter id="RLatTau"    value="3.1304"/>
+        <parameter id="RSyn"       value="2.2045"/>
+        <parameter id="Rw"         value="1.2432"/>
+        <parameter id="Rinj"       value="0.2199"/>
+        <parameter id="Rlk"        value="2.3500"/>
+        <parameter id="RLatTau"    value="3.1304"/>
+        <parameter id="RLat2Tau"   value="2.9796"/>
+        <parameter id="RLat3Tau"   value="2.9796"/>
+        <parameter id="RLrnTau"    value="1.3571"/>
+        <parameter id="RExcIW"     value="1.5862"/>
+        <parameter id="RExcISyn"   value="0.5319"/>
+        <parameter id="RExcITau"   value="3.0851"/>
+    </field>
+        
+    <field id="calibration"> 
+        <parameter id= "nsynloclat1_fit"        value="1.3778e-20"/>
+        <parameter id= "nsynlocself_fit"        value="1.3778e-18"/>
+        <parameter id= "nsynloclat2_fit"        value="2.7387e-20"/>
+        <parameter id= "nsynloclat3_fit"        value="1.9997e-20"/>
+        <parameter id= "nsynstdw0_fit"          value="2.1700e-20"/>
+        <parameter id= "nsynstdw1_fit"          value="4.2001e-20"/>
+        <parameter id= "nsynstdw0_fit2"         value="0.8918"/>
+        <parameter id= "nsynstdw1_fit2"         value="0.8398"/>
+        <parameter id= "nsynexcinh_fit"         value="4.9190e-20"/>
+        <parameter id= "psynlocinhth_fit"       value="1.0571e-14"/>
+        <parameter id= "psynaerinhth_fit1"       value="0.7"/>
+    </field> 
+
+    <field id="defaultparameters"> 
+        <parameter id="tau_synloc_E"       value="100.0"/>
+        <parameter id="tau_syn_E"          value="100.0"/>
+        <parameter id="tau_synloc_IE"      value="100.0"/>
+        <parameter id="tau_syn_I"          value="100.0"/>
+        <parameter id="w_synloc_S"         value="0.0"/>
+        <parameter id="w_synloc_E"         value="0.0"/>
+        <parameter id="w_synloc_EE"        value="0.0"/>
+        <parameter id="w_syn_E1"           value="0.0"/>
+        <parameter id="w_syn_I"           value="0.0"/>
+        <parameter id="w_syn_E2"           value="0.0"/>
+        <parameter id="w_synloc_IE"        value="0.0"/>
+        <parameter id="w_synloc_EI"        value="0.0"/>
+        <parameter id="i_inj"              value="0.0"/>
+        <parameter id="i_injinh1"          value="0.0"/>
+        <parameter id="i_injinh2"          value="0.0"/>
+        <parameter id="i_injinh3"          value="0.0"/>
+        <parameter id="i_injinh4"          value="0.0"/>
+        <parameter id="i_leak"             value="0.0"/>
+        <parameter id="v_thresh"           value="1100.0"/>
+    </field> 
+        
+    <field id="translationnames">
+        <name standard="tau_synloc_E"        native="psynloctau"/>
+        <name standard="tau_syn_E"           native="psynstdtau"/>
+        <name standard="tau_synloc_IE"       native="nsynlocinhtau"/>
+        <name standard="tau_syn_I"           native="nsynaerinhtau"/>
+        <name standard="w_synloc_S"          native="nsynlocself"/>
+        <name standard="w_synloc_E"          native="nsynloclat1"/>
+        <name standard="w_synloc_EE"         native="nsynloclat2"/>
+        <name standard="w_syn_E1"            native="nsynstdw0"/>
+        <name standard="w_syn_E2"            native="nsynstdw1"/>
+        <name standard="w_syn_I"            native="psynlocinhth"/>
+        <name standard="w_synloc_IE"         native="psynlocinhth"/>
+        <name standard="w_synloc_EI"         native="nsynexcinh"/>
+        <name standard="i_inj"               native="pinj"/>
+        <name standard="i_injinh1"           native="pinj1"/>
+        <name standard="i_injinh2"           native="pinj2"/>
+        <name standard="i_injinh3"           native="pinj3"/>
+        <name standard="i_injinh4"           native="pinj4"/>
+        <name standard="i_leak"              native="nlk"/>
+        <name standard="v_thresh"            native="nsf"/>
+    </field>
+        
+    <field id="translationfunctions">
+        <function standardname="tau_synloc_E"   body="CapsynLoc*Ut/(Kappap*I0p*RLatTau*exp(Kappap*(Vdd-psynloctau)/Ut))-tau_synloc_E*1e-3"/>
+        <function standardname="tau_syn_E"      body="CapsynAER*Ut/(Kappap*I0p*RTau*exp(Kappap*(Vdd-psynstdtau)/Ut))-tau_syn_E*1e-3"/>
+        <function standardname="tau_synloc_IE"  body="CapsynInhE*Ut/(Kappan*I0n*RInhETau*exp(Kappan*(nsynlocinhtau)/Ut))-tau_synloc_IE*1e-3"/>
+        <function standardname="tau_syn_I"      body="CapsynInhE*Ut/(Kappan*I0n*RInhETau*exp(Kappan*(nsynaerinhtau)/Ut))-tau_syn_I*1e-3"/>
+        <function standardname="w_synloc_S"     body="nsynlocself_fit*(RLatW*RLatSyn/RLatTau)*exp(Kappan*nsynlocself/Ut+Kappap*(-nsynlocth+psynloctau)/Ut)-w_synloc_S*1e-9"/>
+        <function standardname="w_synloc_E"     body="nsynloclat1_fit*(RLatW*RLatSyn/RLatTau)*exp(Kappan*nsynloclat1/Ut+Kappap*(-nsynlocth+psynloctau)/Ut)-w_synloc_E *1e-9"/>
+        <function standardname="w_synloc_EE"    body="nsynloclat2_fit*(RLat2W*RLat2Syn/RLat2Tau+RLat3W*RLat3Syn/RLat3Tau)*exp(Kappan*nsynloclat2/Ut+Kappap*(-nsynlocth+psynloctau)/Ut)-w_synloc_EE*1e-9"/>
+        <function standardname="w_syn_E1"       body="nsynstdw0_fit*(Rw*RSyn/RTau)*exp(Kappan*(nsynstdw0_fit2*nsynstdw0)/Ut+Kappap*((psynstdtau-Vdd)+(llVdd-nsynstdth))/Ut)-w_syn_E1*1e-9"/>
+        <function standardname="w_syn_E2"       body="nsynstdw1_fit*(Rw*RSyn/RTau)*exp(Kappan*(nsynstdw1_fit2*nsynstdw1)/Ut+Kappap*((psynstdtau-Vdd)+(llVdd-nsynstdth))/Ut)-w_syn_E2*1e-9"/>
+        <function standardname="w_synloc_IE"    body="psynlocinhth_fit*(RInhEW*RInhESyn/RInhETau)*exp(Kappan*(psynlocinhth-nsynlocinhtau)/Ut)-w_synloc_IE*1e-9"/>
+        <function standardname="w_syn_I"    body="psynaerinhth_fit1*(RInhEW*RInhESyn/RInhETau)*exp(Kappan*(psynlocinhth-nsynaerinhtau)/Ut)-w_syn_I*1e-9"/>
+        <function standardname="w_synloc_EI"    body="nsynexcinh_fit*(RExcIW*RExcISyn/RExcITau)*exp(Kappan*nsynexcinh/Ut+Kappap*(-nsynlocth+psynloctau)/Ut)-w_synloc_EI*1e-9"/>
+        <function standardname="i_inj"          body="I0p*Rinj*exp(Kappap*(Vdd-pinj)/Ut)-i_inj*1e-9"/>
+        <function standardname="i_injinh1"      body="I0p*Rinj*exp(Kappap*(Vdd-pinj1)/Ut)-i_injinh1*1e-9"/>
+        <function standardname="i_injinh2"      body="I0p*Rinj*exp(Kappap*(Vdd-pinj2)/Ut)-i_injinh2*1e-9"/>
+        <function standardname="i_injinh3"      body="I0p*Rinj*exp(Kappap*(Vdd-pinj3)/Ut)-i_injinh3*1e-9"/>
+        <function standardname="i_injinh4"      body="I0p*Rinj*exp(Kappap*(Vdd-pinj4)/Ut)-i_injinh4*1e-9"/>
+        <function standardname="v_thresh"       body="nsf+0.35-v_thresh*1e-3"/>
+        <function standardname="i_leak"         body="I0n*Rlk*exp(Kappan*nlk/Ut)+0.8*Cap-i_leak*1e-9"/>
+    </field>
+</paramtrans>

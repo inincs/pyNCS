@@ -46,28 +46,29 @@ def xml_parse_parameter(node):
     return d
 
 
-def parse_and_validate(filename, dtd):
+def parse_and_validate(filename, dtd, validate = True):
     if 'http://' in filename:
         doc = etree.parse(urlopen(filename))
     else:
         doc = etree.parse(filename)
-
-    try:
-        parser = etree.DTD(urlopen(dtd, timeout=URL_TIMEOUT))
-        parser.validate(doc)
-        if len(parser.error_log.filter_from_errors()) > 0:
-            for e in parser.error_log.filter_from_errors():
-                print e
-            raise Exception('setupfile XML is not well formed, corrent the errors given above first')
-        elif len(parser.error_log) > 0:
-            for e in parser.error_log.filter_from_errors():
-                print e
-    except URLError, e:
-        warnings.warn('Could not access online setup.dtd (timeout {0}s), not validating'.format(URL_TIMEOUT))
-    except HTTPError, e:
-        warnings.warn('Could not access online setup.dtd (timeout {0}s), not validating'.format(URL_TIMEOUT))
-    except Exception:
-        warnings.warn('Unknown exception occured while validating setupfile (probably timed out)')
+    
+    if validate:
+        try:
+            parser = etree.DTD(urlopen(dtd, timeout=URL_TIMEOUT))
+            parser.validate(doc)
+            if len(parser.error_log.filter_from_errors()) > 0:
+                for e in parser.error_log.filter_from_errors():
+                    print e
+                raise Exception('setupfile XML is not well formed, corrent the errors given above first')
+            elif len(parser.error_log) > 0:
+                for e in parser.error_log.filter_from_errors():
+                    print e
+        except URLError, e:
+            warnings.warn('Could not access online setup.dtd (timeout {0}s), not validating'.format(URL_TIMEOUT))
+        except HTTPError, e:
+            warnings.warn('Could not access online setup.dtd (timeout {0}s), not validating'.format(URL_TIMEOUT))
+        except Exception:
+            warnings.warn('Unknown exception occured while validating setupfile (probably timed out)')
 
     return doc
 
@@ -90,7 +91,8 @@ class NeuroSetup(object):
             map_kwargs={},
             conf_kwargs={},
             prefix='./',
-            offline=False):
+            offline=False,
+            validate = True):
         '''
         Inputs:
         *setuptype*: Defines the channels and the slots in the setup. See NCS documentation.
@@ -100,6 +102,7 @@ class NeuroSetup(object):
         *conf_kwargs*: keyword arguments for communicator module. This gets merged with arguments in setup.xml
         *prefix*: path prefix to setupfiles and chipfiles (default: current directory)
         *offline*: if True, the setup will not communicate, map or configure.
+        *validate*: if True, the constructor will attempt to validate the setup and setuptype xml files.
         '''
         #Initialize and save API
         self.com_kwargs = com_kwargs
@@ -112,18 +115,22 @@ class NeuroSetup(object):
         self.chips = {}
         self.chipslots = dict()
         self.slots = {}
-        self.load_setuptype(self.setuptype, prefix=prefix)
-        self.load(self.setupfile, prefix=prefix, offline=offline)
         self.offline = offline
+        self.validate = validate
+        self.load_setuptype(self.setuptype, prefix = prefix, validate = validate)
+        self.load(self.setupfile, prefix = prefix, offline = offline, validate = validate )
         self.aerDummyIn = self.aerDummy()
         self.aerDummyOut = self.aerDummy()
         self.update()
         self.apply()
         self.monitors = Monitors()
 
-    def load_setuptype(self, filename, prefix=''):
+        if self.offline:
+            warnings.warn('Running in Offline mode')
 
-        nsetup = parse_and_validate(filename, dtd=URL_SETUPTYPEDTD)
+    def load_setuptype(self, filename, prefix='', validate = True):
+
+        nsetup = parse_and_validate(filename, dtd=URL_SETUPTYPEDTD, validate = validate)
 
         for n in nsetup.iterfind('channelAddressing'):
 #            if not n.getAttribute('name') == 'default':
@@ -153,7 +160,7 @@ class NeuroSetup(object):
             self.aerSlot[id]['seqOut'] = get_addrspec(nslot.
                 find('aerSeq'), 'out')
 
-    def load(self, filename, prefix='', offline=False):
+    def load(self, filename, prefix='', offline=False, validate = True):
         '''
         parses an XML file created by .dumpXML()
 
@@ -162,7 +169,7 @@ class NeuroSetup(object):
         *prefix*: path to be prepended to chipfile names
         *offline*: if True, the chips will not be configured ("pretend" mode).
         '''
-        nsetup = parse_and_validate(filename, dtd=URL_SETUPDTD)
+        nsetup = parse_and_validate(filename, dtd=URL_SETUPDTD, validate = validate)
 
         #parse defaultchip (should be unique)
         self.defaultchipfile = str(
@@ -303,10 +310,8 @@ class NeuroSetup(object):
                 except AttributeError, e:
                     pass
 
-        self.seq = pyST.STChannelAddressing(
-            nChannelBits=self.seqBits, stasList=seqList)
-        self.mon = pyST.STChannelAddressing(
-            nChannelBits=self.monBits, stasList=monList)
+        self.seq = pyST.STChannelAddressing(channelBits=self.seqBits, stasList=seqList)
+        self.mon = pyST.STChannelAddressing(channelBits=self.monBits, stasList=monList)
 
     def apply(self):
         ''' sets default monitor/sequencer to this setup '''
@@ -342,8 +347,8 @@ class NeuroSetup(object):
         self.chips = {}
         self.chipslots = {}
         self.slots = {}
-        self.load_setuptype(self.setuptype, prefix=self.prefix)
-        self.load(self.setupfile, prefix=self.prefix, offline=True)
+        self.load_setuptype(self.setuptype, prefix=self.prefix, validate = self.validate)
+        self.load(self.setupfile, prefix=self.prefix, offline = self.offline, validate = self.validate)
         self.aerDummyIn = self.aerDummy()
         self.aerDummyOut = self.aerDummy()
         self.update()
@@ -397,5 +402,7 @@ class NeuroSetup(object):
         Returns a Stas.RawOutput object and populates monitors. The latter is the preferred way of reading data out.
         '''
         stim_evs = self._pre_process(stim)
-        evs = self.communicator.run(stim_evs, **kwargs)
+        evs = self.communicator.run_rec(stim_evs, **kwargs)
         return self._post_process(evs, self.monitors.channels)
+
+
