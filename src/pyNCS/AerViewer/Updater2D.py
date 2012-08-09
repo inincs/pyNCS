@@ -39,7 +39,7 @@ import wx
 
 #Imports for AER monitoring
 import pyAex
-from pyST import *
+from pyNCS.pyST import *
 import pyNCS
 
 
