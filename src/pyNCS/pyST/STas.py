@@ -145,10 +145,9 @@ class events(object):
         self.__atype = __atype
         self.__dtype = __dtype
 
-        if hasattr(ev, 'get_tm') and hasattr(ev, 'get_ad'):
-            ev = np.array([ev.data['ad'], ev.data['tm']])
-
-        if ev != None:
+        if isinstance(ev, events):
+            self.__data = ev.__data.copy()
+        elif ev != None:
             ev = np.array(ev)
             if ev.shape[1] == self.NF:
                 self.set_data(ev[:, 0], ev[:, 1])
@@ -156,7 +155,6 @@ class events(object):
                 self.set_data(ev[0, :], ev[1, :])
             else:
                 raise TypeError
-
         else:
             self.__data = np.zeros([0], self.dtype)
 
@@ -243,7 +241,7 @@ class events(object):
     #    return self.set_tm(value)
 
     def set_data(self, ad, tm):
-        assert len(ad) == len(tm), "Addresses and Timestamps lengths are incompatible %d %d" % (len(ad), len(tm))
+        assert len(ad) == len(tm), "addresses and timestamps lengths are incompatible %d %d" % (len(ad), len(tm))
         self.__data = np.zeros(len(ad), self.dtype)
         self.__data['ad'] = ad.astype(self.dtype['ad'])
         self.__data['tm'] = tm.astype(self.dtype['tm'])
@@ -294,7 +292,7 @@ class events(object):
         t_start = self.get_tm().min()
         self.set_tm(self.get_tm() - t_start + t0)
 
-    def get_adISI(self):
+    def get_adisi(self):
         if self.isISI:
             return events(ev=self)
 
@@ -308,7 +306,7 @@ class events(object):
         if self.isISI:
             pass
         else:
-            self.__data = self.get_adISI().__data
+            self.__data = self.get_adisi().__data
 
     def set_abs_tm(self):
         if self.isISI:
@@ -402,11 +400,14 @@ class events(object):
 
 
 class channelEvents(dict):
+    '''
+    TODO
+    '''
     def __init__(self, channel_events=None, atype='Physical'):
         assert isinstance(atype, str)
         self.__atype = atype.lower()[0]
 
-        if isinstance(channel_events, dict) or isinstance(channel_events, channelEvents):
+        if isinstance(channel_events, dict):
             for k, v in channel_events.iteritems():
                 self.add_ch(k, events(v, self.atype))
         elif channel_events != None:
@@ -575,14 +576,14 @@ class channelAddressing:
 
     *nChannelBits*: Positions of channel bits in the hardware addresses. Default nChannelBits=[15,16]
 
-    *stasList*: list of address specification objects, of the same length as len(nChannelBits)**2
+    *stasList*: list of address specification objects, of the same length as len(channelBits)**2
 
     See also:
     `addrSpec <#pyST.STas.addrSpec>`_
 
     """
 
-    def __init__(self, stasList, nChannelBits=[15, 16]):
+    def __init__(self, stasList, channelBits=[15, 16]):
         """
         Constructor of the channelAddressing object
 
@@ -590,7 +591,8 @@ class channelAddressing:
             SpikeTrain
         """
         self.nBitsTotal = np.array([0] * len(stasList), 'uint16')
-        self.nChannels = 2 ** len(nChannelBits)
+        self.nChannelBits = len(channelBits)
+        self.nChannels = 2 ** len(channelBits)
         self.channels = range(self.nChannels)
 
         if len(stasList) <= self.nChannels:
@@ -601,7 +603,7 @@ class channelAddressing:
         else:
             raise RuntimeError("len(stasList)>2**nBitChannel !")
 
-        self.nBitsTotal = min(nChannelBits) - 1
+        self.nBitsTotal = min(channelBits) - 1
         self.stasList = stasList
 
     def __getitem__(self, channel):
@@ -620,11 +622,30 @@ class channelAddressing:
             repr_str += "Channel " + str(i) + ": " + self[i].__repr__() + "\n"
         return repr_str
 
+    def __iter__(self):
+        for addr_spec in self.stasList:
+            yield addr_spec
+
+    def reprAddressSpecification(self):
+        '''
+        String representation of the channel address specification
+        '''
+        base_label  = '|--Channel--|----Chip-----|\n'
+        base_string = '|--{0}bits----|----{1}bits---|\n\n'.format(self.nChannelBits,self.nBitsTotal)
+        chann_strings = []
+        for n, addr_spec in enumerate(self):
+            chann_strings.append('Channel {0}:\n'.format(n))
+            chann_strings.append(addr_spec.repr_addr_spec(self.nBitsTotal))
+            chann_strings.append('\n')
+        repr_addr_spec = base_label+base_string+''.join(chann_strings)
+        return repr_addr_spec
+
+
     def getValue(self, channel):
         """
         returns the channel mask
 
-        channel: int between 0 and len(nChannelBits)**2
+        channel: int between 0 and len(channelBits)**2
         """
 
         return np.uint32(channel << self.nBitsTotal)
@@ -1508,6 +1529,63 @@ class layoutFieldEncoder:  # private
 #
 #
 
+def generateST(stas, events, normalize=True):
+    """
+    Extracts events from eventsChannel, using the address specification specified for the given channels, returns a list of SpikeList
+    Inputs:
+    *stas*: STas.addrSpec object
+    *events*: STas.events object
+    *normalize*: if True (default), the timestamp of the first event is set to zeros and all the timestamps of the subsequent events are shifted accordingly.
+    """
+    assert events.atype == 'l', 'channelEvents must be of type logical'
+
+    spike_list = SpikeList([], [])
+    t_start = 0
+    t_stop = 0
+
+    if normalize:
+        events.normalize_tm()
+
+    if events.get_nev() > 0:
+        t_start = events.get_tm().min() * 1e-3
+        t_stop = events.get_tm().max() * 1e-3
+
+    if t_start == t_stop:
+        t_stop += 1.
+
+    events.set_tm(events.get_tm() * 1e-3)
+    spike_list = SpikeList(
+            spikes=events.get_adtmev(),
+            id_list=stas.allpos,
+            t_start=t_start,
+            t_stop=t_stop
+            )
+
+    return spike_list
+
+TYPE_TO_NAME_DICT = { -1 : 'synapse dimension', 0 : 'other dimension', 1 : 'neuron dimension'}
+
+def repr_addr_spec(addr_spec, nBitsTotal):
+    '''
+    Prints the address specification in a human readable format
+    *Input*: addr_spec, a AddrSpec object
+    '''
+    base_string = '| ' + ''.join(['{'+str(i)+'} ' for i in range(nBitsTotal)[::-1]]) +' |'
+    tmp_str = [ 'I ']*nBitsTotal
+    for k,a in addr_spec.addrSpec.iteritems():
+        a_rev = a[::-1] #reverse
+        for i in a_rev:
+            tmp_str[i] = '{0}{1}'.format(k,str(i))
+    p2a_map = base_string.format(*tmp_str)
+    base_string = ['']
+    tmp_str = '{0} {1} = {2} \n'
+    for n, a in enumerate(addr_spec.addrPinConf):
+        field = addr_spec[n]
+        base_string.append( tmp_str.format( TYPE_TO_NAME_DICT[field['type']], field['id'], field['f']) )
+    a2n_map = ''.join(base_string) + 'I = ignore \n'
+    return p2a_map + ' \n' + a2n_map + ' \n'
+
+
 
 class addrSpec:
     """
@@ -1585,6 +1663,7 @@ class addrSpec:
         self.__class__.addrPhysicalExtract = addrPhysicalExtract
         self.__class__.addrPhysicalLogical = addrPhysicalLogical
         self.__class__.addrLogicalPhysical = addrLogicalPhysical
+        self.__class__.repr_addr_spec = repr_addr_spec
         #Update all parameters
         self.update()
 
@@ -1755,6 +1834,9 @@ class addrSpec:
         return
 
 
+#################################################################
+#The following functions are used in AddrSpec
+#
 def _process_addrConf(addrConf):
     #Find number of required bits from range data
     for hrf in addrConf:
@@ -1927,6 +2009,7 @@ def load_stas_from_csv(CSVfile):
             d = {}
             d['id'] = x[1].strip()
             d['range'] = eval(x[3])
+            d['range_str'] = x[3]
             d['type'] = eval(x[5])
             d['f'] = x[7]
             addrConf.append(d)
@@ -1953,36 +2036,3 @@ def load_stas_from_csv(CSVfile):
     return aerIn, aerOut
 
 
-def generateST(stas, events, normalize=True):
-    """
-    Extracts events from eventsChannel, using the address specification specified for the given channels, returns a list of SpikeList
-    Inputs:
-    *stas*: STas.addrSpec object
-    *events*: STas.events object
-    *normalize*: if True (default), the timestamp of the first event is set to zeros and all the timestamps of the subsequent events are shifted accordingly.
-    """
-    assert events.atype == 'l', 'channelEvents must be of type logical'
-
-    spike_list = SpikeList([], [])
-    t_start = 0
-    t_stop = 0
-
-    if normalize:
-        events.normalize_tm()
-
-    if events.get_nev() > 0:
-        t_start = events.get_tm().min() * 1e-3
-        t_stop = events.get_tm().max() * 1e-3
-
-    if t_start == t_stop:
-        t_stop += 1.
-
-    events.set_tm(events.get_tm() * 1e-3)
-    spike_list = SpikeList(
-            spikes=events.get_adtmev(),
-            id_list=stas.allpos,
-            t_start=t_start,
-            t_stop=t_stop
-            )
-
-    return spike_list
