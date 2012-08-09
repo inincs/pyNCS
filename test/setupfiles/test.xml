@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<setup>
+    <chip chipfile="chipfiles/if2dwta.csv" id="if2dwta" slot="1">
+        <configurator module="pyNCS.ConfAPI">
+        </configurator>
+    </chip>
+    <chip chipfile="chipfiles/ifslwta.csv" id="ifslwta" slot="2">
+        <configurator module="pyNCS.ConfAPI">
+        </configurator>
+    </chip>
+    <virtualchip chipfile="chipfiles/linear.csv" id="seq" slot="0" />
+    <defaultchip chipfile="chipfiles/linear.csv" id="default"/>
+    <communicator module="pyNCS.ComAPI">
+    </communicator>
+    <mapper module='pyNCS.ConfAPI'>
+    </mapper>
+</setup>
