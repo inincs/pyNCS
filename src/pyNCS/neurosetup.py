@@ -402,5 +402,7 @@ class NeuroSetup(object):
         Returns a Stas.RawOutput object and populates monitors. The latter is the preferred way of reading data out.
         '''
         stim_evs = self._pre_process(stim)
-        evs = self.communicator.run(stim_evs, **kwargs)
+        evs = self.communicator.run_rec(stim_evs, **kwargs)
         return self._post_process(evs, self.monitors.channels)
+
+
