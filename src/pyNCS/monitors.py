@@ -6,17 +6,6 @@
 # Copyright : University of Zurich, Giacomo Indiveri, Emre Neftci, Sadique Sheik, Fabio Stefanini
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
-#!/usr/bin/python2.6
-#-------------------------------------------------------
-# Author : emre
-#
-# File Name : /media/local/ini/code/python/pyNCS/src/pyNCS/monitors.py
-#
-# Creation Date : 09:51:02 23-03-2011
-# Last Modified : Wed 23 Mar 2011 09:51:02 AM CET
-#
-#-------------------------------------------------------
-
 
 import numpy as np
 import pylab
@@ -69,6 +58,7 @@ class Monitors(object):
         """
         Populates SpikeMonitors in the list of monitors
         chstlist is the dictionary returned by NeuroSetup.stimulate.
+        (this is also the object that channelAddressing.rawoutput_from_chevents returns (a RawOutput object)
 
         """
         for mon, st in self.iterchst(chstlist):
