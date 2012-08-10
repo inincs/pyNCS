@@ -128,14 +128,14 @@ class Monitors(object):
 
     def raster_plot(self, *args, **kwargs):
         """
-        Raster Plotting tool which can handle plotting several SpikeLists/ SpikeMonitors/ SpikeTrainMonitors
+        Raster Plotting tool which can handle plotting several SpikeLists/ SpikeMonitors/ monitorSpikeLists
         """
         return RasterPlot(self, *args, **kwargs)
 
     #def composite_plot(self,*args,**kwargs):
     #    """
     # Raster Plotting tool which can handle plotting several SpikeLists/
-    # SpikeMonitors/ SpikeTrainMonitors
+    # SpikeMonitors/ monitorSpikeLists
     #    """
     #    h,ha=self.__create_multifigure()
     #    kwargs['display']=ha
@@ -363,7 +363,7 @@ class SpikeMonitor(object):
         self.addr_group = addr_group
 
         self.plot_args = plot_args
-        self._sl = SpikeTrainMonitor(self.addr_group.channel,
+        self._sl = monitorSpikeList(self.addr_group.channel,
              spikes=[], id_list=np.sort(addr_group.laddr))
         self._populated = False
         self.name = self.addr_group.name
@@ -458,14 +458,14 @@ class SpikeMonitor(object):
 
     def toSpikeListMonitor(self, st):
         """
-        Transform SpikeList *st* into a SpikeTrainMonitor object
+        Transform SpikeList *st* into a monitorSpikeList object
         """
         adtm = np.fliplr(st.raw_data())
         if adtm.shape[0] == 0:
             print "Empty SpikeTrain"
-            return SpikeTrainMonitor(channel=None, spikes=[], id_list=[])
+            return monitorSpikeList(channel=None, spikes=[], id_list=[])
         t_start, t_stop = min(adtm[:, 1]), max(adtm[:, 1])
-        return SpikeTrainMonitor(self.addr_group.channel, spikes=adtm, id_list=np.sort(self.addr_group.laddr), t_start=t_start, t_stop=t_stop)
+        return monitorSpikeList(self.addr_group.channel, spikes=adtm, id_list=np.sort(self.addr_group.laddr), t_start=t_start, t_stop=t_stop)
 
     def mean_rate(self, t_start=None, t_stop=None):
         return self.sl.mean_rate(t_start=t_start, t_stop=t_stop)
@@ -483,13 +483,13 @@ class SpikeMonitor(object):
         return m
 
 
-class SpikeTrainMonitor(SpikeList):
+class monitorSpikeList(SpikeList):
     """
     A wrapper for the NeuroTools SpikeList
     """
     def __init__(self, channel, *args, **kwargs):
         self.channel = channel
-        super(SpikeTrainMonitor, self).__init__(*args, **kwargs)
+        super(monitorSpikeList, self).__init__(*args, **kwargs)
 
     def id_list_map(self, mapping):
         '''
@@ -497,7 +497,7 @@ class SpikeTrainMonitor(SpikeList):
         SL=original spike list
         mapping=dictionary containing address mapping
         '''
-        mapped_SL = SpikeTrainMonitor(self.channel, spikes=[], id_list=[])
+        mapped_SL = monitorSpikeList(self.channel, spikes=[], id_list=[])
         addr_SL = self.id_list()
         for k, v in mapping.iteritems():
             if k in addr_SL:
