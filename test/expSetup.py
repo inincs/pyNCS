@@ -17,7 +17,9 @@ et=pyNCS.et
 # set dirnames
 setupdir = 'setupfiles/'
 
-nsetup = NeuroSetup(
-        setupdir+'test_setuptype.xml',
-        setupdir+'test.xml',
-        offline=False)
+def build_setup():
+    nsetup = NeuroSetup(
+            setupdir+'test_setuptype.xml',
+            setupdir+'test.xml',
+            offline=False)
+    return nsetup
