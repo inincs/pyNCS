@@ -1,4 +1,5 @@
 *.py[co]
+.*.sw[a-z]
 
 # Packages
 *.egg
