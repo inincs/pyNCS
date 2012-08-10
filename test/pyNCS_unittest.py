@@ -22,12 +22,21 @@ def create_default_population(setup,chipname,N,*args,**kwargs):
     test_pops.populate_by_number(setup, 'seq', 'excitatory', N, *args, **kwargs)
     return test_pops
 
+def evs_loopback(nsetup, sequencer):
+    '''
+    This function takes a sequencer object (e.g. returned by Group.spiketrains_poisson() ) and creates a RawOutput object out of it.
+    This is usefull for generating synthetic data and treating is as neuromorphic system ouput.
+    '''
+    evs = nsetup.mon.exportAER(sequencer, isi=False)
+    ch_evs = nsetup.mon.extract(evs)
+    return nsetup.mon.rawoutput_from_chevents(ch_evs)
+
 
 class TestSequenceFunctions(unittest.TestCase):
 
     def setUp(self):
         import expSetup
-        self.nsetup = expSetup.nsetup
+        self.nsetup = expSetup.build_setup()
 
     def testBuildLinearPopulation(self):
         N=10
@@ -113,13 +122,27 @@ class TestSequenceFunctions(unittest.TestCase):
     def testExperimentTools(self):
         import pyNCS.experimentTools as et
         test_pops=create_default_population(self.nsetup,'seq', 5)
-        stmon1=pyNCS.monitors.SpikeMonitor(test_pops.soma)
-        stmon2=pyNCS.monitors.SpikeMonitor(test_pops.soma)
-        self.nsetup.monitors.import_monitors([stmon1,stmon2])
         input_stim=test_pops.soma.spiketrains_poisson(100)
         self.nsetup.run(input_stim)
         et.mksavedir(pre='/tmp/test_et/')
         et.save_rec_files(self.nsetup)
+
+    def testMonitorsEmptyPlot(self):
+        #github inincs/pyNCS issue#3
+        test_pops1=create_default_population(self.nsetup,'seq', N=5)
+        test_pops2=create_default_population(self.nsetup,'seq', N=5, offset=5)
+        stmon1=pyNCS.monitors.SpikeMonitor(test_pops1.soma)
+        stmon2=pyNCS.monitors.SpikeMonitor(test_pops2.soma)
+        self.nsetup.monitors.import_monitors([stmon1,stmon2])
+        mon = test_pops1.soma.spiketrains_poisson(rate = 50)
+        #Monitor loopback
+        rawoutput = evs_loopback(self.nsetup, mon)
+        self.nsetup.monitors.populate_monitors(rawoutput)
+        pyNCS.monitors.RasterPlot(self.nsetup.monitors.monitors)
+        #import pylab
+        #pylab.show()
+
+
 
 
     def tearDown(self):
