@@ -808,14 +808,12 @@ class channelAddressing:
 
     def importAER(self, input=None, sep='\t', dt=1e-6, format='a', isi=False, *args, **kwargs):
         """
-
-        Internal function for extracting, translating events from a numpy array. Output is a channelEvents dict
-
-        *input*: if a string, will be treated as a filenam, if a numpy array, will be considered as events of dimension 2 x Nevents . By default addresses are on [:,0]
-
+        Function for extracting, translating events from a numpy array. Output is a channelEvents object.
+        
+        Inputs:
+        *input*: if a string, will be treated as a filename and passed to np.loadtxt, if a numpy array, will be considered as events of dimension 2 x number of events. By default, the addresses are on [:,0]
         *format*: either 't' or 'a' respectively meaning timestamps and addresses on the first column. ('a' by default)
-
-        *kwargs* are passed to np.loadtxt
+        *kwargs*: keyword arguments passed to np.loadtxt
         """
 
         if isinstance(input, str):
@@ -912,6 +910,7 @@ class channelAddressing:
 
         Inputs:
             *func* - a dictionary of functions with channels as keys to decode the addresses. If omitted, all the channels are considered
+            Outputs a RawOutput object
         """
         t_start = 0
         t_stop = 0
