@@ -267,11 +267,11 @@ This is called only the first time the physical address is decoded.</p>
 
 <dl class="class">
 <dt id="pyNCS.pyST.STas.channelAddressing">
-<em class="property">class </em><tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">channelAddressing</tt><big>(</big><em>stasList, nChannelBits=[15, 16]</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelAddressing" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">channelAddressing</tt><big>(</big><em>stasList, channelBits=[15, 16]</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelAddressing" title="Permalink to this definition">¶</a></dt>
 <dd><p>This class contains the information defining the Channel Addressing Scheme for a multichip setup, i.e. definition of which chips are found on which channel</p>
 <p>channelAddressing(stasList,nChannelBits)</p>
 <p><em>nChannelBits</em>: Positions of channel bits in the hardware addresses. Default nChannelBits=[15,16]</p>
-<p><em>stasList</em>: list of address specification objects, of the same length as len(nChannelBits)**2</p>
+<p><em>stasList</em>: list of address specification objects, of the same length as len(channelBits)**2</p>
 <p>See also:
 <a class="reference external" href="#pyST.STas.addrSpec">addrSpec</a></p>
 <dl class="method">
@@ -351,7 +351,7 @@ format specifies whether timestamps (format=&#8217;t&#8217;) or addresses (forma
 <dt id="pyNCS.pyST.STas.channelAddressing.getValue">
 <tt class="descname">getValue</tt><big>(</big><em>channel</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelAddressing.getValue" title="Permalink to this definition">¶</a></dt>
 <dd><p>returns the channel mask</p>
-<p>channel: int between 0 and len(nChannelBits)**2</p>
+<p>channel: int between 0 and len(channelBits)**2</p>
 </dd></dl>
 
 <dl class="method">
@@ -391,12 +391,19 @@ format specifies whether timestamps (format=&#8217;t&#8217;) or addresses (forma
 </dl>
 </dd></dl>
 
+<dl class="method">
+<dt id="pyNCS.pyST.STas.channelAddressing.reprAddressSpecification">
+<tt class="descname">reprAddressSpecification</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelAddressing.reprAddressSpecification" title="Permalink to this definition">¶</a></dt>
+<dd><p>String representation of the channel address specification</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
 <dt id="pyNCS.pyST.STas.channelEvents">
 <em class="property">class </em><tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">channelEvents</tt><big>(</big><em>channel_events=None</em>, <em>atype='Physical'</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelEvents" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="http://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">dict</span></tt></a></p>
+<p>TODO</p>
 <dl class="method">
 <dt id="pyNCS.pyST.STas.channelEvents.add_adtmch">
 <tt class="descname">add_adtmch</tt><big>(</big><em>channel</em>, <em>ad</em>, <em>tm</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.channelEvents.add_adtmch" title="Permalink to this definition">¶</a></dt>
@@ -540,8 +547,8 @@ map[src]=[target1,target2,...,targetn],</p>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="pyNCS.pyST.STas.events.get_adISI">
-<tt class="descname">get_adISI</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.events.get_adISI" title="Permalink to this definition">¶</a></dt>
+<dt id="pyNCS.pyST.STas.events.get_adisi">
+<tt class="descname">get_adisi</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.events.get_adisi" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -705,6 +712,13 @@ Inputs:
 <dd><p>This is a reduced version of pyNCS.Chip._readCSV, which reads only the addressing information
 Inputs:
 <em>CSVfile</em> - A csv file describing the chip (a &#8220;chipfile&#8221;).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.STas.repr_addr_spec">
+<tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">repr_addr_spec</tt><big>(</big><em>addr_spec</em>, <em>nBitsTotal</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.repr_addr_spec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints the address specification in a human readable format
+<em>Input</em>: addr_spec, a AddrSpec object</p>
 </dd></dl>
 
 <dl class="function">
