@@ -99,7 +99,7 @@ class AddrGroup(object):
         elif self.grouptype == 'out':
             return self.setup.mon
         elif self.grouptype == '':
-            warnings.warn('Grouptype has not been set')
+            warn('Grouptype has not been set')
             return None
         elif self.grouptype == '':
             raise ValueError('Grouptype should be None, "in" or "out", not {0}'.
@@ -283,17 +283,17 @@ class AddrGroup(object):
 
     def populate_rectangle(self, setup, chipid, grouptype, p1, p2, z=None, n=None):
         """
-        Populate with all the neurons within the rectangle's given cohordinates. If n is given,
+        Populate with all the neurons within the rectangle's given coordinates. If n is given,
         populate with the given number of neurons instead of all neurons in the rectangle.
-        z defines the 3d cohordinate, e.g. retina polarity or synapse in the 2d chip.
+        z defines the 3d coordinate, e.g. retina polarity or synapse in the 2d chip.
         """
 
         if n:
             shaperatio = (1. * p2[1] - p1[1]) * 1. / (1. * p2[0] - p1[0])
             nx, ny = int(
-                sqrt(1. * n / shaperatio)), int(sqrt(1. * shaperatio * n))
-            addrx = linspace(p1[0], p2[0], nx)
-            addry = linspace(p1[1], p2[1], ny)
+                np.sqrt(1. * n / shaperatio)), int(np.sqrt(1. * shaperatio * n))
+            addrx = np.linspace(p1[0], p2[0], nx)
+            addry = np.linspace(p1[1], p2[1], ny)
         else:
             addrx = np.arange(p1[0], p2[0] + 1)
             addry = np.arange(p1[1], p2[1] + 1)
@@ -312,6 +312,7 @@ class AddrGroup(object):
         Populate with the given number of neuron, doesn't matter the shape.
         Needs the number of dimensions
         WARNING: This should go in upper layer of abstraction.
+        TODO: check if this function is unused (Reason: contains reference errors)
         """
 
 #        if True:
@@ -335,7 +336,7 @@ class AddrGroup(object):
 #            print "Type not known, please use 'in' or 'out'"
 #            return
 
-        max = prod([len(i) for i in dims])
+        max = np.prod([len(i) for i in dims])
         if n > max:
             raise Exception(
                 'Don\'t have enough space on this chip (max is %d).' % max)
@@ -344,7 +345,7 @@ class AddrGroup(object):
         nd = 0  # number of needed dimensions
         div = 1
         while True:
-            div = int(n / prod(lendims[0:nd + 1]))
+            div = int(n / np.prod(lendims[0:nd + 1]))
             if div > 0:
                 print "Dimension %d is not enough" % nd
                 nd += 1
@@ -369,7 +370,7 @@ class AddrGroup(object):
         addresses_ret = np.column_stack(
             [return_line, np.repeat(filled_lines, n_return_line)])
 
-        addresses = np.concatenate([addressess, addresses_ret])
+        addresses = np.concatenate([addresses, addresses_ret])
 
         self.__populate__(setup, chipid, grouptype, addresses)
 
@@ -382,7 +383,7 @@ class AddrGroup(object):
                     print "Not yet implemented."
                     pass
         if len(vect) == 0:
-            return array([])
+            return np.array([])
         result = []
         for dim in vect:
             r_low = self.__unfold_dims__(vect[1:])

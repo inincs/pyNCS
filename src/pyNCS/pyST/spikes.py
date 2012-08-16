@@ -6,6 +6,7 @@
 # Copyright : University of Zurich, Giacomo Indiveri, Emre Neftci, Sadique Sheik, Fabio Stefanini
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
+import warnings
 """
 NeuroTools.signals.spikes
 ==================
@@ -816,9 +817,9 @@ class SpikeList(object):
     def __del__(self):
         pass
 
-    def filter_duplicates(sl):
+    def filter_duplicates(self):
         time_window = 0.01  # in ms
-        for st in sl:
+        for st in self:
             isi = st.isi()
             if not isinstance(st, emptySpikeTrain):
                 st.spike_times = numpy.delete(
@@ -1385,12 +1386,12 @@ class SpikeList(object):
         if not subplot or not HAVE_PYLAB:
             return rates
         else:
-            if newnum:
-                values, xaxis = numpy.histogram(
-                    rates, nbins, normed=True, new=newnum)
-                xaxis = xaxis[:-1]
-            else:
-                values, xaxis = numpy.histogram(rates, nbins, normed=True)
+#            if newnum:
+#                values, xaxis = numpy.histogram(
+#                    rates, nbins, normed=True, new=newnum)
+#                xaxis = xaxis[:-1]
+#            else:
+            values, xaxis = numpy.histogram(rates, nbins, normed=True)
             xlabel = "Average Firing Rate (Hz)"
             ylabel = "% of Neurons"
             set_labels(subplot, xlabel, ylabel)
@@ -1642,7 +1643,7 @@ class SpikeList(object):
             spk = spk.time_slice(t_start, t_stop)
 
         if not subplot or not HAVE_PYLAB:
-            print PYLAB_ERROR
+            warnings.warn('PYLAB_ERROR')
         else:
             ids, spike_times = spk.convert(format="[ids, times]")
 

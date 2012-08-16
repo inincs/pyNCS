@@ -9,7 +9,7 @@
 from __future__ import with_statement
 from xml.dom import minidom as md
 import pyST
-from pyST import addrSpec
+from pyST.STas import addrSpec
 from pyST.STas import _buildGrid
 import warnings
 from ConfAPI import Configurator
@@ -324,10 +324,10 @@ class Chip:
         for elm in doc:
             if elm.tag == 'addressSpecification':
                 if elm.get('type') == 'aerIn':
-                    self.aerIn = pyST.addrSpec(id=self.chipclass + 'In')
+                    self.aerIn = addrSpec(id=self.chipclass + 'In')
                     self.aerIn.__parseXML__(elm)
                 elif elm.get('type') == 'aerOut':
-                    self.aerOut = pyST.addrSpec(id=self.chipclass + 'Out')
+                    self.aerOut = addrSpec(id=self.chipclass + 'Out')
                     self.aerOut.__parseXML__(elm)
                 else:
                     pass

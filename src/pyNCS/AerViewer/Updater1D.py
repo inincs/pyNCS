@@ -44,7 +44,7 @@ import wx
 #Imports for AER monitoring
 import pyAex
 from pyNCS.pyST import *
-import pyNCS
+import pyNCS, pyNCS.pyST.STas
 
 
 #def make_custom_marker(size=2):
@@ -63,7 +63,7 @@ class UpdateEvents:
                 self.tDuration = 5.
                 self.gui.updater = self
                 self.stcs = getDefaultMonChannelAddress()
-                addrBuildHashTable(self.stcs[channel])
+                pyNCS.pyST.STas.addrBuildHashTable(self.stcs[channel])
                 self.eventsQueue = pyAex.netMonClient(MonChannelAddress=self.stcs,
                                                            channels=[
                                                                self.channel],
@@ -232,7 +232,7 @@ class ImagePlot(HasTraits):
                         self.updater.eventsQueue.stop()
                 except:
                         pass
-                addrBuildHashTable(self.updater.stcs[self.channel])
+                pyNCS.pyST.STas.addrBuildHashTable(self.updater.stcs[self.channel])
                 self.updater.eventsQueue = pyAex.netMonClient(MonChannelAddress=self.updater.stcs,
                                                            channels=[
                                                                self.channel],

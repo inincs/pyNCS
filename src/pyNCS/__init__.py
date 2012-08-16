@@ -17,6 +17,7 @@ from neurosetup import NeuroSetup
 from monitors import Monitors, SpikeMonitor
 import ComAPI
 import ConfAPI
+import pyST
 
 ######################  Utility functions
 from functools import wraps

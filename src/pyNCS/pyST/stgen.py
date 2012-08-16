@@ -29,12 +29,12 @@ gamma_hazard - Compute the hazard function for a gamma process with parameters a
 """
 
 
-from spikes import SpikeTrain, SpikeList
+from spikes import SpikeTrain
 from numpy import array, log
 import numpy
 
 
-def gamma_hazard_scipy(x, a, b, dt=1e-4):
+def gamma_hazard(x, a, b, dt=1e-4):
     """
     Compute the hazard function for a gamma process with parameters a,b
     where a and b are the parameters of the gamma PDF:
@@ -69,42 +69,42 @@ def gamma_hazard_scipy(x, a, b, dt=1e-4):
         return val
 
 
-def gamma_hazard(x, a, b, dt=1e-4):
-    """
-    Compute the hazard function for a gamma process with parameters a,b
-    where a and b are the parameters of the gamma PDF:
-    y(t) = x^(a-1) \exp(-x/b) / (\Gamma(a)*b^a)
-
-    Inputs:
-        x   - in units of seconds
-        a   - dimensionless
-        b   - in units of seconds
-
-    See also:
-        inh_gamma_generator
-
-    """
-
-    # Used by inh_gamma_generator
-
-    # Ideally, I would like to see an implementation which does not depend on
-    # RPy
-    # but the gamma_hazard_scipy above using scipy exhibits numerical problems,
-    # as it does not
-    # support directly returning the log.
-
-    from rpy import r
-
-    # scipy.special.gammaincc has numerical problems
-    #Hpre = -log(scipy.special.gammaincc(a,(x-dt)/b))
-    #Hpost = -log(scipy.special.gammaincc(a,(x+dt)/b))
-
-    # reverting to the good old r.pgamma
-    Hpre = -r.pgamma(x - dt, shape=a, scale=b, lower=False, log=True)
-    Hpost = -r.pgamma(x + dt, shape=a, scale=b, lower=False, log=True)
-    val = 0.5 * (Hpost - Hpre) / dt
-
-    return val
+#def gamma_hazard_rpy(x, a, b, dt=1e-4):
+#    """
+#    Compute the hazard function for a gamma process with parameters a,b
+#    where a and b are the parameters of the gamma PDF:
+#    y(t) = x^(a-1) \exp(-x/b) / (\Gamma(a)*b^a)
+#
+#    Inputs:
+#        x   - in units of seconds
+#        a   - dimensionless
+#        b   - in units of seconds
+#
+#    See also:
+#        inh_gamma_generator
+#
+#    """
+#
+#    # Used by inh_gamma_generator
+#
+#    # Ideally, I would like to see an implementation which does not depend on
+#    # RPy
+#    # but the gamma_hazard_scipy above using scipy exhibits numerical problems,
+#    # as it does not
+#    # support directly returning the log.
+#
+#    from rpy import r
+#
+#    # scipy.special.gammaincc has numerical problems
+#    #Hpre = -log(scipy.special.gammaincc(a,(x-dt)/b))
+#    #Hpost = -log(scipy.special.gammaincc(a,(x+dt)/b))
+#
+#    # reverting to the good old r.pgamma
+#    Hpre = -r.pgamma(x - dt, shape=a, scale=b, lower=False, log=True)
+#    Hpost = -r.pgamma(x + dt, shape=a, scale=b, lower=False, log=True)
+#    val = 0.5 * (Hpost - Hpre) / dt
+#
+#    return val
 
 
 class StGen:
@@ -950,18 +950,18 @@ def _gen_g_add(spikes, tau, q, t, eps=1.0e-8):
 
     #spikes = poisson_generator(rate,t[-1])
 
-    gd_s = zeros(shape(t), Float)
+    gd_s = numpy.zeros(numpy.shape(t), 'float')
 
     dt = t[1] - t[0]
 
     # time of vanishing significance
     vs_t = -tau * log(eps / q)
-    kern = q * exp(-arrayrange(0.0, vs_t, dt) / tau)
+    kern = q * numpy.exp(-numpy.arange(0.0, vs_t, dt) / tau)
 
     vs_idx = len(kern)
 
-    idx = clip(searchsorted(t, spikes), 0, len(t) - 1)
-    idx2 = clip(idx + vs_idx, 0, len(gd_s))
+    idx = numpy.clip(numpy.searchsorted(t, spikes), 0, len(t) - 1)
+    idx2 = numpy.clip(idx + vs_idx, 0, len(gd_s))
     idx3 = idx2 - idx
 
     for i in xrange(len(idx)):

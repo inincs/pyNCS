@@ -310,8 +310,8 @@ class NeuroSetup(object):
                 except AttributeError, e:
                     pass
 
-        self.seq = pyST.STChannelAddressing(channelBits=self.seqBits, stasList=seqList)
-        self.mon = pyST.STChannelAddressing(channelBits=self.monBits, stasList=monList)
+        self.seq = pyST.channelAddressing(channelBits=self.seqBits, stasList=seqList)
+        self.mon = pyST.channelAddressing(channelBits=self.monBits, stasList=monList)
 
     def apply(self):
         ''' sets default monitor/sequencer to this setup '''

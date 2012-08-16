@@ -320,7 +320,7 @@ class Mapping(object):
         Loads the mapping from a file.
         """
         self.clear()
-        self.mapping = loadtxt(filename)
+        self.mapping = np.loadtxt(filename)
         self.__toint__()
 
     def is_connect_possible(self, groupsrc, groupdst):
