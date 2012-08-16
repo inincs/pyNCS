@@ -109,8 +109,8 @@ class NeuroSetup(object):
         self.conf_kwargs = conf_kwargs
         self.map_kwargs = map_kwargs
         #Save setup file locations
-        self.setupfile = prefix + setupfile
-        self.setuptype = prefix + setuptype
+        self.setupfile = setupfile
+        self.setuptype = setuptype
         self.prefix = prefix
         self.chips = {}
         self.chipslots = dict()

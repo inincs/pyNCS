@@ -15,11 +15,11 @@ from pyNCS.neurosetup import NeuroSetup
 et=pyNCS.et
 
 # set dirnames
-setupdir = 'setupfiles/'
 
-def build_setup():
+def build_setup(setups_dir = 'setupfiles/', chips_dir = 'chipfiles/'):
     nsetup = NeuroSetup(
-            setupdir+'test_setuptype.xml',
-            setupdir+'test.xml',
+            setups_dir+'test_setuptype.xml',
+            setups_dir+'test.xml',
+            prefix = chips_dir,
             offline=False)
     return nsetup

@@ -6,7 +6,7 @@
 # Copyright : University of Zurich, Giacomo Indiveri, Emre Neftci, Sadique Sheik, Fabio Stefanini
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
-
+import sys
 import pyNCS
 import pyAex
 import pyNCS.pyST as pyST
@@ -14,8 +14,19 @@ import time
 import numpy as np
 import unittest
 import warnings
+import optparse
+import os
 from pyAexServer import ServerStarter
 
+try:
+    SETUPSDIR = os.environ['NCS_SETUPFILES']
+except KeyError:
+    SETUPSDIR = 'setupfiles/'
+
+try:
+    CHIPSDIR = os.environ['NCS_CHIPFILES']
+except KeyError:
+    CHIPSDIR = 'chipfiles/'
 
 def create_default_population(setup,chipname,N,*args,**kwargs):
     test_pops = pyNCS.Population('default', 'Default Population') 
@@ -24,8 +35,10 @@ def create_default_population(setup,chipname,N,*args,**kwargs):
 
 def evs_loopback(nsetup, sequencer):
     '''
-    This function takes a sequencer object (e.g. returned by Group.spiketrains_poisson() ) and creates a RawOutput object out of it.
-    This is usefull for generating synthetic data and treating is as neuromorphic system ouput.
+    This function takes a sequencer object (e.g. returned by
+    Group.spiketrains_poisson() ) and creates a RawOutput object out of it. This
+    is usefull for generating synthetic data and treating is as neuromorphic
+    system ouput.
     '''
     evs = nsetup.mon.exportAER(sequencer, isi=False)
     ch_evs = nsetup.mon.extract(evs)
@@ -36,7 +49,7 @@ class TestSequenceFunctions(unittest.TestCase):
 
     def setUp(self):
         import expSetup
-        self.nsetup = expSetup.build_setup()
+        self.nsetup = expSetup.build_setup(setups_dir = SETUPSDIR, chips_dir = CHIPSDIR)
 
     def testBuildLinearPopulation(self):
         N=10
@@ -58,8 +71,7 @@ class TestSequenceFunctions(unittest.TestCase):
         ird=input_stim[test_pops.soma.channel].raw_data()
         for mon in self.nsetup.monitors:
             ord=mon.sl.raw_data()
-            for i in xrange(len(ird)):
-                #self.assertAlmostEqual(ord[i][0],ird[i][0],2)
+            for i in xrange(len(ird)):                
                 self.assertAlmostEqual(ord[i][1],ird[i][1],2)
 
     def testPMapping(self):
