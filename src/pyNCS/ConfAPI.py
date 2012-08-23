@@ -23,7 +23,7 @@ try:
     from enthought.traits.ui.api import *
 except ImportError:
     from traits.api import *
-    from traitsui.api import *
+    from traitsui.api import * #This causes pyNCS not to run in headless mode (without C)
 
 
 class Parameter(HasTraits):
