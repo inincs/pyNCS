@@ -1,7 +1,0 @@
-pyNCS
-=====
-
-.. toctree::
-   :maxdepth: 4
-
-   pyNCS
