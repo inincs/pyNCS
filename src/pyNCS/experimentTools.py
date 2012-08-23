@@ -9,9 +9,6 @@
 # -*- coding: utf-8 -*-
 
 #For jaer monitoring
-import threading
-import Queue
-import socket
 import tarfile
 import glob
 import time
@@ -20,8 +17,6 @@ import fnmatch
 import pickle
 import pylab
 import numpy as np
-import pyAex
-import pyST
 from shutil import rmtree
 
 ### The globals class
@@ -29,7 +24,7 @@ from shutil import rmtree
 
 class datacontainer:
     def __init__(self):
-        self.directory = '.'
+        self.directory = './'
 
 global globaldata
 globaldata = datacontainer()
@@ -200,3 +195,21 @@ def save_rec_files(nsetup):
     import shutil, os
     for f in exp_fns:
         shutil.copyfile(f, globaldata.directory+f.split('/')[-1])
+        
+def savefigs(filename='fig', extension = 'png', close=True, *args, **kwargs):
+    """
+    Saves all figures with filename *filename#* where # is the figure number.
+    The order is: last opened last saved.
+    Inputs:
+    *filename*: figure name prefix
+    *extension*: figure extension. savefig should resolve the format from the extension
+    *close*: whether to close the figure after it is saved
+    *args, **kwargs  are passed to savefig  
+    """
+    import matplotlib,pylab
+    figures = [manager.canvas.figure
+         for manager in matplotlib._pylab_helpers.Gcf.get_all_fig_managers()]
+    print 'Saving {0} figures'.format(len(figures))
+    for i, f in enumerate(figures):
+        savefig('fig'+str(i)+'.'+extension, *args, **kwargs)
+        if close: pylab.close()
