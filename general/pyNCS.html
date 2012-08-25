@@ -116,7 +116,7 @@ def foo(self):</p>
 <dl class="class">
 <dt id="pyNCS.ComAPI.BatchCommunicatorBase">
 <em class="property">class </em><tt class="descclassname">pyNCS.ComAPI.</tt><tt class="descname">BatchCommunicatorBase</tt><a class="headerlink" href="#pyNCS.ComAPI.BatchCommunicatorBase" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pyNCS.ComAPI.ResourceManagerBase" title="pyNCS.ComAPI.ResourceManagerBase"><tt class="xref py py-class docutils literal"><span class="pre">pyNCS.ComAPI.ResourceManagerBase</span></tt></a></p>
+<dd><p>Bases: <a class="reference internal" href="#pyNCS.ComAPI.ResourceManagerBase" title="pyNCS.ComAPI.ResourceManagerBase"><tt class="xref py py-class docutils literal"><span class="pre">pyNCS.ComAPI.ResourceManagerBase</span></tt></a>, <a class="reference internal" href="#pyNCS.ComAPI.RecordableCommunicatorBase" title="pyNCS.ComAPI.RecordableCommunicatorBase"><tt class="xref py py-class docutils literal"><span class="pre">pyNCS.ComAPI.RecordableCommunicatorBase</span></tt></a></p>
 <dl class="method">
 <dt id="pyNCS.ComAPI.BatchCommunicatorBase.run">
 <tt class="descname">run</tt><big>(</big><em>stimulus=None</em>, <em>duration=None</em>, <em>context_manager=None</em><big>)</big><a class="headerlink" href="#pyNCS.ComAPI.BatchCommunicatorBase.run" title="Permalink to this definition">¶</a></dt>
@@ -162,6 +162,77 @@ Input:
 Usage:
 &gt;&gt;&gt; events = np.array([0, 1],[100,200], dtype=&#8217;uint32&#8217;) #addr, time format
 &gt;&gt;&gt; stim(events, 1500)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyNCS.ComAPI.RecordableCommunicatorBase">
+<em class="property">class </em><tt class="descclassname">pyNCS.ComAPI.</tt><tt class="descname">RecordableCommunicatorBase</tt><a class="headerlink" href="#pyNCS.ComAPI.RecordableCommunicatorBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="attribute">
+<dt id="pyNCS.ComAPI.RecordableCommunicatorBase.REC_FN_MON">
+<tt class="descname">REC_FN_MON</tt><em class="property"> = 'mon'</em><a class="headerlink" href="#pyNCS.ComAPI.RecordableCommunicatorBase.REC_FN_MON" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyNCS.ComAPI.RecordableCommunicatorBase.REC_FN_SEQ">
+<tt class="descname">REC_FN_SEQ</tt><em class="property"> = 'seq'</em><a class="headerlink" href="#pyNCS.ComAPI.RecordableCommunicatorBase.REC_FN_SEQ" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyNCS.ComAPI.RecordableCommunicatorBase.REC_HEADER_MON">
+<tt class="descname">REC_HEADER_MON</tt><em class="property"> = '# File format raw address, timestamp (us)'</em><a class="headerlink" href="#pyNCS.ComAPI.RecordableCommunicatorBase.REC_HEADER_MON" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyNCS.ComAPI.RecordableCommunicatorBase.REC_HEADER_SEQ">
+<tt class="descname">REC_HEADER_SEQ</tt><em class="property"> = '# File format raw address, ISI (us)'</em><a class="headerlink" href="#pyNCS.ComAPI.RecordableCommunicatorBase.REC_HEADER_SEQ" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyNCS.ComAPI.RecordableCommunicatorBase.REC_PATH">
+<tt class="descname">REC_PATH</tt><em class="property"> = '/tmp/exp_rec'</em><a class="headerlink" href="#pyNCS.ComAPI.RecordableCommunicatorBase.REC_PATH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.ComAPI.RecordableCommunicatorBase.del_all">
+<tt class="descname">del_all</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.ComAPI.RecordableCommunicatorBase.del_all" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.ComAPI.RecordableCommunicatorBase.get_exp_rec">
+<tt class="descname">get_exp_rec</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.ComAPI.RecordableCommunicatorBase.get_exp_rec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the filename where the raw stimated and monitored events are saved.
+The filenames for all experiments are returned, and run_id is reset</p>
+<p>Output: list of filenames containing the experiment records (stimulated and monitored events). Additionally, the experiment number is reset.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.ComAPI.RecordableCommunicatorBase.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.ComAPI.RecordableCommunicatorBase.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.ComAPI.RecordableCommunicatorBase.run">
+<tt class="descname">run</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pyNCS.ComAPI.RecordableCommunicatorBase.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.ComAPI.RecordableCommunicatorBase.run_rec">
+<tt class="descname">run_rec</tt><big>(</big><em>stimulus=None</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pyNCS.ComAPI.RecordableCommunicatorBase.run_rec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stimulate the neuromorphic hardware with event stream <em>stimulus</em> and monitor it for <em>duration</em> ms.
+In addition to the run() function, this function records the experimental data in /tmp/.
+The resulting files can be obtained with get_exp_record
+This function should be overridden to avoid redundant events file creation.</p>
+<p>Input: (see also run() for more information)
+<em>stimulus</em>: a numpy array in (addr, time) format. Type should be uint32 (shape = (-1,2)).
+<em>duration</em>: monitor duration.
+<em>context_manager</em>: context manager used to wrap the stimulate function. Useful for syncing with external process.
+Output: a numpy array in addr, time format. Type is uint32 (shape = (-1,2)).</p>
+<p>Usage:
+&gt;&gt;&gt; events = np.array([[0, 1],[100,200]], dtype=&#8217;uint32&#8217;) #addr, time format
+&gt;&gt;&gt; run_record(events, 1500)</p>
 </dd></dl>
 
 </dd></dl>
@@ -440,12 +511,6 @@ created with saveBiases(CSVfile)</p>
 <em class="property">class </em><tt class="descclassname">pyNCS.chip_v2.</tt><tt class="descname">NeuroChip</tt><big>(</big><em>chipfile</em>, <em>id='noname'</em>, <em>offline=False</em>, <em>conf_api=None</em>, <em>conf_kwargs={}</em><big>)</big><a class="headerlink" href="#pyNCS.chip_v2.NeuroChip" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyNCS.chip_v2.Chip" title="pyNCS.chip_v2.Chip"><tt class="xref py py-class docutils literal"><span class="pre">pyNCS.chip_v2.Chip</span></tt></a></p>
 <dl class="method">
-<dt id="pyNCS.chip_v2.NeuroChip.load_paramfile">
-<tt class="descname">load_paramfile</tt><big>(</big><em>paramfile</em><big>)</big><a class="headerlink" href="#pyNCS.chip_v2.NeuroChip.load_paramfile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function to parse the xml file with the parameter details of the chip.</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="pyNCS.chip_v2.NeuroChip.saveXML">
 <tt class="descname">saveXML</tt><big>(</big><em>filename</em><big>)</big><a class="headerlink" href="#pyNCS.chip_v2.NeuroChip.saveXML" title="Permalink to this definition">¶</a></dt>
 <dd><p>save XML representation of this object to a file</p>
@@ -475,6 +540,12 @@ WARNING: This is buggy! The order of the numbers matters! It should</p>
 <em class="property">class </em><tt class="descclassname">pyNCS.connection.</tt><tt class="descname">Connection</tt><big>(</big><em>popsrc</em>, <em>popdst</em>, <em>synapse</em>, <em>fashion='one2one'</em>, <em>fashion_kwargs={}</em>, <em>append=True</em>, <em>setup=None</em><big>)</big><a class="headerlink" href="#pyNCS.connection.Connection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>A class representing the connections between populations.</p>
+<dl class="method">
+<dt id="pyNCS.connection.Connection.plot">
+<tt class="descname">plot</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.connection.Connection.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>plots the connectivity</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -538,9 +609,27 @@ size: 0.5 &#8211; two column page.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="pyNCS.experimentTools.save_rec_files">
+<tt class="descclassname">pyNCS.experimentTools.</tt><tt class="descname">save_rec_files</tt><big>(</big><em>nsetup</em><big>)</big><a class="headerlink" href="#pyNCS.experimentTools.save_rec_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves files recorded by the communicator and prepends address specification</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="pyNCS.experimentTools.savefig">
 <tt class="descclassname">pyNCS.experimentTools.</tt><tt class="descname">savefig</tt><big>(</big><em>filename</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pyNCS.experimentTools.savefig" title="Permalink to this definition">¶</a></dt>
 <dd><p>Like pylab.savefig but appends the Results directory</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.experimentTools.savefigs">
+<tt class="descclassname">pyNCS.experimentTools.</tt><tt class="descname">savefigs</tt><big>(</big><em>filename='fig'</em>, <em>extension='png'</em>, <em>close=True</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pyNCS.experimentTools.savefigs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves all figures with filename <em>filename#</em> where # is the figure number.
+The order is: last opened last saved.
+Inputs:
+<em>filename</em>: figure name prefix
+<em>extension</em>: figure extension. savefig should resolve the format from the extension
+<em>close</em>: whether to close the figure after it is saved
+<a href="#id4"><span class="problematic" id="id5">*</span></a>args, <a href="#id6"><span class="problematic" id="id7">**</span></a>kwargs  are passed to savefig</p>
 </dd></dl>
 
 <dl class="function">
@@ -633,7 +722,8 @@ mapping = group1.connect_one2one(group2)</p>
 <tt class="descname">populate_by_number</tt><big>(</big><em>setup</em>, <em>chipid</em>, <em>grouptype</em>, <em>n</em>, <em>dims</em><big>)</big><a class="headerlink" href="#pyNCS.group.AddrGroup.populate_by_number" title="Permalink to this definition">¶</a></dt>
 <dd><p>Populate with the given number of neuron, doesn&#8217;t matter the shape.
 Needs the number of dimensions
-WARNING: This should go in upper layer of abstraction.</p>
+WARNING: This should go in upper layer of abstraction.
+TODO: check if this function is unused (Reason: contains reference errors)</p>
 </dd></dl>
 
 <dl class="method">
@@ -649,9 +739,9 @@ WARNING: This should go in upper layer of abstraction.</p>
 <dl class="method">
 <dt id="pyNCS.group.AddrGroup.populate_rectangle">
 <tt class="descname">populate_rectangle</tt><big>(</big><em>setup</em>, <em>chipid</em>, <em>grouptype</em>, <em>p1</em>, <em>p2</em>, <em>z=None</em>, <em>n=None</em><big>)</big><a class="headerlink" href="#pyNCS.group.AddrGroup.populate_rectangle" title="Permalink to this definition">¶</a></dt>
-<dd><p>Populate with all the neurons within the rectangle&#8217;s given cohordinates. If n is given,
+<dd><p>Populate with all the neurons within the rectangle&#8217;s given coordinates. If n is given,
 populate with the given number of neurons instead of all neurons in the rectangle.
-z defines the 3d cohordinate, e.g. retina polarity or synapse in the 2d chip.</p>
+z defines the 3d coordinate, e.g. retina polarity or synapse in the 2d chip.</p>
 </dd></dl>
 
 <dl class="method">
@@ -1031,13 +1121,14 @@ if synapse is None, then the soma is taken as the address group to monitor, othe
 <dt id="pyNCS.monitors.Monitors.populate_monitors">
 <tt class="descname">populate_monitors</tt><big>(</big><em>chstlist</em><big>)</big><a class="headerlink" href="#pyNCS.monitors.Monitors.populate_monitors" title="Permalink to this definition">¶</a></dt>
 <dd><p>Populates SpikeMonitors in the list of monitors
-chstlist is the dictionary returned by NeuroSetup.stimulate.</p>
+chstlist is the dictionary returned by NeuroSetup.stimulate.
+(this is also the object that channelAddressing.rawoutput_from_chevents returns (a RawOutput object)</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="pyNCS.monitors.Monitors.raster_plot">
 <tt class="descname">raster_plot</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pyNCS.monitors.Monitors.raster_plot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raster Plotting tool which can handle plotting several SpikeLists/ SpikeMonitors/ SpikeTrainMonitors</p>
+<dd><p>Raster Plotting tool which can handle plotting several SpikeLists/ SpikeMonitors/ monitorSpikeLists</p>
 </dd></dl>
 
 </dd></dl>
@@ -1143,22 +1234,7 @@ API is the one of AddrGroup.</p>
 <dl class="method">
 <dt id="pyNCS.monitors.SpikeMonitor.toSpikeListMonitor">
 <tt class="descname">toSpikeListMonitor</tt><big>(</big><em>st</em><big>)</big><a class="headerlink" href="#pyNCS.monitors.SpikeMonitor.toSpikeListMonitor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Transform SpikeList <em>st</em> into a SpikeTrainMonitor object</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="pyNCS.monitors.SpikeTrainMonitor">
-<em class="property">class </em><tt class="descclassname">pyNCS.monitors.</tt><tt class="descname">SpikeTrainMonitor</tt><big>(</big><em>channel</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pyNCS.monitors.SpikeTrainMonitor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="pyNCS.pyST.html#pyNCS.pyST.spikes.SpikeList" title="pyNCS.pyST.spikes.SpikeList"><tt class="xref py py-class docutils literal"><span class="pre">pyNCS.pyST.spikes.SpikeList</span></tt></a></p>
-<p>A wrapper for the NeuroTools SpikeList</p>
-<dl class="method">
-<dt id="pyNCS.monitors.SpikeTrainMonitor.id_list_map">
-<tt class="descname">id_list_map</tt><big>(</big><em>mapping</em><big>)</big><a class="headerlink" href="#pyNCS.monitors.SpikeTrainMonitor.id_list_map" title="Permalink to this definition">¶</a></dt>
-<dd><p>this function maps the addresses of a spike list into another using the given mapping. Useful for logical to physical translation and vice versa
-SL=original spike list
-mapping=dictionary containing address mapping</p>
+<dd><p>Transform SpikeList <em>st</em> into a monitorSpikeList object</p>
 </dd></dl>
 
 </dd></dl>
@@ -1175,12 +1251,27 @@ mapping=dictionary containing address mapping</p>
 <dd><p>Iterates over all spikelists in Monitors and returns t_stop</p>
 </dd></dl>
 
+<dl class="class">
+<dt id="pyNCS.monitors.monitorSpikeList">
+<em class="property">class </em><tt class="descclassname">pyNCS.monitors.</tt><tt class="descname">monitorSpikeList</tt><big>(</big><em>channel</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pyNCS.monitors.monitorSpikeList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyNCS.pyST.html#pyNCS.pyST.spikes.SpikeList" title="pyNCS.pyST.spikes.SpikeList"><tt class="xref py py-class docutils literal"><span class="pre">pyNCS.pyST.spikes.SpikeList</span></tt></a></p>
+<p>A wrapper for the NeuroTools SpikeList</p>
+<dl class="method">
+<dt id="pyNCS.monitors.monitorSpikeList.id_list_map">
+<tt class="descname">id_list_map</tt><big>(</big><em>mapping</em><big>)</big><a class="headerlink" href="#pyNCS.monitors.monitorSpikeList.id_list_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>this function maps the addresses of a spike list into another using the given mapping. Useful for logical to physical translation and vice versa
+SL=original spike list
+mapping=dictionary containing address mapping</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-pyNCS.neurosetup">
 <span id="neurosetup-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">neurosetup</span></tt> Module<a class="headerlink" href="#module-pyNCS.neurosetup" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pyNCS.neurosetup.NeuroSetup">
-<em class="property">class </em><tt class="descclassname">pyNCS.neurosetup.</tt><tt class="descname">NeuroSetup</tt><big>(</big><em>setuptype</em>, <em>setupfile</em>, <em>com_kwargs={}</em>, <em>map_kwargs={}</em>, <em>conf_kwargs={}</em>, <em>prefix='./'</em>, <em>offline=False</em><big>)</big><a class="headerlink" href="#pyNCS.neurosetup.NeuroSetup" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">pyNCS.neurosetup.</tt><tt class="descname">NeuroSetup</tt><big>(</big><em>setuptype</em>, <em>setupfile</em>, <em>com_kwargs={}</em>, <em>map_kwargs={}</em>, <em>conf_kwargs={}</em>, <em>prefix='./'</em>, <em>offline=False</em>, <em>validate=True</em><big>)</big><a class="headerlink" href="#pyNCS.neurosetup.NeuroSetup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <dl class="method">
 <dt id="pyNCS.neurosetup.NeuroSetup.aerDummy">
@@ -1196,7 +1287,7 @@ mapping=dictionary containing address mapping</p>
 
 <dl class="method">
 <dt id="pyNCS.neurosetup.NeuroSetup.load">
-<tt class="descname">load</tt><big>(</big><em>filename</em>, <em>prefix=''</em>, <em>offline=False</em><big>)</big><a class="headerlink" href="#pyNCS.neurosetup.NeuroSetup.load" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">load</tt><big>(</big><em>filename</em>, <em>prefix=''</em>, <em>offline=False</em>, <em>validate=True</em><big>)</big><a class="headerlink" href="#pyNCS.neurosetup.NeuroSetup.load" title="Permalink to this definition">¶</a></dt>
 <dd><p>parses an XML file created by .dumpXML()</p>
 <p>Inputs:
 <em>filename</em>: setup file name
@@ -1206,7 +1297,7 @@ mapping=dictionary containing address mapping</p>
 
 <dl class="method">
 <dt id="pyNCS.neurosetup.NeuroSetup.load_setuptype">
-<tt class="descname">load_setuptype</tt><big>(</big><em>filename</em>, <em>prefix=''</em><big>)</big><a class="headerlink" href="#pyNCS.neurosetup.NeuroSetup.load_setuptype" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">load_setuptype</tt><big>(</big><em>filename</em>, <em>prefix=''</em>, <em>validate=True</em><big>)</big><a class="headerlink" href="#pyNCS.neurosetup.NeuroSetup.load_setuptype" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1267,7 +1358,7 @@ returns the merged dictionary</p>
 
 <dl class="function">
 <dt id="pyNCS.neurosetup.parse_and_validate">
-<tt class="descclassname">pyNCS.neurosetup.</tt><tt class="descname">parse_and_validate</tt><big>(</big><em>filename</em>, <em>dtd</em><big>)</big><a class="headerlink" href="#pyNCS.neurosetup.parse_and_validate" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">pyNCS.neurosetup.</tt><tt class="descname">parse_and_validate</tt><big>(</big><em>filename</em>, <em>dtd</em>, <em>validate=True</em><big>)</big><a class="headerlink" href="#pyNCS.neurosetup.parse_and_validate" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -1438,18 +1529,11 @@ address is already there, it doesn&#8217;t add.</p>
 <li class="toctree-l2"><a class="reference internal" href="pyNCS.pyST.html#module-pyNCS.pyST.STas"><tt class="docutils literal"><span class="pre">STas</span></tt> Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pyNCS.pyST.html#module-pyNCS.pyST.STsl"><tt class="docutils literal"><span class="pre">STsl</span></tt> Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pyNCS.pyST.html#module-pyNCS.pyST.pyST_globals"><tt class="docutils literal"><span class="pre">pyST_globals</span></tt> Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyNCS.pyST.html#module-pyNCS.pyST.spikes"><tt class="docutils literal"><span class="pre">spikes</span></tt> Module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pyNCS.pyST.html#neurotools-signals-spikes">NeuroTools.signals.spikes</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="pyNCS.pyST.html#classes">Classes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pyNCS.pyST.html#functions">Functions</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="pyNCS.pyST.html#module-pyNCS.pyST.spikes"><tt class="docutils literal"><span class="pre">spikes</span></tt> Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pyNCS.pyST.html#module-pyNCS.pyST.stgen"><tt class="docutils literal"><span class="pre">stgen</span></tt> Module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="pyNCS.pyST.html#neurotools-stgen">NeuroTools.stgen</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="pyNCS.pyST.html#id7">Classes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pyNCS.pyST.html#id8">Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyNCS.pyST.html#classes">Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyNCS.pyST.html#functions">Functions</a></li>
 </ul>
 </li>
 </ul>

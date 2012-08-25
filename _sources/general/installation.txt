@@ -41,7 +41,7 @@ Finally, a nice matlab--style Python prompt is IPython.
 
 You can try to install all these packages in ubuntu, add the "universe" repository and run the following command in a terminal:
 
-    ``sudo apt-get install python python-dev python-numpy python-matplotlib iPython python-scipy python-chaco python-lxml python-traits python-traitsui``
+    ``sudo apt-get install python python-pydot python-dev python-numpy python-matplotlib iPython python-scipy python-chaco python-lxml python-traits python-traitsui``
 
 and for server-mode, also:
     ``sudo apt-get install fxload``
