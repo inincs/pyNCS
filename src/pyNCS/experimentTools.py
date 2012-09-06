@@ -79,15 +79,53 @@ def loadPlotParameters(size=0.5, fontsize=18.0):
           'text.usetex': True,
           'figure.figsize': get_figsize(1000 * size, ratio=1.3)}  # size in inches
     pylab.rcParams.update(params0)
+    
+def load_compatibility(filename):
+    """
+    Same as experimentTools.load(), but works around recent module renaming problems
+    Code from http://wiki.python.org/moin/UsingPickle/RenamingModules
+    """
+    import pickle
+    
+    renametable = {
+        'pyST': 'pyNCS.pyST',
+        'pyST.spikes': 'pyNCS.pyST.spikes',
+        'pyST.STas': 'pyNCS.pyST.STas',
+        'pyST.STsl': 'pyNCS.pyST.STsl',
+        'pyST.stgen': 'pyNCS.pyST.stgen',
+        }
+    
+    def mapname(name):
+        if name in renametable:
+            return renametable[name]
+        return name
+    
+    def mapped_load_global(self):
+        module = mapname(self.readline()[:-1])
+        name = mapname(self.readline()[:-1])
+        klass = self.find_class(module, name)
+        self.append(klass)
+        
+    def loads(filename_):
+        fh = file(filename_,'rb')
+        unpickler = pickle.Unpickler(fh)
+        unpickler.dispatch[pickle.GLOBAL] = mapped_load_global
+        return unpickler.load()
+    
+    return loads(filename)
 
-
-def load(filename=None):
+def load(filename=None, compatibility=True):
     """
     Unpickles file named 'filename' from the results directory. If no 'filename' is given, then 'globaldata.pickle' is loaded
     """
-    if filename == None:
-        return pickle.load(file(globaldata.directory + 'globaldata.pickle', 'r'))
-    return pickle.load(file(globaldata.directory + filename, 'r'))
+    if filename == None: 
+        filename = globaldata.directory + 'globaldata.pickle'
+    else:
+        filename = globaldata.directory + filename        
+    if compatibility:
+        return load_compatibility(filename)
+    else:
+        return pickle.load(file(filename, 'rb'))    
 
 
 def save_py_scripts():
