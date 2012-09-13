@@ -1664,7 +1664,10 @@ class addrSpec:
         self.__class__.addrLogicalPhysical = addrLogicalPhysical
         self.__class__.repr_addr_spec = repr_addr_spec
         #Update all parameters
-        self.update()
+        try:
+            self.update()
+        except:
+            warnings.warn('Address specification not updated during init')
 
     def update(self):
         '''
@@ -1823,13 +1826,14 @@ class addrSpec:
                         pin['f'] = chld.text
                     else:
                         pass
+                self.addrPinConf.append(pin)
             elif elm.tag == 'pinlayout':
                 # Pinlayout
                 self.addrStr = elm.text
             else:
                 pass
-            # Update the object
-            self.update()
+        # Update the object
+        self.update()
         return
 
 
@@ -2031,7 +2035,31 @@ def load_stas_from_csv(CSVfile):
                 stasMon_f = False
 
     #Determining the dimensions from the address specifications
-
     return aerIn, aerOut
 
-
+def load_stas_from_nhml(doc):
+    '''
+    load_stas_from_nhml(NHMLfile)
+    This function returns addrSpec objects aerIn and aerOut by parsing the NHML
+    file.
+    '''
+    if isinstance(doc, str):
+        # parse the file
+        doc = etree.parse(doc).getroot()
+    else:
+        # assuming doc is an lxml Element object
+        assert doc.tag == 'chip'
+    chipclass = doc.get('chipclass')
+    aerIn, aerOut = None, None
+    for elm in doc:
+        if elm.tag == 'addressSpecification':
+            if elm.get('type') == 'aerIn':
+                aerIn = addrSpec(id=chipclass + 'In')
+                aerIn.__parseXML__(elm)
+            elif elm.get('type') == 'aerOut':
+                aerOut = addrSpec(id=chipclass + 'Out')
+                aerOut.__parseXML__(elm)
+            else:
+                pass
+    return aerIn, aerOut
+    

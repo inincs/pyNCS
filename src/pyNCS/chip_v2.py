@@ -297,14 +297,20 @@ class Chip:
         '''
         doc = etree.Element('chip')
         doc.attrib['chipclass'] = self.chipclass
-        # aerIn
-        aerInDoc = self.aerIn.__getXML__()
-        aerInDoc.attrib['type'] = 'aerIn'
-        doc.append(aerInDoc)
-        # aerOut
-        aerOutDoc = self.aerOut.__getXML__()
-        aerOutDoc.attrib['type'] = 'aerOut'
-        doc.append(aerOutDoc)
+        try:
+            # aerIn
+            aerInDoc = self.aerIn.__getXML__()
+            aerInDoc.attrib['type'] = 'aerIn'
+            doc.append(aerInDoc)
+        except AttributeError, e:
+            warnings.warn("Cannot retreive aerIn data")
+        try:
+            # aerOut
+            aerOutDoc = self.aerOut.__getXML__()
+            aerOutDoc.attrib['type'] = 'aerOut'
+            doc.append(aerOutDoc)
+        except AttributeError, e:
+            warnings.warn("Cannot retreive aerOut in data")
         # Parameters
         doc.append(self.configurator.__getXML__())
         return doc
@@ -321,17 +327,9 @@ class Chip:
             assert doc.tag == 'chip'
         # Chipclass
         self.chipclass = doc.get('chipclass')
+        self.aerIn, self.aerOut = pyST.STas.load_stas_from_nhml(doc)
         for elm in doc:
-            if elm.tag == 'addressSpecification':
-                if elm.get('type') == 'aerIn':
-                    self.aerIn = addrSpec(id=self.chipclass + 'In')
-                    self.aerIn.__parseXML__(elm)
-                elif elm.get('type') == 'aerOut':
-                    self.aerOut = addrSpec(id=self.chipclass + 'Out')
-                    self.aerOut.__parseXML__(elm)
-                else:
-                    pass
-            elif elm.tag == 'parameters':
+            if elm.tag == 'parameters':
                 self.configurator.__parseXML__(elm)
             else:
                 pass
@@ -456,7 +454,7 @@ class NeuroChip(Chip):
                           conf_api=conf_api,
                           conf_kwargs=conf_kwargs)
             self._load_paramfile(paramfile)
-        elif chipfile.endswith('.xml'):
+        elif chipfile.endswith('.nhml'):
             Chip.__init__(self, chipfile, id=id, offline=offline,
                           conf_api=conf_api,
                           conf_kwargs=conf_kwargs)

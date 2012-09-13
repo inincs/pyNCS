@@ -119,8 +119,7 @@ class NeuroSetup(object):
         self.validate = validate
         self.load_setuptype(self.setuptype, prefix = prefix, validate = validate)
         self.load(self.setupfile, prefix = prefix, offline = offline, validate = validate )
-        self.aerDummyIn = self.aerDummy()
-        self.aerDummyOut = self.aerDummy()
+        self.aerDummyIn, self.aerDummyOut = self.aerDummy()
         self.update()
         self.apply()
         self.monitors = Monitors()
@@ -245,9 +244,13 @@ class NeuroSetup(object):
 
     def aerDummy(self):
         ''' returns a placeholder pyST.addrSpec '''
-        aerIn, aerOut = pyST.STas.load_stas_from_csv(self.prefix+\
+        if self.defaultchipfile.endswith('.csv'):
+            aerIn, aerOut = pyST.STas.load_stas_from_csv(self.prefix+\
                                                      self.defaultchipfile)
-        return aerOut
+        elif self.defaultchipfile.endswith('.nhml'):
+            aerIn, aerOut = pyST.STas.load_stas_from_nhml(self.prefix+\
+                                                     self.defaultchipfile)
+        return aerIn, aerOut
 
     def update(self):
         '''
@@ -349,8 +352,7 @@ class NeuroSetup(object):
         self.slots = {}
         self.load_setuptype(self.setuptype, prefix=self.prefix, validate = self.validate)
         self.load(self.setupfile, prefix=self.prefix, offline = self.offline, validate = self.validate)
-        self.aerDummyIn = self.aerDummy()
-        self.aerDummyOut = self.aerDummy()
+        self.aerDummyIn, self.aerDummyOut = self.aerDummy()
         self.update()
 
     def __getinitargs__(self):
