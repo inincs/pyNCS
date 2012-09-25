@@ -90,6 +90,7 @@ class Block():
         self.TYPE = doc.get('type')
         self.dims = {}
         self.parameters = {}
+        self.id = doc.get('id')
         for elm in doc:
             if elm.tag == 'dim':
                 if self.dims.has_key(elm.get('id')):
