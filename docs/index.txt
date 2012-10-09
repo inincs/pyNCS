@@ -3,10 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Python NCS tools documentation
-==============================
-
-Please refer to http://ncs.ethz.ch/ncs for more information. 
+pyNCS documentation
+===================
 
 
 General
@@ -18,10 +16,7 @@ General
    general/introduction.txt
    general/installation.txt
    general/tutorial.txt
-   general/pyosc.txt
    general/experiments.txt
-   general/pytune.txt
-   general/learning.txt
 
 Technical
 ---------
@@ -29,10 +24,8 @@ Technical
 .. toctree::
    :maxdepth: 2
 
-   general/hardware_setup.txt
    general/new_hardware.txt
-   general/spcm.txt
-   general/troubleshooting.txt
+
 
 Examples
 --------
@@ -58,3 +51,37 @@ API reference
 .. * :ref:`genindex`
 .. * :ref:`modindex`
 .. * :ref:`search`
+
+
+NCS specific documentation
+==========================
+
+Please refer to http://ncs.ethz.ch/ncs for more information. 
+
+Measurement and tuning
+----------------------
+
+.. toctree::
+   :maxdepth: 2
+   
+   general/pyosc.txt
+   general/pytune.txt
+
+
+Plasticity on hardware
+----------------------
+
+.. toctree::
+   :maxdepth: 2
+   
+   general/learning.txt
+
+Technical
+---------
+
+.. toctree::
+   :maxdepth: 2
+   
+   general/hardware_setup.txt
+   general/spcm.txt
+   general/troubleshooting.txt
