@@ -161,8 +161,7 @@ class NeuroSetup(object):
 
     def load(self, filename, prefix='', offline=False, validate = True):
         '''
-        parses an XML file created by .dumpXML()
-
+        Loads the setup
         Inputs:
         *filename*: setup file name
         *prefix*: path to be prepended to chipfile names

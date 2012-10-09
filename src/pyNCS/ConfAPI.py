@@ -64,7 +64,7 @@ class Parameter(HasTraits):
     def __str__(self):
         return str(self.param_data)
 
-    def __getXML__(self):
+    def __getNHML__(self):
         '''
         Returns lxml.etree.Element representatoin of this parameter
         '''
@@ -73,7 +73,7 @@ class Parameter(HasTraits):
             doc.attrib[n] = str(v)
         return doc
 
-    def __parseXML__(self, doc):
+    def __parseNHML__(self, doc):
         '''
         Parse xml file or element tree to generate the object
         '''
@@ -145,6 +145,7 @@ class ConfiguratorBase(ResourceManagerBase):
     def _readCSV(self, CSVfile):
         '''
         Parse the CSV file to build the configurator object.
+        NOTE: Downward compatibility function
         '''
         with open(CSVfile, 'r') as CSV:
             csv = CSV.readlines()
@@ -178,13 +179,13 @@ class ConfiguratorBase(ResourceManagerBase):
                     self.add_parameter(parameters)
         return
 
-    def __getXML__(self):
+    def __getNHML__(self):
         doc = etree.Element('parameters')
         for p in self.parameters.values():
-            doc.append(p.__getXML__())
+            doc.append(p.__getNHML__())
         return doc
 
-    def __parseXML__(self, doc):
+    def __parseNHML__(self, doc):
         '''
         Parse xml file or element tree to generate the object
         '''
@@ -208,7 +209,7 @@ class ConfiguratorBase(ResourceManagerBase):
             self.parameters[param['SignalName']] = Parameter(param, self)
         elif isinstance(param, etree._Element):
             parameter = Parameter({'SignalName': ''}, self)
-            parameter.__parseXML__(param)
+            parameter.__parseNHML__(param)
             self.parameters[parameter.SignalName] = parameter
 
     def get_parameter(self, param_name):

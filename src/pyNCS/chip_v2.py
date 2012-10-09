@@ -29,7 +29,8 @@ class Block():
 
     def __generateFromXml__(self, chip, xml):
         '''
-        Generates the parameter translation.
+        Generates the parameter translation xml file.
+        NOTE: Backward compatibility function
         '''
         self.domdoc = xml
         self.id = self.domdoc.getAttribute('id')
@@ -59,9 +60,9 @@ class Block():
                     self.dims[d] = eval(i.getAttribute('range'))
         return self
 
-    def __getXML__(self):
+    def __getNHML__(self):
         '''
-        Returns xml representation of the object
+        Returns nhml representation of the object
         '''
         if self.TYPE == 'SOMA':
             doc = etree.Element('soma')
@@ -80,7 +81,10 @@ class Block():
             doc.append(paramdoc)
         return doc
 
-    def __parseXML__(self, doc):
+    def __parseNHML__(self, doc):
+        '''
+        Parse nhml representation of the object
+        '''
         if isinstance(doc, str):
             # parse the file
             doc = etree.parse(doc).getroot()
@@ -118,6 +122,10 @@ class NeuronBlock():
         self.synapses = {}
 
     def __generateFromXml__(self, xml):
+        '''
+        Parse xml file for object representation
+        NOTE: Backward compatibility function
+        '''
         self.domdoc = xml
         if self.domdoc.tagName == 'neuron':
             self.id = self.domdoc.getAttribute('id')
@@ -141,23 +149,26 @@ class NeuronBlock():
         else:
             print "This is not a neuron!"
 
-    def __getXML__(self):
+    def __getNHML__(self):
         '''
-        Returns xml representation for this object.
+        Returns nhml representation for this object.
         '''
         doc = etree.Element('neuron')
         # Soma
-        somadoc = self.soma.__getXML__()
+        somadoc = self.soma.__getNHML__()
         somadoc.attrib['id'] = self.soma.id
         doc.append(somadoc)
         # Synapses
         for k, v in self.synapses.items():
-            syndoc = v.__getXML__()
+            syndoc = v.__getNHML__()
             syndoc.attrib['id'] = k
             doc.append(syndoc)
         return doc
 
-    def __parseXML__(self, doc):
+    def __parseNHML__(self, doc):
+        '''
+        Parse NHML representation of the object
+        '''
         if isinstance(doc, str):
             # parse the file
             doc = etree.parse(doc).getroot()
@@ -169,11 +180,11 @@ class NeuronBlock():
         for elm in doc:
             if elm.tag == 'soma':
                 group = Block(self.neurochip)
-                group.__parseXML__(elm)
+                group.__parseNHML__(elm)
                 self.soma = group
             elif elm.tag == 'synapse':
                 group = Block(self.neurochip)
-                group.__parseXML__(elm)
+                group.__parseNHML__(elm)
                 self.synapses[elm.get('id')] = group
         for k, v in self.synapses.items():
             self.synapses[k].addresses = self.expand_dims(k)
@@ -245,11 +256,11 @@ class Chip:
             # File name
             if chipdoc.endswith('.csv'):
                 self._readCSV(chipdoc)
-            elif chipdoc.endswith('.xml'):
-                self.__parseXML__(chipdoc)
+            elif chipdoc.endswith('.nhml'):
+                self.__parseNHML__(chipdoc)
         elif isinstance(chipdoc, etree._Element):
             assert chipdoc.tag == 'chip'
-            self.__parseXML__(chipdoc)
+            self.__parseNHML__(chipdoc)
         else:
             pass
 
@@ -270,6 +281,7 @@ class Chip:
     def _readCSV(self, CSVfile):
         '''
         Parse the CSV file to build the chip object.
+        NOTE: Backward compatibility function
         '''
         #The following builds the input output address specification only
         self.aerIn, self.aerOut = pyST.STas.load_stas_from_csv(CSVfile)
@@ -292,33 +304,33 @@ class Chip:
         self.configurator._readCSV(CSVfile)
         return
 
-    def __getXML__(self):
+    def __getNHML__(self):
         '''
-        Returns xml representatoin of this object
+        Returns nhml representatoin of this object
         '''
         doc = etree.Element('chip')
         doc.attrib['chipclass'] = self.chipclass
         try:
             # aerIn
-            aerInDoc = self.aerIn.__getXML__()
+            aerInDoc = self.aerIn.__getNHML__()
             aerInDoc.attrib['type'] = 'aerIn'
             doc.append(aerInDoc)
         except AttributeError, e:
             warnings.warn("Cannot retreive aerIn data")
         try:
             # aerOut
-            aerOutDoc = self.aerOut.__getXML__()
+            aerOutDoc = self.aerOut.__getNHML__()
             aerOutDoc.attrib['type'] = 'aerOut'
             doc.append(aerOutDoc)
         except AttributeError, e:
             warnings.warn("Cannot retreive aerOut in data")
         # Parameters
-        doc.append(self.configurator.__getXML__())
+        doc.append(self.configurator.__getNHML__())
         return doc
 
-    def __parseXML__(self, doc):
+    def __parseNHML__(self, doc):
         '''
-        Parse xml file or lxml Element tree to build the object
+        Parse nhml file or lxml Element tree to build the object
         '''
         if isinstance(doc, str):
             # parse the file
@@ -331,7 +343,7 @@ class Chip:
         self.aerIn, self.aerOut = pyST.STas.load_stas_from_nhml(doc)
         for elm in doc:
             if elm.tag == 'parameters':
-                self.configurator.__parseXML__(elm)
+                self.configurator.__parseNHML__(elm)
             else:
                 pass
         # Infer dimensions of the chip
@@ -459,7 +471,7 @@ class NeuroChip(Chip):
             Chip.__init__(self, chipfile, id=id, offline=offline,
                           conf_api=conf_api,
                           conf_kwargs=conf_kwargs)
-            self.__parseXML__(chipfile)
+            self.__parseNHML__(chipfile)
         else:
             raise Exception('Unknown file format for chipfile!')
 
@@ -477,22 +489,22 @@ class NeuroChip(Chip):
                 self.neuron[block_id] = neuronblock
         self.domdoc = xml
 
-    def __getXML__(self):
+    def __getNHML__(self):
         '''
-        Returns xml representation of this object.
+        Returns nhml representation of this object.
         '''
-        doc = Chip.__getXML__(self)
+        doc = Chip.__getNHML__(self)
         for k, v in self.neuron.items():
-            neurodoc = v.__getXML__()
+            neurodoc = v.__getNHML__()
             neurodoc.attrib['id'] = k
             doc.append(neurodoc)
         return doc
 
-    def __parseXML__(self, doc):
+    def __parseNHML__(self, doc):
         '''
-        Parse xml file or lxml Element tree to build the object
+        Parse nhml file or lxml Element tree to build the object
         '''
-        Chip.__parseXML__(self, doc)
+        Chip.__parseNHML__(self, doc)
         if isinstance(doc, str):
             # parse the file
             doc = etree.parse(doc).getroot()
@@ -502,7 +514,7 @@ class NeuroChip(Chip):
         for elm in doc:
             if elm.tag == 'neuron':
                 neuronblk = NeuronBlock(self)
-                neuronblk.__parseXML__(elm)
+                neuronblk.__parseNHML__(elm)
                 self.neuron[elm.get('id')] = neuronblk
             else:
                 pass
@@ -514,10 +526,10 @@ class NeuroChip(Chip):
             warnings.warn('Dimensions could not be inferred')
             warnings.warn('Error is :' + str(e))
 
-    def saveXML(self, filename):
+    def saveNHML(self, filename):
         '''
-        save XML representation of this object to a file
+        save NHML representation of this object to a file
         '''
-        doc = self.__getXML__()
+        doc = self.__getNHML__()
         with open(filename, 'w') as f:
             f.write(etree.tostring(doc, pretty_print=True))

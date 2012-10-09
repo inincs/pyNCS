@@ -1667,7 +1667,8 @@ class addrSpec:
         try:
             self.update()
         except:
-            warnings.warn('Address specification not updated during init')
+            warnings.warn('Address specification not updated during init.' \
+                          + ' Ignore if loading addrSpec from file.')
 
     def update(self):
         '''
@@ -1732,7 +1733,7 @@ class addrSpec:
     def __getitem__(self, field):
         return self.addrConf[field]
 
-    def __getXML__(self):
+    def __getNHML__(self):
         '''
         Returns xml representation of this object
         '''
@@ -1772,7 +1773,7 @@ class addrSpec:
         pinlayout.text = self.addrStr
         return doc
 
-    def __parseXML__(self, doc):
+    def __parseNHML__(self, doc):
         '''
         Parses an lxml element tree or a file name with xml content to
         initialize the object.
@@ -2055,10 +2056,10 @@ def load_stas_from_nhml(doc):
         if elm.tag == 'addressSpecification':
             if elm.get('type') == 'aerIn':
                 aerIn = addrSpec(id=chipclass + 'In')
-                aerIn.__parseXML__(elm)
+                aerIn.__parseNHML__(elm)
             elif elm.get('type') == 'aerOut':
                 aerOut = addrSpec(id=chipclass + 'Out')
-                aerOut.__parseXML__(elm)
+                aerOut.__parseNHML__(elm)
             else:
                 pass
     return aerIn, aerOut
