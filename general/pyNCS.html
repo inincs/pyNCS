@@ -576,7 +576,7 @@ WARNING: This is buggy! The order of the numbers matters! It should</p>
 
 <dl class="function">
 <dt id="pyNCS.experimentTools.load">
-<tt class="descclassname">pyNCS.experimentTools.</tt><tt class="descname">load</tt><big>(</big><em>filename=None</em><big>)</big><a class="headerlink" href="#pyNCS.experimentTools.load" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">pyNCS.experimentTools.</tt><tt class="descname">load</tt><big>(</big><em>filename=None</em>, <em>compatibility=True</em><big>)</big><a class="headerlink" href="#pyNCS.experimentTools.load" title="Permalink to this definition">¶</a></dt>
 <dd><p>Unpickles file named &#8216;filename&#8217; from the results directory. If no &#8216;filename&#8217; is given, then &#8216;globaldata.pickle&#8217; is loaded</p>
 </dd></dl>
 
@@ -589,6 +589,13 @@ size: 0.5 &#8211; two column page.</p>
 <div>0.33 &#8211; three column page.
 0.25 &#8211; two column double figure.</div></blockquote>
 <p>fontsize: universal font size</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.experimentTools.load_compatibility">
+<tt class="descclassname">pyNCS.experimentTools.</tt><tt class="descname">load_compatibility</tt><big>(</big><em>filename</em><big>)</big><a class="headerlink" href="#pyNCS.experimentTools.load_compatibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same as experimentTools.load(), but works around recent module renaming problems
+Code from <a class="reference external" href="http://wiki.python.org/moin/UsingPickle/RenamingModules">http://wiki.python.org/moin/UsingPickle/RenamingModules</a></p>
 </dd></dl>
 
 <dl class="function">
@@ -1621,7 +1628,7 @@ address is already there, it doesn&#8217;t add.</p>
     </div>
     <div class="footer">
         &copy; Copyright 2012, University of Zurich, Emre Neftci, Sadique Sheik, Fabio Stefanini, Giacomo Indiveri.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>
