@@ -1685,8 +1685,11 @@ class addrSpec:
         self.field, self.nFields = _stas_create_fields(
             self.nBits, self.addrSpec, self.addrConf, self.addrPinConf)
         self.nbits = _stas_compute_nbits(self.addrConf)
-        self.addrExtractLogicalFast = np.empty(
-            [2 ** np.sum(self.nbits.values())], 'float')
+        #self.addrExtractLogicalFast = np.empty(
+        #    [2 ** np.sum(self.nbits.values())], 'float')
+        # NOTE: The above code is modified to accomodate for blank bits in the
+        # address space and hence use of nBitsTotal might be more accurate.
+        self.addrExtractLogicalFast = np.empty([2 ** self.nBitsTotal], 'float')
         self.addrExtractPhysicalFast = dict()
 #        try:
         addrBuildHashTable(self)
