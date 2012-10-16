@@ -44,124 +44,121 @@ import pyNCS, pyNCS.pyST.STas
 
 
 class UpdateEvents:
-        def __init__(self, gui, host='localhost', port=50001, channel=0, dims=(128, 0), fps=25):
-                self.gui = gui
-                self.port = port
-                self.host = host
-                self.dims = dims
-                self.fps = fps
-                self.channel = channel
-                self.gui.updater = self
-                self.stcs = getDefaultMonChannelAddress()
-                pyNCS.pyST.STas.addrBuildHashTable(self.stcs[channel])
-                self.eventsQueue = pyAex.netMonClient(MonChannelAddress=self.stcs,
-                                                           channels=[
-                                                               self.channel],
-                                                           host=self.host,
-                                                           port=self.port,
-                                                           autostart=True,
-                                                           fps=self.fps)
-                self.neurons = numpy.ndarray(shape=(0, 2))
-                self.times = numpy.array([])
-                self.z = numpy.zeros(self.dims)  # Data being plotted
+    def __init__(self, gui, host='localhost', port=50001, channel=0, dims=(128, 0), fps=25):
+        self.gui = gui
+        self.port = port
+        self.host = host
+        self.dims = dims
+        self.fps = fps
+        self.channel = channel
+        self.gui.updater = self
+        self.stcs = getDefaultMonChannelAddress()
+        pyNCS.pyST.STas.addrBuildHashTable(self.stcs[channel])
+        self.eventsQueue = pyAex.netMonClient(MonChannelAddress=self.stcs,
+                                                   channels=[
+                                                       self.channel],
+                                                   host=self.host,
+                                                   port=self.port,
+                                                   autostart=True,
+                                                   fps=self.fps)
+        self.neurons = numpy.ndarray(shape=(0, 2))
+        self.times = numpy.array([])
+        self.z = numpy.zeros(self.dims)  # Data being plotted
 
-                self.gui.channel = channel
+        self.gui.channel = channel
 
-                #count for updating the rate
-                self.clockcount = 0
-                self.ratecount = 0
+        #count for updating the rate
+        self.clockcount = 0
+        self.ratecount = 0
 
-        def fetch(self, *args):
-                '''
-                The function fetches the data from the server and updates the plot (calles the 'update' function)
-                '''
+    def fetch(self, *args):
+        '''
+        The function fetches the data from the server and updates the plot (calles the 'update' function)
+        '''
 
-                cur_neurons = numpy.ndarray(shape=(0, 2))
-                cur_times = numpy.array([])
-                self.datadims = 0  # Dimensionality of the data
-                # for now i assume that the reading of que is faster than
-                # writing.. something more intelligent can go here.
-                while True:
-                        try:
-                                eventsPacket_channel = self.eventsQueue.buffer.get(
-                                    block=False)
-                                if self.channel in eventsPacket_channel:  # Check if there is any data
-                                        ad = self.stcs.addrLogicalExtract({self.channel: eventsPacket_channel.get_ad(self.channel)})[self.channel].transpose()
-                                        if len(ad[0]) >= 2:  # Confirms that the chip actually has two dimensions.
-                                                self.datadims = 2
-                                                cur_neurons = append(cur_neurons,
-                                                                ad[:, 0:2],
-                                                                axis=0,)
-                                                cur_times = append(cur_times,
-                                                           eventsPacket_channel.get_tm(self.channel))
-                                        elif len(ad[0]) == 1:  # Confirms that the chip is one dimensional.
-                                                self.datadims = 1
-                                                cur_neurons = append(cur_neurons,
-                                                                [[i, 0] for i in ad[:, 0]],  # crappy hack..
-                                                                axis=0,)
-                                                cur_times = append(cur_times,
-                                                           eventsPacket_channel.get_tm(self.channel))
+        cur_neurons = numpy.ndarray(shape=(0, 2))
+        cur_times = numpy.array([])
+        self.datadims = 0  # Dimensionality of the data
+        # for now i assume that the reading of que is faster than
+        # writing.. something more intelligent can go here.
+        while True:
+            try:
+                eventsPacket_channel = self.eventsQueue.buffer.get(
+                    block=False)
+                if self.channel in eventsPacket_channel:  # Check if there is any data
+                    pad = eventsPacket_channel.get_ad(self.channel)
+                    ad = self.stcs[self.channel].addrPhysicalExtract(pad).transpose()
+                    if len(ad[0]) >= 2:  # Confirms that the chip actually has two dimensions.
+                        self.datadims = 2
+                        cur_neurons = append(cur_neurons,
+                                        ad[:, 0:2],
+                                        axis=0,)
+                    elif len(ad[0]) == 1:  # Confirms that the chip is one dimensional.
+                        self.datadims = 1
+                        cur_neurons = append(cur_neurons,
+                                        [[i, 0] for i in ad[:, 0]],  # crappy hack..
+                                        axis=0,)
+                    cur_times = append(cur_times,
+                               eventsPacket_channel.get_tm(self.channel))
+            except Queue.Empty, e:
+                    break
 
-                        except Queue.Empty, e:
-                                break
+        self.neurons = cur_neurons
+        self.times = cur_times
 
-                self.neurons = cur_neurons
-                self.times = cur_times
+        #update clock count
+        self.clockcount += 1
 
-                #update clock count
-                self.clockcount += 1
+        self.update()
 
-                self.update()
+    def update(self):
+        '''
+        update() function updates all the components.
+        The class can be inherited and then the update function can be overwritten to make custom filters.
+        '''
+        self.updatePlot()
+        self.updateMeanrate()
 
-        def update(self):
-                '''
-                update() function updates all the components.
-                The class can be inherited and then the update function can be overwritten to make custom filters.
-                '''
-                self.updatePlot()
-                self.updateMeanrate()
+    def updateMeanrate(self):
+        self.ratecount += len(self.times)
+        if self.clockcount % int(self.fps / 2) == 0:
+                self.gui.meanrate = self.ratecount * 2  # update the display
+                self.ratecount = 0  # reset the counter
 
-        def updateMeanrate(self):
-                self.ratecount += len(self.times)
-                if self.clockcount % int(self.fps / 2) == 0:
-                        self.gui.meanrate = self.ratecount * 2  # update the display
-                        self.ratecount = 0  # reset the counter
+    def updatePlot(self):
+        '''
+        updatePlot() function updates the plot
+        '''
+        try:
+            self.z = self.z * self.gui.decay_factor  # Decay factor
+            for c in self.neurons:
+                if self.datadims == 2:  # for a 2D chip
+                    try:
+                        self.z[c[0], c[1]] += 1
+                    except IndexError, e:
+                        # print('Index error in
+                        # updating z',c)
+                        pass  # Data out of the dimensions of plot
+                elif self.datadims == 1:  # for a 1D chip
+                    try:
+                        self.z[c[0], 0] += 1
+                    except IndexError, e:
+                        # print('Index error in
+                        # updating z',c)
+                        pass  # Data out of the dimensions of plot
 
-        def updatePlot(self):
-                '''
-                updatePlot() function updates the plot
-                '''
-                try:
-                        self.z = self.z * self.gui.decay_factor  # Decay factor
-                        for c in self.neurons:
-                                if self.datadims == 2:  # for a 2D chip
-                                        try:
-                                                self.z[c[0], c[1]] += 1
-                                        except IndexError, e:
-                                                # print('Index error in
-                                                # updating z',c)
-                                                pass  # Data out of the dimensions of plot
-                                elif self.datadims == 1:  # for a 1D chip
-                                        try:
-                                                self.z[c[0], 0] += 1
-                                        except IndexError, e:
-                                                # print('Index error in
-                                                # updating z',c)
-                                                pass  # Data out of the dimensions of plot
+            self.gui.plotdata.set_data('imagedata', self.z)
+            self.gui.plot.request_redraw()
+        except IndexError, e:
+            print('Warning:Index Error .. (No data)')
+        return True
 
-                        self.gui.plotdata.set_data('imagedata', self.z)
-                        self.gui.plot.request_redraw()
-                except IndexError, e:
-                        print('Warning:Index Error .. (No data)')
+    def stop(self):
+        self.eventsQueue.stop()
+        print('Updation ended!')
 
-                return True
-
-        def stop(self):
-                self.eventsQueue.stop()
-                print('Updation ended!')
-
-        def __del__(self):
-                self.eventsQueue.stop()
+    def __del__(self):
+        self.eventsQueue.stop()
 
 
 class Controller(Handler):
@@ -169,10 +166,10 @@ class Controller(Handler):
         view = Instance(HasTraits)
 
         def init(self, info):
-                self.view = info.object
+            self.view = info.object
 
         def edit_plot(self, ui_info):
-                self.view.configure_traits(view="plot_edit_view")
+            self.view.configure_traits(view="plot_edit_view")
 
 
 class ImagePlot(HasTraits):
