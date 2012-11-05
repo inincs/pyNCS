@@ -31,10 +31,9 @@ class Connection(object):
         - setup: specify setup if different from popsrc.setup
         """
         self.mapping = self._create_mapping(popsrc, popdst, synapse)
-        self.mapping.connect(popsrc.soma,
-                                 popdst.synapses[synapse],
-                                 fashion=fashion,
-                                 fashion_kwargs=fashion_kwargs)
+        self.mapping.connect(popsrc.soma, popdst.synapses[synapse],
+                             fashion=fashion, fashion_kwargs=fashion_kwargs)
+        self.mapping.prepare()
         if setup is None:
             setup = popsrc.setup
         if append:
