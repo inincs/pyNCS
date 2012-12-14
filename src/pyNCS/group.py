@@ -7,6 +7,7 @@
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
 import numpy as np
+import itertools
 from warnings import warn
 from pyST import *
 
@@ -307,6 +308,31 @@ class AddrGroup(object):
 
         self.__populate__(setup, chipid, grouptype, addresses)
 
+    def populate_cuboid(self, setup, chipid, grouptype, p1, p2):
+        '''
+        Populate addresses within volume defined by the two opposite vertices
+        in the N-dimensional space.
+        setup: setup object
+        chipid: ID of the chip to be populated on
+        grouptype: IN or OUT
+        p1: Lower Vertex (included) (vector of size n) defining the starting vertex
+        p2: Upper Vertex (excluded) (vector of size n) defining the end vertex
+        '''
+        try:
+            assert( len(p1)==len(p2) )
+        except AssertionError, e:
+            raise Exception("Dimensions of vertices do not match")
+        try:
+            assert( ((np.array(p2) - np.array(p1)) <= 0).sum() == 0 )
+        except AssertionError, e:
+            warnings.warn('Zero volume for given vertices')
+        
+        edges = []
+        for i in range(len(p1)):
+            edges.append(range(p1[i], p2[i]))
+        addresses = itertools.product(*edges)
+        self.__populate__(setup, chipid, grouptype, list(addresses))
+
     def populate_by_number(self, setup, chipid, grouptype, n, dims):
         """
         Populate with the given number of neuron, doesn't matter the shape.
@@ -581,11 +607,7 @@ class AddrGroup(object):
         return self.spiketrains_poisson(rate, t_start, duration,
                                         channel=channel)
 
-    def populate_rectangle_coarse(self):
-        raise NotImplementedError
 
-    def populate_circle(self):
-        raise NotImplementedError
 
     def __spiketrains_periodic_bump_vector(self, pos, width, ampl):
         from scipy.stats import norm
