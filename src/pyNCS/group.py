@@ -177,15 +177,8 @@ class AddrGroup(object):
         addr = addr[np.lexsort(zip(*addr[:, :]))]
         
         self._channel = None
-
-        if len(self.addr) > 0:
-            self._laddr = self.ch_addr[self.
-                channel].addrLogicalConstruct(addr.T)
-            self._paddr = self.ch_addr[self.
-                channel].addrPhysicalConstruct(addr.T)
-        else:
-            self._laddr = np.array([], dtype='float')
-            self._paddr = np.array([], dtype='uint32')
+        self._laddr = None
+        self._paddr = None
 
         self.addr = addr
 
@@ -194,14 +187,17 @@ class AddrGroup(object):
         Sort all the addresses with the given order. If the order is None it
         orders by the last column of the address (most probably the column of
         synapses).
+        WARNING: Not advisable to use it unless you are very sure about what you are
+        doing.
         """
         if order is None:
             order = np.lexsort(zip(*self.addr[:, :]))
         self.addr = self.addr[order]
-        if self._laddr != None:
-            self._laddr = self._laddr[order]
-        if self._paddr != None:
-            self._paddr = self._paddr[order]
+        # Just to ensure the addresses are generated.
+        self.laddr; self.paddr
+        # Sort the addresses accordingly.
+        self._laddr = self._laddr[order]
+        self._paddr = self._paddr[order]
 
     def add(self, setup, addresses):
         """
@@ -239,12 +235,29 @@ class AddrGroup(object):
 
         self.chipid = chipid
         self.grouptype = grouptype
-
         self.addr = np.array([], dtype='uint32')
         self._paddr = None  # np.array([],dtype='uint32')
         self._laddr = None  # np.array([],dtype='float')
-
         self.add(setup, addresses)
+    
+    def _get_dtype(self, setup, chipid, grouptype):
+        '''
+        Returns the data type of AddrGroup.addr variable, ie. the
+        format of human readable addresses.
+        '''
+        chp = setup.chips[chipid]
+        if grouptype == 'in':
+            flds = chp.aerIn.addrDict
+        elif grouptype == 'out':
+            flds = chp.aerOut.addrDict
+        else:
+            raise ValueError('Grouptype should be None, "in" or "out", not {0}'.
+                format(grouptype))
+        dtp = [None for i in range(len(flds))]
+        for k,v in flds.iteritems():
+            dtp[v] = (k, 'uint32')
+        return np.dtype(dtp)
+
 
     def populate_line(self, setup, chipid, grouptype, addresses):
         self.__populate__(setup, chipid, grouptype, np.array(addresses))
