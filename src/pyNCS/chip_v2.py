@@ -15,6 +15,7 @@ import warnings
 from ConfAPI import Configurator
 from contextlib import contextmanager
 from lxml import etree
+from re import search as res
 
 
 class Block():
