@@ -373,6 +373,9 @@ class PMapping(Mapping):
         return M
 
     def __connect_by_probability_matrix__(self, groupsrc, groupdst, M, expand=True, hide=False, return_inst=False):
+        '''
+        M : shape -> (len(groupsrc), len(groupdst))
+        '''
 
         if not self.is_connect_possible(groupsrc, groupdst):
             return []
