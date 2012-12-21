@@ -415,10 +415,14 @@ class Chip:
     def grep_params(self, string):
         '''
         Lists all parameters and values containing the given string.
+        Regular expressions allowed, e.g.:
+                chip.grep_params('synaer[i]*|synstd[e]*')
         '''
-        param_names = [name for name in self.get_param_names()
-             if string in name]
-        return self.get_parameter(param_names)
+        l = []
+        for n in self.get_param_names():
+                if res(string, n):
+                        l.append(n)
+        return self.get_parameters(l)
 
     def load_parameters(self, CSVfile, sep='\t'):
         '''
