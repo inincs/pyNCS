@@ -137,7 +137,10 @@ class Mapping(object):
 
         if len(groupsrc) != len(groupdst):
             print "WARNING: source and destination have different sizes"
-            groupdst = groupdst[:len(groupsrc)]
+            if len(groupdst) > len(groupsrc):
+                groupdst = groupdst[:len(groupsrc)]
+            else:
+                groupsrc = groupsrc[:len(groupdst)]
         connect_dist = np.eye(len(groupsrc))*p
         return self.__connect_by_probability_matrix__(groupsrc, groupdst,
                                                       connect_dist, expand=True, hide=False)
