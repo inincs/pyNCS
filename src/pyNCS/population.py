@@ -336,7 +336,7 @@ class Population(object):
         Populate all the synapses of the population with the corresponding
         addresses for the neurons in the population.
         """
-        self.soma.sort()
+        self.soma.sort() #sadique: is this necessary ??
         for s in self.neuronblock.synapses.keys():
             syn_id = self.neuronblock.synapses[s].id
             self.synapses[syn_id] = S = AddrGroup(self.
@@ -345,10 +345,10 @@ class Population(object):
 
             #Populate empty first to set channel and ch_addr of S
             #Consider doing this in AddrGroup
-            S.populate_line(self.setup,
-                    self.soma.chipid,
-                    grouptype='in',
-                    addresses=[])
+            #S.populate_line(self.setup,
+            #        self.soma.chipid,
+            #        grouptype='in',
+            #        addresses=[])
 
             S.populate_line(self.setup,
                     self.soma.chipid,
