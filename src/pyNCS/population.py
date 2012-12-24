@@ -345,10 +345,10 @@ class Population(object):
 
             #Populate empty first to set channel and ch_addr of S
             #Consider doing this in AddrGroup
-            #S.populate_line(self.setup,
-            #        self.soma.chipid,
-            #        grouptype='in',
-            #        addresses=[])
+            S.populate_line(self.setup,
+                    self.soma.chipid,
+                    grouptype='in',
+                    addresses=[])
 
             S.populate_line(self.setup,
                     self.soma.chipid,
