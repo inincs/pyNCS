@@ -62,7 +62,10 @@ class Mapping(object):
         self.mapping = [[int(x) for x in v] for v in self.mapping]
 
     def __instance_from_matrix_random(self, M):
-        return np.random.binomial(1, M).astype('bool')
+        try:
+            return np.random.binomial(1, M.tolist()).astype('bool')
+        except:
+            return np.random.binomial(1,M).astype('bool')
 
     def __build_from_pmatrix_shuffle(self, M):
         raise NotImplementedError
