@@ -211,14 +211,15 @@ class AddrGroup(object):
                 # WARNING: This data type conversion can introduce errors for
                 # complex data types.
                 addr = addresses.astype('uint32').view(self.dtype)
+                addr = addr.T[0]
         else:
             addr = np.array(addresses, dtype='uint32').view(self.dtype)
+            addr = addr.T[0]
 
         if len(self.addr) > 0:
-            addr = addr.T[0]
             self.addr = np.concatenate([self.addr, addr])
         else:
-            self.addr = addr.T[0]
+            self.addr = addr
 
 #    def remove(self, address):
 #        """
@@ -261,7 +262,7 @@ class AddrGroup(object):
 
 
     def populate_line(self, setup, chipid, grouptype, addresses):
-        self.__populate__(setup, chipid, grouptype, np.array(addresses))
+        self.__populate__(setup, chipid, grouptype, addresses)
 
     def populate_rectangle(self, setup, chipid, grouptype, p1, p2, z=None, n=None):
         """

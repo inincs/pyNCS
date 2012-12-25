@@ -26,7 +26,8 @@ def _buildGrid(inlist):
                [1, 0],
                [1, 2],
                [1, 3]])
-
+    Sadique: Isn't this is the same as
+    np.array(list(it.product(*inlist))) ??
     '''
     nD = len(inlist)
     min_list = [0] * nD
@@ -172,6 +173,7 @@ class Population(object):
         """
         Add the given population's addresses to the existing one. If the
         address is already there, it doesn't add.
+        WARNING: Synapses might be incorrect
         """
         if not population.isinit():
             # if the other population is still not initiated init with the same
@@ -209,7 +211,6 @@ class Population(object):
             - addresses: neuron address in human format (e.g. [10, 2] for neuron
               [10,2] in a 2D chip.
         """
-
         for a in addresses:
             if not a in self.neuronblock.soma.addresses:
                 raise Exception("At least one address is not present in the population neuronblock.")
@@ -219,9 +220,9 @@ class Population(object):
         # add synapses
         for k in self.synapses.keys():
             ch = self.synapses[k].channel
-            self.synapses[k].add(
-                    self.setup,
-                    self.__soma2syn__(addresses, synapses=[k]))
+            soma_addr = addresses
+            syn_addr = self.__soma2syn__(soma_addr, synapses=[k])
+            self.synapses[k].add( self.setup, syn_addr)
         #self.__unique_addresses__()
 
     def remove(self, address):
@@ -259,49 +260,79 @@ class Population(object):
         Given the neurons addresses, returns all the addresses of its synapses.
         Useful for populating by giving only the soma addresses.
         If synapses is set, returns only those synapses (e.g., 'excitatory0').
+        NOTE: The returned array preserves ordering of neurons (np.repeat)
         """
 
-        # Freshly generate addresses of synapses
-        somaddr = addresses
-        nd = len(addresses.dtype)
-        synaddr = []
+        ## Freshly generate addresses of synapses
+        #somaddr = addresses
+        #nd = len(addresses.dtype)
+        #synaddr = []
 
+        #for s in synapses:
+        #    # Synapses can be multi-dimensional
+        #    syn_block = self.neuronblock.synapses[s]
+
+        #    # The following codes insures that the addresses are built it the
+        #    # correct order
+        #    ch = self.synapses[s].channel
+        #    ch_ad = self.synapses[s].ch_addr[ch]
+        #    snr = []
+        #    # assumes human readable addresses are of the form neuron -
+        #    # synapse. (could be anything)
+        #    for field in ch_ad.addrConf:
+        #        if field['type'] == -1:
+        #            if field['id'] in syn_block.dims:
+        #                snr.append(syn_block.dims[field['id']])
+        #            else:
+        #                snr.append([field['default_value']])
+        #    print snr
+        #    #The following three lines are a little intricate.
+        #    #It first builds a grid of possible synapses (see _buildGrid)
+        #    # Then combines it (column_stack) with all possible soma addresses
+        #    # (which is already a grid)
+        #    # Repeat and Tile make sure that the dimenstionalities are
+        #    # consistent
+        #    #and that all possible addresses are considered
+
+        #    syngrid = _buildGrid(snr)
+        #    pa = self.soma.addr
+        #    somasyngrid = np.column_stack(
+        #            [np.repeat(pa, len(syngrid), axis=0),
+        #             np.tile(syngrid.T, len(pa)).T])
+        #    synaddr.append(somasyngrid)
+
+        #saddrout = np.array(_flatten(synaddr)).reshape((-1, nd + len(snr)))
+
+        #return _sort_by_logical(saddrout)
+        somaaddr = addresses
+        dtp = AddrGroup._get_dtype(AddrGroup('',''), self.setup,
+                                   self.soma.chipid, 'in')
+        syn_dim_names = None
+        synaddrs_all = None
         for s in synapses:
-            # Synapses can be multi-dimensional
             syn_block = self.neuronblock.synapses[s]
-
-            # The following codes insures that the addresses are built it the
-            # correct order
-            ch = self.synapses[s].channel
-            ch_ad = self.synapses[s].ch_addr[ch]
-            snr = []
-            # assumes human readable addresses are of the form neuron -
-            # synapse. (could be anything)
-            for field in ch_ad.addrConf:
-                if field['type'] == -1:
-                    if field['id'] in syn_block.dims:
-                        snr.append(syn_block.dims[field['id']])
-                    else:
-                        snr.append([field['default_value']])
-            print snr
-            #The following three lines are a little intricate.
-            #It first builds a grid of possible synapses (see _buildGrid)
-            # Then combines it (column_stack) with all possible soma addresses
-            # (which is already a grid)
-            # Repeat and Tile make sure that the dimenstionalities are
-            # consistent
-            #and that all possible addresses are considered
-
-            syngrid = _buildGrid(snr)
-            pa = self.soma.addr
-            somasyngrid = np.column_stack(
-                    [np.repeat(pa, len(syngrid), axis=0),
-                     np.tile(syngrid.T, len(pa)).T])
-            synaddr.append(somasyngrid)
-
-        saddrout = np.array(_flatten(synaddr)).reshape((-1, nd + len(snr)))
-
-        return _sort_by_logical(saddrout)
+            if syn_dim_names == None:
+                syn_dim_names = syn_block.dims.keys()
+                syndtp = np.dtype([(k, 'uint32') for k in syn_dim_names])
+            synaddrs = [syn_block.dims[fld] for fld in syn_dim_names]
+            synaddrs = list(it.product(*synaddrs))
+            if synaddrs_all == None:
+                synaddrs_all = np.array(synaddrs)
+            else:
+                synaddrs_all = np.concatenate((synaddrs_all, synaddrs))
+        # Syn addresses only
+        synaddrs_all = synaddrs_all.astype('uint32').view(syndtp).T[0]
+        # Syn addresses tiled for all soma addresses
+        synaddrs_full = np.tile(synaddrs_all, len(addresses)) 
+        # Soma addresses repeated for all synapse addresses
+        soma_addr_all = addresses.repeat(len(synaddrs_all))
+        # Full addresses space
+        syn_addr_full = np.empty(soma_addr_all.shape, dtype=dtp)
+        for fld in soma_addr_all.dtype.names:
+            syn_addr_full[fld] = soma_addr_all[fld]
+        for fld in synaddrs_all.dtype.names:
+            syn_addr_full[fld] = synaddrs_full[fld]
+        return syn_addr_full
 
     def __populate_init__(self, setup, chipid, neurontype):
         """
@@ -336,24 +367,24 @@ class Population(object):
         Populate all the synapses of the population with the corresponding
         addresses for the neurons in the population.
         """
-        self.soma.sort() #sadique: is this necessary ??
+        #self.soma.sort() #sadique: is this necessary ??
         for s in self.neuronblock.synapses.keys():
             syn_id = self.neuronblock.synapses[s].id
             self.synapses[syn_id] = S = AddrGroup(self.
                 neuronblock.synapses[s].id)
             self.synapses[syn_id].name = self.name + ' ' + str(s)
 
-            #Populate empty first to set channel and ch_addr of S
-            #Consider doing this in AddrGroup
+            ##Populate empty first to set channel and ch_addr of S
+            ##Consider doing this in AddrGroup
+            #S.populate_line(self.setup,
+            #        self.soma.chipid,
+            #        grouptype='in',
+            #        addresses=[])
+            addresses=self.__soma2syn__(self.soma.addr, [s])
             S.populate_line(self.setup,
                     self.soma.chipid,
                     grouptype='in',
-                    addresses=[])
-
-            S.populate_line(self.setup,
-                    self.soma.chipid,
-                    grouptype='in',
-                    addresses=self.__soma2syn__(self.soma.addr, [s]))
+                    addresses=addresses,)
 
     def populate_all(self, setup, chipid, neurontype):
         """
