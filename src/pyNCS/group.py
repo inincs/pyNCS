@@ -215,6 +215,7 @@ class AddrGroup(object):
             addr = np.array(addresses, dtype='uint32').view(self.dtype)
 
         if len(self.addr) > 0:
+            self.addr = self.addr.T[0]
             self.addr = np.concatenate([self.addr, addresses])
         else:
             self.addr = addr
@@ -583,7 +584,7 @@ class AddrGroup(object):
             return self._laddr
         if len(self.addr) > 0:
             self._laddr = self.ch_addr[self.
-                channel].addrLogicalConstruct(self.addr.view('uint32').T)
+                channel].addrLogicalConstruct(self.addr.view('uint32'))
         else:
             self._laddr = np.array([], dtype='float')
         return self._laddr
@@ -601,7 +602,7 @@ class AddrGroup(object):
         if len(self.addr) > 0:
             print self.addr.view('uint32').T
             self._paddr = self.ch_addr.addrPhysicalConstruct(
-                {self.channel: self.addr.view('uint32').T})
+                {self.channel: self.addr.view('uint32')})
         else:
             self._paddr = np.array([], dtype='uint32')
         return self._paddr
