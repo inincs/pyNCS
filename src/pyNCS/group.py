@@ -185,7 +185,7 @@ class AddrGroup(object):
         doing.
         """
         if order is None:
-            order = np.lexsort(zip(*self.addr[:, :]))
+            order = np.argsort(self.addr)
         self.addr = self.addr[order]
         # Just to ensure the addresses are generated.
         self.laddr; self.paddr
@@ -193,16 +193,16 @@ class AddrGroup(object):
         self._laddr = self._laddr[order]
         self._paddr = self._paddr[order]
 
-    def add(self, setup, addresses):
+    def add(self, addresses):
         """
         Add a list of addresses to a group.
         """
-        # Is this the right place to add the setup ?
-        self.setup = setup
-
         if self.grouptype is '':
             raise Exception("Group has never been populated before.")
         
+        if len(addresses) == 0:
+            return
+
         # Check for data type
         if isinstance(addresses, np.ndarray):
             if np.issubdtype(addresses.dtype, self.dtype):
@@ -215,11 +215,11 @@ class AddrGroup(object):
             addr = np.array(addresses, dtype='uint32').view(self.dtype)
 
         if len(self.addr) > 0:
-            self.addr = self.addr.T[0]
-            self.addr = np.concatenate([self.addr, addresses])
+            addr = addr.T[0]
+            self.addr = np.concatenate([self.addr, addr])
         else:
-            self.addr = addr
-
+            self.addr = addr.T[0]
+            print "Address:", addr, self.addr, addresses
 
 #    def remove(self, address):
 #        """
@@ -235,11 +235,12 @@ class AddrGroup(object):
 
         self.chipid = chipid
         self.grouptype = grouptype
+        self.setup = setup
         self.dtype = self._get_dtype(setup, chipid, grouptype)
         self.addr = np.array([], dtype=self.dtype)
         self._paddr = None  # np.array([],dtype='uint32')
         self._laddr = None  # np.array([],dtype='float')
-        self.add(setup, addresses)
+        self.add(addresses)
     
     def _get_dtype(self, setup, chipid, grouptype):
         '''
