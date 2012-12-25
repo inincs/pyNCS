@@ -217,7 +217,7 @@ class AddrGroup(object):
         if len(self.addr) > 0:
             self.addr = np.concatenate([self.addr, addresses])
         else:
-            self.addr = addresses
+            self.addr = addr
 
 
 #    def remove(self, address):
