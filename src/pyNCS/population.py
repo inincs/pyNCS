@@ -263,7 +263,7 @@ class Population(object):
 
         # Freshly generate addresses of synapses
         somaddr = addresses
-        nd = np.shape(addresses)[1]
+        nd = len(addresses.dtype)
         synaddr = []
 
         for s in synapses:
@@ -283,7 +283,7 @@ class Population(object):
                         snr.append(syn_block.dims[field['id']])
                     else:
                         snr.append([field['default_value']])
-
+            print snr
             #The following three lines are a little intricate.
             #It first builds a grid of possible synapses (see _buildGrid)
             # Then combines it (column_stack) with all possible soma addresses

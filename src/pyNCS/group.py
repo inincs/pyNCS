@@ -219,7 +219,6 @@ class AddrGroup(object):
             self.addr = np.concatenate([self.addr, addr])
         else:
             self.addr = addr.T[0]
-            print "Address:", addr, self.addr, addresses
 
 #    def remove(self, address):
 #        """
@@ -601,7 +600,6 @@ class AddrGroup(object):
         if self._paddr != None:
             return self._paddr
         if len(self.addr) > 0:
-            print self.addr.view('uint32').T
             self._paddr = self.ch_addr.addrPhysicalConstruct(
                 {self.channel: self.addr.view('uint32').reshape((-1,
                                                                  len(self.dtype))).T})
