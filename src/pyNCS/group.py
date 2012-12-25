@@ -62,7 +62,7 @@ class AddrGroup(object):
         self.name = name  # a short name
         self._channel = None
         self.chipid = ''
-        self.addr = np.array([], dtype='uint32')
+        self.addr = None
         self._paddr = None
         self._laddr = None
         self._channel = None
@@ -139,13 +139,13 @@ class AddrGroup(object):
                 g._laddr = self._laddr[i]
         else:
             if hasattr(i, '__len__'):
-                g.addr = np.array(self.addr[i], dtype='uint32')
+                g.addr = np.array(self.addr[i])
                 if self._paddr != None:
                     g._paddr = np.array(self._paddr[i], dtype='uint32')
                 if self._laddr != None:
                     g._laddr = np.array(self._laddr[i], dtype='float')
             else:
-                g.addr = np.array([self.addr[i]], dtype='uint32')
+                g.addr = np.array([self.addr[i]], dtype=self.dtype)
                 if self._paddr != None:
                     g._paddr = np.array([self._paddr[i]], dtype='uint32')
                 if self._laddr != None:
@@ -171,16 +171,10 @@ class AddrGroup(object):
         self.setup = setup
         if self.grouptype is '':
             raise Exception("Group has never been populated before.")
-
-        #No need to keep funny order, fall back to logical order
-        addr = self.addr.copy()
-        addr = addr[np.lexsort(zip(*addr[:, :]))]
-        
         self._channel = None
         self._laddr = None
         self._paddr = None
-
-        self.addr = addr
+        self.addr = self.addr.copy()
 
     def sort(self, order=None):
         """
@@ -208,13 +202,18 @@ class AddrGroup(object):
 
         if self.grouptype is '':
             raise Exception("Group has never been populated before.")
-
-        if not isinstance(addresses, np.ndarray):  # is this really necessary?
-            addr = np.array(addresses, dtype='uint32')
+        
+        # Check for data type
+        if isinstance(addresses, np.ndarray):
+            if np.issubdtype(addresses.dtype, self.dtype):
+                addr = addresses
+            else:
+                # WARNING: This data type conversion can introduce errors for
+                # complex data types.
+                addr = addresses.astype('uint32').view(self.dtype)
         else:
-            addr = addresses
+            addr = np.array(addresses, dtype='uint32').view(self.dtype)
 
-        # TODO: uniform everything to use np.array
         if len(self.addr) > 0:
             self.addr = np.concatenate([self.addr, addresses])
         else:
@@ -235,7 +234,8 @@ class AddrGroup(object):
 
         self.chipid = chipid
         self.grouptype = grouptype
-        self.addr = np.array([], dtype='uint32')
+        self.dtype = self._get_dtype(setup, chipid, grouptype)
+        self.addr = np.array([], dtype=self.dtype)
         self._paddr = None  # np.array([],dtype='uint32')
         self._laddr = None  # np.array([],dtype='float')
         self.add(setup, addresses)
@@ -583,7 +583,7 @@ class AddrGroup(object):
             return self._laddr
         if len(self.addr) > 0:
             self._laddr = self.ch_addr[self.
-                channel].addrLogicalConstruct(self.addr.T)
+                channel].addrLogicalConstruct(self.addr.view('uint32').T)
         else:
             self._laddr = np.array([], dtype='float')
         return self._laddr
@@ -599,8 +599,9 @@ class AddrGroup(object):
         if self._paddr != None:
             return self._paddr
         if len(self.addr) > 0:
+            print self.addr.view('uint32').T
             self._paddr = self.ch_addr.addrPhysicalConstruct(
-                {self.channel: self.addr.T})
+                {self.channel: self.addr.view('uint32').T})
         else:
             self._paddr = np.array([], dtype='uint32')
         return self._paddr
