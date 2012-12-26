@@ -186,10 +186,10 @@ class AddrGroup(object):
         """
         if order is None:
             order = np.argsort(self.addr)
-        self.addr = self.addr[order]
         # Just to ensure the addresses are generated.
         self.laddr; self.paddr
         # Sort the addresses accordingly.
+        self.addr = self.addr[order]
         self._laddr = self._laddr[order]
         self._paddr = self._paddr[order]
 
