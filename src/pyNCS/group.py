@@ -132,7 +132,7 @@ class AddrGroup(object):
         """
         g = self.__copy__()
         if isinstance(i, slice):
-            g.addr = self.addr[i]
+            g.addr = self.addr[i].copy()
             if self._paddr != None:
                 g._paddr = self._paddr[i]
             if self._laddr != None:
