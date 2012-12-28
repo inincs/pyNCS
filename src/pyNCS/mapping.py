@@ -79,12 +79,19 @@ class Mapping(object):
         self.mapping = np.concatenate([c.mapping.mapping for c in
                                        connections_list]).tolist()
 
+    def complete(self):
+        '''
+        Completes the fields if there are any blank fields in the table
+        '''
+        pass
+
     def merge(self, pyncs_mapping):
         """
         Merge the existing mapping with a given one. It acts on two
         pyNCS.Mapping instancies.
         """
         # TODO: check for duplicates
+        self.complete()
         if len(self.mapping) > 0:
             if len(pyncs_mapping.mapping) > 0:
                 self.mapping = np.concatenate([self.mapping,
@@ -361,7 +368,7 @@ class Mapping(object):
         '''
         Returns a dictionary of the mappings
         '''
-            #sort list
+        #sort list
         from collections import defaultdict
         mapping_dict = defaultdict(list)
         func = lambda srctgt: mapping_dict[srctgt[0]].append(srctgt[1])
