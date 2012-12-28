@@ -328,7 +328,8 @@ class NeuroSetup(object):
                 self.mapper.set_mappings(self.mapping.mapping)
 
     def __copy__(self):
-        return self.__class__(self.setuptype, self.setupfile, self.prefix)
+        return self.__class__(self.setuptype, self.setupfile,
+                              prefix=self.prefix, offline=self.offline)
 
     def __deepcopy__(self, memo):
         return self.__copy__()
@@ -336,7 +337,10 @@ class NeuroSetup(object):
     def __getstate__(self):
         return {'setuptype': self.setuptype,
                 "setupfile": self.setupfile,
-                "prefix": self.prefix}
+                "prefix": self.prefix,
+                "offline":self.offline,
+                "validate": self.validate,
+               }
 
     def reload(self):
         '''
