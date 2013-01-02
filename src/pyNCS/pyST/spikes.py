@@ -1860,3 +1860,18 @@ def set_labels(subplot, xlabel, ylabel):
         subplot.set_ylabel(ylabel)
     else:
         raise Exception('ERROR: The plot passed to function NeuroTools.plotting.set_label(...) does not provide labelling functions.')
+
+def merge_sequencers(*l_seq):
+    '''
+    merge_sequencers(stim1, stim2 ......)
+    Merges (soon to be) sequencer objects. These are typically returend by pyNCS.group spiketrain functions and used in setup.run
+    '''
+    from collections import defaultdict
+    new_seq = defaultdict(list)
+    merged_seq = dict()
+    for seq in l_seq:
+        for k, s in seq.iteritems():
+            new_seq[k].append(s)
+    for k, lseq in new_seq.iteritems():
+        merged_seq[k] = merge_spikelists(*lseq)
+    return merged_seq

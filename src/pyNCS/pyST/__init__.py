@@ -10,7 +10,8 @@ from STas import events, channelEvents, RawOutput, channelAddressing, addrSpec
 from STas import setDefaultMonChannelAddress, setDefaultSeqChannelAddress,\
                  getDefaultMonChannelAddress, getDefaultSeqChannelAddress
 from STsl import STCreate
-from spikes import SpikeList, SpikeTrain, merge, merge_spikelists
+from spikes import SpikeList, SpikeTrain, merge, merge_spikelists, \
+                   merge_sequencers
 import pyST_globals
 import numpy as np
 
