@@ -1634,6 +1634,7 @@ class SpikeList(object):
             spk = self
         else:
             spk = self.id_slice(id_list)
+        
 
         if t_start is None:
             t_start = spk.t_start
@@ -1642,36 +1643,42 @@ class SpikeList(object):
         if t_start != spk.t_start or t_stop != spk.t_stop:
             spk = spk.time_slice(t_start, t_stop)
 
+        if t_start == None:
+            t_start = 0
+        if t_stop == None:
+            t_stop = 1.
+
         if not subplot or not HAVE_PYLAB:
             warnings.warn('PYLAB_ERROR')
         else:
             ids, spike_times = spk.convert(format="[ids, times]")
 
-            try:
-                idx = numpy.where(
-                    (spike_times >= t_start) & (spike_times <= t_stop))[0]
-                if len(spike_times) > 0:
-                    if kwargs.has_key('linestyle') or kwargs.has_key('ls'):
-                        pass
-                    else:
-                        kwargs['ls'] = ''
-                    if 'marker' in kwargs:
-                        pass
-                    else:
-                        kwargs['marker'] = '.'
-                    subplot.plot(spike_times, ids, **kwargs)
-                xlabel = "Time (ms)"
-                ylabel = "Neuron"
-                set_labels(subplot, xlabel, ylabel)
-                min_id = numpy.min(spk.id_list())
-                max_id = numpy.max(spk.id_list())
-                length = t_stop - t_start
-                set_axis_limits(subplot, t_start - 0.05 *
-                    length, t_stop + 0.05 * length, min_id - 2, max_id + 2)
-                pylab.draw()
-
-            except IndexError:
+            idx = numpy.where(
+                (spike_times >= t_start) & (spike_times <= t_stop))[0]
+            if len(spike_times) > 0:
+                if kwargs.has_key('linestyle') or kwargs.has_key('ls'):
+                    pass
+                else:
+                    kwargs['ls'] = ''
+                if 'marker' in kwargs:
+                    pass
+                else:
+                    kwargs['marker'] = '.'
+                subplot.plot(spike_times, ids, **kwargs)
+            xlabel = "Time (ms)"
+            ylabel = "Neuron"
+            set_labels(subplot, xlabel, ylabel)
+            idlist = spk.id_list()
+            if len(idlist) > 0:
+                min_id = numpy.min(idlist)
+                max_id = numpy.max(idlist)
+            else:
+                max_id = min_id = 0
                 print 'Empty Spiketrain'
+            length = t_stop - t_start
+            set_axis_limits(subplot, t_start - 0.05 *
+                length, t_stop + 0.05 * length, min_id - 2, max_id + 2)
+            pylab.draw()
 
     #######################################################################
     ## Method to convert the SpikeList into several others format        ##
