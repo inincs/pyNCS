@@ -320,6 +320,32 @@ class SpikeTrain(object):
                 self.spike_times <= t_stop))[0]
         return 1000. * len(idx) / (t_stop - t_start)
 
+    def mean_rate_isi(self, t_start=None, t_stop=None):
+        '''
+        Returns the mean rate (Hz) based on the interspike intervals
+
+        Inputs:
+            t_start, t_stop - in ms. If not defined, the one of the SpikeTrain object is used
+        '''
+        if (t_start == None) & (t_stop == None):
+            isi = self.isi()
+        else:
+            if t_start == None:
+                t_start = self.t_start
+            else:
+                t_start = max(self.t_start, t_start)
+            if t_stop == None:
+                t_stop = self.t_stop
+            else:
+                t_stop = min(self.t_stop, t_stop)
+            print t_start, t_stop
+            isi = self.time_slice(t_start, t_stop).isi()
+        if len(isi):
+            mean_rate = 1000./numpy.mean(isi)
+            return mean_rate
+        else:
+            return 0 # There were no spikes
+
     def cv_isi(self):
         """
         Return the coefficient of variation of the isis.
@@ -1328,6 +1354,19 @@ class SpikeList(object):
             mean_rates, mean_rate_std
         """
         return numpy.mean(self.mean_rates(t_start, t_stop))
+    def mean_rates_isi(self, t_start=None, t_stop=None):
+        '''
+        Returns a list of mean rates calculated on the basis of interspike
+        interval.
+        
+        If t_start or t_stop are not defined, those of the SpikeList are used
+        '''
+        mean_rate = []
+        for id in self.id_list():
+            mean_rate.append(self.spiketrains[id].mean_rate_isi(t_start, 
+                                                                t_stop))
+        return mean_rate
+
 
     def mean_rate_std(self, t_start=None, t_stop=None):
         """
