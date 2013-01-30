@@ -313,7 +313,9 @@ class Population(object):
             syn_block = self.neuronblock.synapses[s]
             if syn_dim_names == None:
                 syn_dim_names = syn_block.dims.keys()
-                syndtp = np.dtype([(k, 'uint32') for k in syn_dim_names])
+                syndtp = np.dtype([(str(k), 'uint32') for k in syn_dim_names])
+                # NOTE: the str type cast is because numpy dtype doesn't support
+                # unicode strings
             synaddrs = [syn_block.dims[fld] for fld in syn_dim_names]
             synaddrs = list(it.product(*synaddrs))
             if synaddrs_all == None:
