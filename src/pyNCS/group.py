@@ -384,6 +384,7 @@ class AddrGroup(object):
         '''
         Constructs a stimulus with the desired SpikeList.
         spikes : list of tuples (id, time)
+        id -> logical addresses of the group ie. AddrGroup.laddr
         All the arguments are the same as that of a pyST.SpikeList
         '''
         stStim = SpikeList(spikes=spikes, id_list=self.laddr,
