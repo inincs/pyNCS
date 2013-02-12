@@ -93,9 +93,24 @@ class Mapping(object):
         # TODO: check for duplicates
         self.complete()
         if len(self.mapping) > 0:
+            # check for shape
+            my_cols = np.shape(self.mapping)[1]
             if len(pyncs_mapping.mapping) > 0:
-                self.mapping = np.concatenate([self.mapping,
-                                               pyncs_mapping.mapping]).tolist()
+                # check for shape
+                their_cols = np.shape(pyncs_mapping.mapping)[1]
+                # check for shape compatibility
+                if my_cols > their_cols:
+                    # Do something
+                    self.mapping.append(*pyncs_mapping.mapping)
+                    self.complete()
+                elif my_cols < their_cols:
+                    warn('Connection cannot be merged. Ignoring probability')
+                    # NOTE: Assuming the only missing dimension is probability
+                    self.mapping = np.concatenate([self.mapping,
+                        np.array(pyncs_mapping.mapping)[:,0:my_cols]]).tolist()
+                else:
+                    self.mapping = np.concatenate([self.mapping,
+                                        pyncs_mapping.mapping]).tolist()
         else:
             self.mapping = pyncs_mapping.mapping
 
