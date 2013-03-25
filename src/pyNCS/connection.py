@@ -9,7 +9,6 @@
 import numpy as np
 import pylab
 
-import pyAex
 from mapping import Mapping, PMapping
 
 class Connection(object):

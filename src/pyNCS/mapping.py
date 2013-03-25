@@ -11,7 +11,6 @@ import sys
 import subprocess
 import numpy as np
 import pydot
-import pyAex
 from warnings import warn
 
 
