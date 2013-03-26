@@ -17,6 +17,8 @@ import warnings
 from contextlib import contextmanager
 from lxml import etree
 from itertools import chain
+import ComAPI
+import ConfAPI
 
 
 URL_SETUPDTD = 'http://ncs.ethz.ch/internal/files/setup.dtd/at_download/file'
@@ -178,8 +180,12 @@ class NeuroSetup(object):
         for ncom in nsetup.iterfind('communicator'):
             com_kwargs = xml_parse_parameter(ncom)
             self.com_kwargs = dict_merge(self.com_kwargs, com_kwargs)
-
-            self.com_api = self._import_module(str(ncom.attrib['module']))
+            try:
+                self.com_api = self._import_module(str(ncom.attrib['module']))
+            except ImportError, e:
+                warnings.warn(e.message)
+                self.com_api = ComAPI
+                self.com_kwargs = {}
             self.communicator = self.com_api.Communicator(**self.com_kwargs)
         
         # Load virtual chips
@@ -202,7 +208,12 @@ class NeuroSetup(object):
             nconf = nchip.find('configurator')
             module = str(nconf.attrib['module'])
             conf_kwargs = xml_parse_parameter(nconf)
-            conf_api = self._import_module(module)
+            try:
+                conf_api = self._import_module(module)
+            except ImportError, e:
+                warnings.warn(e.message)
+                conf_api = ConfAPI
+                conf_kwargs = {}
             chip = NeuroChip(chipfile, id=chipid, offline=offline,
                              conf_api=conf_api,
                              conf_kwargs=conf_kwargs)
@@ -218,8 +229,12 @@ class NeuroSetup(object):
         for nmapper in nsetup.iterfind('mapper'):
             map_kwargs = xml_parse_parameter(nmapper)
             self.map_kwargs = dict_merge(self.map_kwargs, map_kwargs)
-
-            self.map_api = self._import_module(str(nmapper.attrib['module']))
+            try:
+                self.map_api = self._import_module(str(nmapper.attrib['module']))
+            except ImportError, e:
+                warnings.warn(e.message)
+                self.map_api = ConfAPI
+                self.map_kwargs = {}
             self.mapper = self.map_api.Mappings(**self.map_kwargs)
             if self.map_kwargs.has_key('version'):
                 if float(self.map_kwargs['version']) == 3.0:
@@ -237,8 +252,8 @@ class NeuroSetup(object):
             #without fromlist, only the package is returned
             mod = __import__(module, fromlist=[module])
         except ImportError, error:
+            #print(error)
             raise ImportError('{0} API failed to be imported'.format(module))
-            print(error)
         return mod
 
     def aerDummy(self):
