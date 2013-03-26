@@ -117,12 +117,13 @@ class Population(object):
 
         if isinstance(i, slice):
             p.soma = self.soma[i]
-            p.__populate_synapses__()
-            return p
         else:
-            p.soma = self.soma[i:i + 1]
-            p.__populate_synapses__()
-            return p
+            if hasattr(i, '__len__'):
+                p.soma = self.soma[i]
+            else:
+                p.soma = self.soma[i:i + 1]
+        p.__populate_synapses__()
+        return p
 
     def __getslice__(self, i, j):
         """
