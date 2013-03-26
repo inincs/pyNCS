@@ -100,7 +100,7 @@ class Mapping(object):
                 # check for shape compatibility
                 if my_cols > their_cols:
                     # Do something
-                    self.mapping.append(*pyncs_mapping.mapping)
+                    self.mapping.extend(pyncs_mapping.mapping)
                     self.complete()
                 elif my_cols < their_cols:
                     warn('Connection cannot be merged. Ignoring probability')
