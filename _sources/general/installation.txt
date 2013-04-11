@@ -4,36 +4,26 @@ Software Installation
 Preliminary remarks
 -------------------
 
-**Please remember that most of this software is **work in progress, therefore please do not distribute.**
-
-The software used in the NCS group is mainly written in the Python Programming Language. Online tutorials for python can be found on `docs.python.org <http://docs.python.org/tutorial/>`
-
 The software is mainly tested on Linux. It has been reported to work on Mac OS X without considerable difficulty, but is is currently not supported by Windows.
 
 Prerequisites
 .............
 
-You first need the following packages
+You first need the following python packages
 
 - `python <http://www.python.org>`_
 - `python-dev <http://www.python.org>`_
-
-And the following third party modules
-
 - `numpy <http://numpy.scipy.org/>`_
-- `matplotlib <http://matplotlib.sourceforge.net/>`_
 - `scipy <http://numpy.scipy.org/>`_
+- `matplotlib <http://matplotlib.sourceforge.net/>`_
 - `pydot <http://pydot.googlecode.com/files/pydot-1.0.25.zip>`_
+- `lxml <http://lxml.de/>`_
 
 For real-time vizualization, you will need Enthoughts Chaco Module:
 
 - `TraitsGUI <http://www.enthought.com/repo/ETS/TraitsGUI-3.6.0.tar.gz>`_
 - `chaco <http://pypi.python.org/pypi/Chaco/3.0.0>`_
 
-If your computer is going to act as a Server (i.e. you are going to connect
-chips to your computer), you also need
-
-- fxload
 
 Finally, a nice matlab--style Python prompt is IPython.
 
@@ -41,10 +31,8 @@ Finally, a nice matlab--style Python prompt is IPython.
 
 You can try to install all these packages in ubuntu, add the "universe" repository and run the following command in a terminal:
 
-    ``sudo apt-get install python python-pydot python-dev python-numpy python-matplotlib iPython python-scipy python-chaco python-lxml python-traits python-traitsui``
+    ``sudo apt-get install python python-pydot python-dev python-numpy python-matplotlib iPython python-scipy python-chaco python-lxml``
 
-and for server-mode, also:
-    ``sudo apt-get install fxload``
 
 Optional packages:
 
@@ -54,19 +42,26 @@ Optional packages:
 - `setuptools <http://pypi.python.org/pypi/setuptools/0.6c8>`_
 - `wxPython <http://downloads.sourceforge.net/wxpython/wxPython-src-2.9.1.1.tar.bz2>`_
 
+Installation of pyNCS
+---------------------
 
-Installation of NCS python packages
+- This packages contains all the objects needed for the setup. You can download
+  the latest version of pyNCS by running the following command through your commandline tools.
+
+    ``git clone https://github.com/inincs/pyNCS.git``
+
+For installing the python package go to the downloaded directory and run
+
+    ``sudo python setup.py install``
+
+You can do the same for any python package.
+
+
+Installation of INI python packages
 -----------------------------------
 
-The NCS software can be downloaded directly from their respective repositories. 
 
-- pyST: the python SpikeToolbox (responsible: Emre_)
-
-    ``svn co https://svn.ini.uzh.ch/repos/ncs/ini/code/python/pyST``
-
-- pyNCS: the python Neuromorphic Cognitive Systems setup module. This packages contains all the objects needed for the setup (responsible: Sadique Sheik, Emre_, Fabio Stefanini)
-
-    ``svn co https://svn.ini.uzh.ch/repos/ncs/ini/code/python/pyNCS``
+The NCS drivers can be downloaded directly from their respective repositories. 
 
 - pyAMDA: this module is required by pyNCS and contains the module to set the biases (responsible: Sadique Sheik, Daniel Sonnleithner)
 
@@ -76,13 +71,17 @@ The NCS software can be downloaded directly from their respective repositories.
 
     ``svn co https://svn.ini.uzh.ch/repos/ncs/ini/code/python/pyAex``
 
-For installing all the python packages (those starting with py) go to the root directory of each package and run
-
-    ``sudo python setup.py install``
 
 This will install the python module to the appropriate place on your system. 
 
 **The following is only needed if your computer is going to act as a server, i.e. it will be directly connected to an AEX board. If you don't know what this means, this means it is probably not required**
+
+If your computer is going to act as a Server (i.e. you are going to connect
+chips to your computer), you also need
+
+- fxload
+    
+    ``sudo apt-get install fxload``
 
 - aerfx2 and fx2: the driver for the AEX boards (Daniel_)
 - udevamda: the udev rule for the amda boards (Sadique Sheik, Daniel Sonnleithner). you may install the udev rules by running ``make install`` as root in the udevamda directory
@@ -91,8 +90,8 @@ Setup files and chip files explained
 ------------------------------------
 
 The "setup files" and the "chip files" contain information about the hardware setup, such
-as IP addresses of the servers and mappers, ID of the AMDA boards connected, the list of the chips connected to the hardware, how to interpret AER packets, and so on.
-The pyNCS package comes with them in the ``setupfiles`` and ``chipfiles``
+as IP addresses of the servers and mappers, ID of the boards connected, the list of the chips connected to the hardware, how to interpret AER packets, and so on.
+The pyNCS package comes with them in the ``test/setupfiles`` and ``test/chipfiles``
 folders. Here we explain some details about them.
 
 Chip files
@@ -237,8 +236,6 @@ The last fields of the ``setup.xml`` file describes which modules should be used
 .. image:: ../images/amda_and_aex.jpg
    :width: 400px
 
-.. _NeuroTools: http://neuralensemble.org/trac/NeuroTools
-.. _pyST: pyst.html
 .. _Emre: mailto:emre(at)ini.phys.ethz.ch
 .. _Daniel: mailto:fasnacht(at)sos.phys.ethz.ch
 .. _ncs: http://ncs.ethz.ch

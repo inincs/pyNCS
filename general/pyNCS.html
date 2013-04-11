@@ -465,7 +465,10 @@ simultaneously.</p>
 <dl class="method">
 <dt id="pyNCS.chip_v2.Chip.grep_params">
 <tt class="descname">grep_params</tt><big>(</big><em>string</em><big>)</big><a class="headerlink" href="#pyNCS.chip_v2.Chip.grep_params" title="Permalink to this definition">¶</a></dt>
-<dd><p>Lists all parameters and values containing the given string.</p>
+<dd><p>Lists all parameters and values containing the given string.
+Regular expressions allowed, e.g.:</p>
+<blockquote>
+<div>chip.grep_params(&#8216;synaer[i]*|synstd[e]*&#8217;)</div></blockquote>
 </dd></dl>
 
 <dl class="method">
@@ -511,9 +514,9 @@ created with saveBiases(CSVfile)</p>
 <em class="property">class </em><tt class="descclassname">pyNCS.chip_v2.</tt><tt class="descname">NeuroChip</tt><big>(</big><em>chipfile</em>, <em>id='noname'</em>, <em>offline=False</em>, <em>conf_api=None</em>, <em>conf_kwargs={}</em><big>)</big><a class="headerlink" href="#pyNCS.chip_v2.NeuroChip" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pyNCS.chip_v2.Chip" title="pyNCS.chip_v2.Chip"><tt class="xref py py-class docutils literal"><span class="pre">pyNCS.chip_v2.Chip</span></tt></a></p>
 <dl class="method">
-<dt id="pyNCS.chip_v2.NeuroChip.saveXML">
-<tt class="descname">saveXML</tt><big>(</big><em>filename</em><big>)</big><a class="headerlink" href="#pyNCS.chip_v2.NeuroChip.saveXML" title="Permalink to this definition">¶</a></dt>
-<dd><p>save XML representation of this object to a file</p>
+<dt id="pyNCS.chip_v2.NeuroChip.saveNHML">
+<tt class="descname">saveNHML</tt><big>(</big><em>filename</em><big>)</big><a class="headerlink" href="#pyNCS.chip_v2.NeuroChip.saveNHML" title="Permalink to this definition">¶</a></dt>
+<dd><p>save NHML representation of this object to a file</p>
 </dd></dl>
 
 </dd></dl>
@@ -651,10 +654,8 @@ Inputs:
 <dt id="pyNCS.group.AddrGroup">
 <em class="property">class </em><tt class="descclassname">pyNCS.group.</tt><tt class="descname">AddrGroup</tt><big>(</big><em>name</em>, <em>description=None</em><big>)</big><a class="headerlink" href="#pyNCS.group.AddrGroup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
-<p>A AddrGroup is a group of chip addresses. They can be of grouptype &#8216;in&#8217; or of grouptype &#8216;out&#8217;. A description
-is needed for populating the group.
-AddrGroup lives in the setup, which means one can address neurons without caring about on which
-chip.</p>
+<p>A AddrGroup is a group of chip addresses. They can be of grouptype &#8216;in&#8217; or
+of grouptype &#8216;out&#8217;. A description is needed for populating the group.</p>
 <dl class="docutils">
 <dt>Ex.:</dt>
 <dd><p class="first">setup = pyNCS.Setup(&#8216;setuptype.xml&#8217;)
@@ -665,12 +666,12 @@ group1 = AddrGroup(&#8216;retina output&#8217;)
 group1.populate_rectangle(</p>
 <blockquote>
 <div>setup, &#8216;retina&#8217;, &#8216;out&#8217;, [0,0,0], [64,64,0], n = 28*28 )</div></blockquote>
-<p># input from the retina
+<p># input from the ifslwta_0 chip
 group2 = AddrGroup(&#8216;A1 cortex learning input&#8217;)
 group2.populate_rectangle(setup, &#8216;ifslwta_0&#8217;, &#8216;in&#8217;, [0,4], [28,32])</p>
 <p># input from the sequencer
 group3 = AddrGroup(&#8216;A1 cortex excitatory input&#8217;)
-group3.populate_rectangle(setup, &#8216;ifslwta_0&#8217;, &#8216;in&#8217;, [0,2], [28,2])</p>
+group3.populate_rectangle(setup, &#8216;sequencer&#8217;, &#8216;in&#8217;, [0,2], [28,2])</p>
 <p># input from the sequencer
 group4 = AddrGroup(&#8216;A1 cortex excitatory inhibitory&#8217;)
 group4.populate_rectangle(setup, &#8216;ifslwta_0&#8217;, &#8216;in&#8217;, [0,2], [28,2])</p>
@@ -688,7 +689,7 @@ mapping = group1.connect_one2one(group2)</p>
 </dl>
 <dl class="method">
 <dt id="pyNCS.group.AddrGroup.add">
-<tt class="descname">add</tt><big>(</big><em>setup</em>, <em>addresses</em><big>)</big><a class="headerlink" href="#pyNCS.group.AddrGroup.add" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">add</tt><big>(</big><em>addresses</em><big>)</big><a class="headerlink" href="#pyNCS.group.AddrGroup.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a list of addresses to a group.</p>
 </dd></dl>
 
@@ -697,15 +698,22 @@ mapping = group1.connect_one2one(group2)</p>
 <tt class="descname">ch_addr</tt><a class="headerlink" href="#pyNCS.group.AddrGroup.ch_addr" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="attribute">
+<dt id="pyNCS.group.AddrGroup.channel">
+<tt class="descname">channel</tt><a class="headerlink" href="#pyNCS.group.AddrGroup.channel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="pyNCS.group.AddrGroup.getLaddr">
 <tt class="descname">getLaddr</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.group.AddrGroup.getLaddr" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Regenreates Locigal addresses from address list.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyNCS.group.AddrGroup.getPaddr">
 <tt class="descname">getPaddr</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.group.AddrGroup.getPaddr" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Regenerates Physical addresses from the address list.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="pyNCS.group.AddrGroup.is_empty">
@@ -725,18 +733,16 @@ mapping = group1.connect_one2one(group2)</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pyNCS.group.AddrGroup.populate_by_number">
-<tt class="descname">populate_by_number</tt><big>(</big><em>setup</em>, <em>chipid</em>, <em>grouptype</em>, <em>n</em>, <em>dims</em><big>)</big><a class="headerlink" href="#pyNCS.group.AddrGroup.populate_by_number" title="Permalink to this definition">¶</a></dt>
-<dd><p>Populate with the given number of neuron, doesn&#8217;t matter the shape.
-Needs the number of dimensions
-WARNING: This should go in upper layer of abstraction.
-TODO: check if this function is unused (Reason: contains reference errors)</p>
+<dt id="pyNCS.group.AddrGroup.populate_cuboid">
+<tt class="descname">populate_cuboid</tt><big>(</big><em>setup</em>, <em>chipid</em>, <em>grouptype</em>, <em>p1</em>, <em>p2</em><big>)</big><a class="headerlink" href="#pyNCS.group.AddrGroup.populate_cuboid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Populate addresses within volume defined by the two opposite vertices
+in the N-dimensional space.
+setup: setup object
+chipid: ID of the chip to be populated on
+grouptype: IN or OUT
+p1: Lower Vertex (included) (vector of size n) defining the starting vertex
+p2: Upper Vertex (excluded) (vector of size n) defining the end vertex</p>
 </dd></dl>
-
-<dl class="method">
-<dt id="pyNCS.group.AddrGroup.populate_circle">
-<tt class="descname">populate_circle</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.group.AddrGroup.populate_circle" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="method">
 <dt id="pyNCS.group.AddrGroup.populate_line">
@@ -749,17 +755,6 @@ TODO: check if this function is unused (Reason: contains reference errors)</p>
 <dd><p>Populate with all the neurons within the rectangle&#8217;s given coordinates. If n is given,
 populate with the given number of neurons instead of all neurons in the rectangle.
 z defines the 3d coordinate, e.g. retina polarity or synapse in the 2d chip.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pyNCS.group.AddrGroup.populate_rectangle_coarse">
-<tt class="descname">populate_rectangle_coarse</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.group.AddrGroup.populate_rectangle_coarse" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="pyNCS.group.AddrGroup.remove">
-<tt class="descname">remove</tt><big>(</big><em>address</em><big>)</big><a class="headerlink" href="#pyNCS.group.AddrGroup.remove" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove list of addresses to a group.</p>
 </dd></dl>
 
 <dl class="method">
@@ -783,7 +778,9 @@ z defines the 3d coordinate, e.g. retina polarity or synapse in the 2d chip.</p>
 <tt class="descname">sort</tt><big>(</big><em>order=None</em><big>)</big><a class="headerlink" href="#pyNCS.group.AddrGroup.sort" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sort all the addresses with the given order. If the order is None it
 orders by the last column of the address (most probably the column of
-synapses).</p>
+synapses).
+WARNING: Not advisable to use it unless you are very sure about what you are
+doing.</p>
 </dd></dl>
 
 <dl class="method">
@@ -791,6 +788,7 @@ synapses).</p>
 <tt class="descname">spiketrains</tt><big>(</big><em>spikes=</em><span class="optional">[</span><span class="optional">]</span>, <em>t_start=0</em>, <em>t_stop=None</em>, <em>dims=None</em><big>)</big><a class="headerlink" href="#pyNCS.group.AddrGroup.spiketrains" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructs a stimulus with the desired SpikeList.
 spikes : list of tuples (id, time)
+id -&gt; logical addresses of the group ie. AddrGroup.laddr
 All the arguments are the same as that of a pyST.SpikeList</p>
 </dd></dl>
 
@@ -899,6 +897,12 @@ Inputs:
 <dt id="pyNCS.mapping.Mapping.clear">
 <tt class="descname">clear</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.mapping.Mapping.clear" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clear mapping list.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.mapping.Mapping.complete">
+<tt class="descname">complete</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.mapping.Mapping.complete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Completes the fields if there are any blank fields in the table</p>
 </dd></dl>
 
 <dl class="method">
@@ -1295,8 +1299,8 @@ mapping=dictionary containing address mapping</p>
 <dl class="method">
 <dt id="pyNCS.neurosetup.NeuroSetup.load">
 <tt class="descname">load</tt><big>(</big><em>filename</em>, <em>prefix=''</em>, <em>offline=False</em>, <em>validate=True</em><big>)</big><a class="headerlink" href="#pyNCS.neurosetup.NeuroSetup.load" title="Permalink to this definition">¶</a></dt>
-<dd><p>parses an XML file created by .dumpXML()</p>
-<p>Inputs:
+<dd><p>Loads the setup
+Inputs:
 <em>filename</em>: setup file name
 <em>prefix</em>: path to be prepended to chipfile names
 <em>offline</em>: if True, the chips will not be configured (&#8220;pretend&#8221; mode).</p>
@@ -1513,7 +1517,8 @@ Arguments are:</p>
 <dt id="pyNCS.population.Population.union">
 <tt class="descname">union</tt><big>(</big><em>population</em><big>)</big><a class="headerlink" href="#pyNCS.population.Population.union" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add the given population&#8217;s addresses to the existing one. If the
-address is already there, it doesn&#8217;t add.</p>
+address is already there, it doesn&#8217;t add.
+WARNING: Synapses might be incorrect</p>
 </dd></dl>
 
 </dd></dl>

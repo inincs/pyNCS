@@ -27,6 +27,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="Python NCS tools 0.2 documentation" href="../index.html" />
     <link rel="up" title="pyNCS Package" href="pyNCS.html" />
+    <link rel="next" title="The Python Oscilloscope Module" href="pyosc.html" />
     <link rel="prev" title="AerViewer Package" href="pyNCS.AerViewer.html" /> 
   </head>
   <body>
@@ -39,6 +40,9 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="pyosc.html" title="The Python Oscilloscope Module"
+             accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="pyNCS.AerViewer.html" title="AerViewer Package"
              accesskey="P">previous</a> |</li>
@@ -717,6 +721,13 @@ Inputs:
 </dd></dl>
 
 <dl class="function">
+<dt id="pyNCS.pyST.STas.load_stas_from_nhml">
+<tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">load_stas_from_nhml</tt><big>(</big><em>NHMLfile</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.load_stas_from_nhml" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns addrSpec objects aerIn and aerOut by parsing the NHML
+file.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="pyNCS.pyST.STas.repr_addr_spec">
 <tt class="descclassname">pyNCS.pyST.STas.</tt><tt class="descname">repr_addr_spec</tt><big>(</big><em>addr_spec</em>, <em>nBitsTotal</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.STas.repr_addr_spec" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prints the address specification in a human readable format
@@ -1257,6 +1268,14 @@ t_stop  - end of the selected area to compute std(mean_rate), in ms</dd>
 </dd></dl>
 
 <dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeList.mean_rates_isi">
+<tt class="descname">mean_rates_isi</tt><big>(</big><em>t_start=None</em>, <em>t_stop=None</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.mean_rates_isi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of mean rates calculated on the basis of interspike
+interval.</p>
+<p>If t_start or t_stop are not defined, those of the SpikeList are used</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="pyNCS.pyST.spikes.SpikeList.merge">
 <tt class="descname">merge</tt><big>(</big><em>spikelist</em>, <em>relative=False</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeList.merge" title="Permalink to this definition">¶</a></dt>
 <dd><p>For each cell id in spikelist that matches an id in this SpikeList,
@@ -1709,6 +1728,16 @@ t_stop  - in ms. If not defined, the one of the SpikeTrain object is used</dd>
 </dd></dl>
 
 <dl class="method">
+<dt id="pyNCS.pyST.spikes.SpikeTrain.mean_rate_isi">
+<tt class="descname">mean_rate_isi</tt><big>(</big><em>t_start=None</em>, <em>t_stop=None</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeTrain.mean_rate_isi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the mean rate (Hz) based on the interspike intervals</p>
+<dl class="docutils">
+<dt>Inputs:</dt>
+<dd>t_start, t_stop - in ms. If not defined, the one of the SpikeTrain object is used</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="pyNCS.pyST.spikes.SpikeTrain.merge">
 <tt class="descname">merge</tt><big>(</big><em>spiketrain</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.SpikeTrain.merge" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add the spike times from a spiketrain to the current SpikeTrain</p>
@@ -1898,6 +1927,12 @@ t_stop  - end of the new SpikeTrain, in ms.</dd>
 </dl>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.pyST.spikes.merge_sequencers">
+<tt class="descclassname">pyNCS.pyST.spikes.</tt><tt class="descname">merge_sequencers</tt><big>(</big><em>stim1</em>, <em>stim2 ......</em><big>)</big><a class="headerlink" href="#pyNCS.pyST.spikes.merge_sequencers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merges (soon to be) sequencer objects. These are typically returend by pyNCS.group spiketrain functions and used in setup.run</p>
 </dd></dl>
 
 <dl class="function">
@@ -2332,6 +2367,9 @@ b   - in units of seconds</dd>
   <h4>Previous topic</h4>
   <p class="topless"><a href="pyNCS.AerViewer.html"
                         title="previous chapter">AerViewer Package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pyosc.html"
+                        title="next chapter">The Python Oscilloscope Module</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="../_sources/general/pyNCS.pyST.txt"
@@ -2364,6 +2402,9 @@ b   - in units of seconds</dd>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
+          <a href="pyosc.html" title="The Python Oscilloscope Module"
+             >next</a> |</li>
+        <li class="right" >
           <a href="pyNCS.AerViewer.html" title="AerViewer Package"
              >previous</a> |</li>
         <li><a href="../index.html">Python NCS tools 0.2 documentation</a> &raquo;</li>
@@ -2373,7 +2414,7 @@ b   - in units of seconds</dd>
     </div>
     <div class="footer">
         &copy; Copyright 2012, University of Zurich, Emre Neftci, Sadique Sheik, Fabio Stefanini, Giacomo Indiveri.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>
