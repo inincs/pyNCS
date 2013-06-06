@@ -12,6 +12,19 @@ import pylab
 from pyST.STsl import mapSpikeListAddresses, composite_plot, SpikeList, SpikeTrain
 import copy
 
+def create_SpikeMonitor_from_SpikeList(st):
+    '''
+    Creates a channel spikelist dictionary from a spikelist or a list of spikelists 
+    '''
+    from pyNCS import AddrGroupBase
+    msl = monitorSpikeList(0, st)
+    a = AddrGroupBase('')
+    a.paddr = a.laddr = a.addr = st.id_list()
+    a.channel = 0
+    sm = SpikeMonitor(addr_group = a)
+    sm.populate(msl)
+    return sm
+    
 
 class Monitors(object):
     """
@@ -174,9 +187,14 @@ class MonitorPlotBase(object):
         self.__class__.get_t_start = get_t_start
         self.__class__.get_t_stop = get_t_stop
 
-        if not hasattr(monitors, '__iter__'):
-            monitors = [monitors]
-        self.monitors = monitors
+        if isinstance(monitors, SpikeList):
+            mons = create_SpikeMonitor_from_SpikeList(monitors)  
+            self.monitors = mons   
+        elif not hasattr(monitors, '__iter__'):
+            mons = [monitors]
+            self.monitors = mons
+        else:
+            self.monitors = monitors
         self.h, self.ha = self.create_multifigure()
 
     def __iter__(self):

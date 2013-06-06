@@ -67,13 +67,22 @@ class TestSequenceFunctions(unittest.TestCase):
         self.nsetup.monitors.import_monitors([stmon1,stmon2])
         input_stim=test_pops.soma.spiketrains_poisson(100)
         self.nsetup.stimulate(input_stim)
-
         ird=input_stim[test_pops.soma.channel].raw_data()
         for mon in self.nsetup.monitors:
             ord=mon.sl.raw_data()
             for i in xrange(len(ird)):                
                 self.assertAlmostEqual(ord[i][1],ird[i][1],2)
-
+                
+    def testMonitors_from_SpikeList(self):
+        from pyNCS import monitors
+        from pylab import close
+        N=10
+        test_pops=create_default_population(self.nsetup,'seq',N)
+        st = test_pops.soma.spiketrains_poisson(10)[0]      
+        mon = monitors.create_SpikeMonitor_from_SpikeList(st)        
+        monitors.MeanRatePlot(mon)
+        close('all')
+        
     def testPMapping(self):
         N=30
         p=0.25
