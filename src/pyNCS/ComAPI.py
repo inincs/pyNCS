@@ -9,11 +9,12 @@
 
 #Path for recording experimental data
 
-import numpy
+import numpy, getpass
 EMPTY_RAW = numpy.zeros([0,2], dtype='uint32')
+USER = getpass.getuser()
 
 class RecordableCommunicatorBase(object):
-    REC_PATH = '/tmp/exp_rec'
+    REC_PATH = '/tmp/exp_rec_' + USER
     REC_FN_SEQ = 'seq'
     REC_FN_MON = 'mon'
     REC_HEADER_SEQ = '# File format raw address, ISI (us)'
