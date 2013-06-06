@@ -357,7 +357,7 @@ class SpikeMonitor(object):
     >>> nsetup.monitors.raster_plot()
 
     """
-    def __init__(self, addr_group, plot_args=None):
+    def __init__(self, addr_group=[], plot_args=None):
         # By definition of populations, SpikeMonitor is associated to at most
         # one channel
         self.addr_group = addr_group
@@ -384,7 +384,7 @@ class SpikeMonitor(object):
         return self.addr_group.__len__()
 
     def __getslice__(self, i, j):
-        return self.addr_group.__getslice__
+        return self.addr_group.__getslice__(i, j)
 
     def copy(self):
         '''
