@@ -784,6 +784,9 @@ class SpikeList(object):
         See also
             SpikeList, load_spikelist
         """
+        if isinstance(spikes, SpikeList):
+            id_list = spikes.id_list()
+            spikes = numpy.transpose(spikes.convert("[ids, times]"))
         self._t_start = t_start
         self._t_stop = t_stop
         self.dimensions = dims
