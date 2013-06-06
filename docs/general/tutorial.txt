@@ -206,13 +206,12 @@ Monitors and plots
 
 There are several ways to visualize spiketrains. Assuming stim is a SpikeList object, the most basic vizualization is as follows::
 
-    from pylab import show
-    
+    from pylab import ion
+    ion()
+
     stim[input_pop.soma.channel].raster_plot()
-    show()
 
     output[my_pop.soma.channel].raster_plot()
-    show()
 
 Monitors are a much more convenient way of visualizing data when dealing with
 several populations of neurons. A monitor will slice addresses and times according to the Population it is monitoring.
@@ -229,8 +228,6 @@ Then import it to the setup with::
 When ``nsetup.run`` is run, ``my_mon`` gets automatically populated with the relevant output spikes. You will have to run ``nsetup.run`` again or ``nsetup.monitors.populate_monitors(output)``.
 Raster plots and rate plots can be convienently obtained with::
 
-
-    from pylab import show
     from pyNCS.monitors import RasterPlot, MeanRatePlot
     RasterPlot(my_mon)
     MeanRatePlot(my_mon)
