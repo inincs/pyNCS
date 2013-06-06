@@ -653,7 +653,7 @@ Inputs:
 <dl class="class">
 <dt id="pyNCS.group.AddrGroup">
 <em class="property">class </em><tt class="descclassname">pyNCS.group.</tt><tt class="descname">AddrGroup</tt><big>(</big><em>name</em>, <em>description=None</em><big>)</big><a class="headerlink" href="#pyNCS.group.AddrGroup" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dd><p>Bases: <a class="reference internal" href="#pyNCS.group.AddrGroupBase" title="pyNCS.group.AddrGroupBase"><tt class="xref py py-class docutils literal"><span class="pre">pyNCS.group.AddrGroupBase</span></tt></a></p>
 <p>A AddrGroup is a group of chip addresses. They can be of grouptype &#8216;in&#8217; or
 of grouptype &#8216;out&#8217;. A description is needed for populating the group.</p>
 <dl class="docutils">
@@ -687,12 +687,6 @@ mapping = group1.connect_one2one(group2)</p>
 <p class="last">setMappings(mapping)</p>
 </dd>
 </dl>
-<dl class="method">
-<dt id="pyNCS.group.AddrGroup.add">
-<tt class="descname">add</tt><big>(</big><em>addresses</em><big>)</big><a class="headerlink" href="#pyNCS.group.AddrGroup.add" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a list of addresses to a group.</p>
-</dd></dl>
-
 <dl class="attribute">
 <dt id="pyNCS.group.AddrGroup.ch_addr">
 <tt class="descname">ch_addr</tt><a class="headerlink" href="#pyNCS.group.AddrGroup.ch_addr" title="Permalink to this definition">¶</a></dt>
@@ -714,11 +708,6 @@ mapping = group1.connect_one2one(group2)</p>
 <tt class="descname">getPaddr</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.group.AddrGroup.getPaddr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Regenerates Physical addresses from the address list.</p>
 </dd></dl>
-
-<dl class="method">
-<dt id="pyNCS.group.AddrGroup.is_empty">
-<tt class="descname">is_empty</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.group.AddrGroup.is_empty" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="attribute">
 <dt id="pyNCS.group.AddrGroup.laddr">
@@ -772,16 +761,6 @@ z defines the 3d coordinate, e.g. retina polarity or synapse in the 2d chip.</p>
 <dt id="pyNCS.group.AddrGroup.setPaddr">
 <tt class="descname">setPaddr</tt><big>(</big><em>ad</em><big>)</big><a class="headerlink" href="#pyNCS.group.AddrGroup.setPaddr" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="method">
-<dt id="pyNCS.group.AddrGroup.sort">
-<tt class="descname">sort</tt><big>(</big><em>order=None</em><big>)</big><a class="headerlink" href="#pyNCS.group.AddrGroup.sort" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sort all the addresses with the given order. If the order is None it
-orders by the last column of the address (most probably the column of
-synapses).
-WARNING: Not advisable to use it unless you are very sure about what you are
-doing.</p>
-</dd></dl>
 
 <dl class="method">
 <dt id="pyNCS.group.AddrGroup.spiketrains">
@@ -876,6 +855,48 @@ channel - Channel argument to enforce a particular channel</p>
 Inputs:
 <em>spike_time</em>: a float or a vector of floats indicating the spike times. If a vector is given, each entry is used once for each address in the logical addresses of the group (in the same order as self.laddr)
 <em>t_after</em> ms after the spike</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pyNCS.group.AddrGroupBase">
+<em class="property">class </em><tt class="descclassname">pyNCS.group.</tt><tt class="descname">AddrGroupBase</tt><big>(</big><em>name</em>, <em>description=None</em><big>)</big><a class="headerlink" href="#pyNCS.group.AddrGroupBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="pyNCS.group.AddrGroupBase.add">
+<tt class="descname">add</tt><big>(</big><em>addresses</em><big>)</big><a class="headerlink" href="#pyNCS.group.AddrGroupBase.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a list of addresses to a group.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pyNCS.group.AddrGroupBase.channel">
+<tt class="descname">channel</tt><a class="headerlink" href="#pyNCS.group.AddrGroupBase.channel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.group.AddrGroupBase.is_empty">
+<tt class="descname">is_empty</tt><big>(</big><big>)</big><a class="headerlink" href="#pyNCS.group.AddrGroupBase.is_empty" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyNCS.group.AddrGroupBase.laddr">
+<tt class="descname">laddr</tt><a class="headerlink" href="#pyNCS.group.AddrGroupBase.laddr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pyNCS.group.AddrGroupBase.paddr">
+<tt class="descname">paddr</tt><a class="headerlink" href="#pyNCS.group.AddrGroupBase.paddr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pyNCS.group.AddrGroupBase.sort">
+<tt class="descname">sort</tt><big>(</big><em>order=None</em><big>)</big><a class="headerlink" href="#pyNCS.group.AddrGroupBase.sort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort all the addresses with the given order. If the order is None it
+orders by the last column of the address (most probably the column of
+synapses).
+WARNING: Not advisable to use it unless you are very sure about what you are
+doing.</p>
 </dd></dl>
 
 </dd></dl>
@@ -1168,7 +1189,7 @@ kwargs are passed to raster_plot</p>
 
 <dl class="class">
 <dt id="pyNCS.monitors.SpikeMonitor">
-<em class="property">class </em><tt class="descclassname">pyNCS.monitors.</tt><tt class="descname">SpikeMonitor</tt><big>(</big><em>addr_group</em>, <em>plot_args=None</em><big>)</big><a class="headerlink" href="#pyNCS.monitors.SpikeMonitor" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">pyNCS.monitors.</tt><tt class="descname">SpikeMonitor</tt><big>(</big><em>addr_group=</em><span class="optional">[</span><span class="optional">]</span>, <em>plot_args=None</em><big>)</big><a class="headerlink" href="#pyNCS.monitors.SpikeMonitor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <p>A class for monitoring spiking activity during experimentation.
 API is the one of AddrGroup.</p>
@@ -1248,6 +1269,12 @@ API is the one of AddrGroup.</p>
 <dd><p>Transform SpikeList <em>st</em> into a monitorSpikeList object</p>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="function">
+<dt id="pyNCS.monitors.create_SpikeMonitor_from_SpikeList">
+<tt class="descclassname">pyNCS.monitors.</tt><tt class="descname">create_SpikeMonitor_from_SpikeList</tt><big>(</big><em>st</em><big>)</big><a class="headerlink" href="#pyNCS.monitors.create_SpikeMonitor_from_SpikeList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a channel spikelist dictionary from a spikelist or a list of spikelists</p>
 </dd></dl>
 
 <dl class="function">
