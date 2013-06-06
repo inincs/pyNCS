@@ -152,9 +152,6 @@ class BatchCommunicatorBase(ResourceManagerBase,RecordableCommunicatorBase):
         ResourceManagerBase.__init__(self)
         RecordableCommunicatorBase.__init__(self)
 
-    
-
-
     def run(self, stimulus=None, duration=None, context_manager=None):
         #IMPLEMENT
         '''
