@@ -9,7 +9,7 @@
 # -*- coding: utf-8 -*-
 from chip_v2 import Chip, NeuronBlock, NeuroChip, Block
 import experimentTools as et
-from group import AddrGroup
+from group import AddrGroup, AddrGroupBase
 from population import Population
 from connection import Connection, PConnection
 from mapping import Mapping, PMapping

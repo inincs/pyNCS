@@ -6,54 +6,11 @@
 # Copyright : University of Zurich, Giacomo Indiveri, Emre Neftci, Sadique Sheik, Fabio Stefanini
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
-import numpy as np
 import itertools
 from warnings import warn
 from pyST import *
 
-
-class AddrGroup(object):
-    #TODO: merge function
-    """
-    A AddrGroup is a group of chip addresses. They can be of grouptype 'in' or
-    of grouptype 'out'. A description is needed for populating the group.
-
-    Ex.:
-        setup = pyNCS.Setup('setuptype.xml')
-        setup.load('setup')
-        setup.apply()
-
-        # output from the retina
-        group1 = AddrGroup('retina output')
-        group1.populate_rectangle(
-            setup, 'retina', 'out', [0,0,0], [64,64,0], n = 28*28 )
-
-        # input from the ifslwta_0 chip
-        group2 = AddrGroup('A1 cortex learning input')
-        group2.populate_rectangle(setup, 'ifslwta_0', 'in', [0,4], [28,32])
-
-        # input from the sequencer
-        group3 = AddrGroup('A1 cortex excitatory input')
-        group3.populate_rectangle(setup, 'sequencer', 'in', [0,2], [28,2])
-
-        # input from the sequencer
-        group4 = AddrGroup('A1 cortex excitatory inhibitory')
-        group4.populate_rectangle(setup, 'ifslwta_0', 'in', [0,2], [28,2])
-
-        group5 = AddrGroup('56 trains from sequencer')
-        group4.populate_by_number(setup, 'seq', 'out', 56)
-
-        # you want to treat group3 and group4 as a whole
-        group4.join_with(group3)
-
-        mapping = []
-        mapping = group1.connect_one2one(group2)
-             # the connect functions will maybe go in some Mapping module
-        # ... and so on and so forth ...
-
-        setMappings(mapping)
-
-    """
+class AddrGroupBase(object):
     def __init__(self, name, description=None):
         if description:
             self.description = description
@@ -68,7 +25,7 @@ class AddrGroup(object):
         self._channel = None
         self.grouptype = ''
         self.dtype = None
-
+    
     def __deepcopy__(self, memo):
         return self.__copy__()
 
@@ -89,31 +46,30 @@ class AddrGroup(object):
         return g
 
     @property
-    def ch_addr(self):
-        if self.grouptype == 'in':
-            return self.setup.seq
-        elif self.grouptype == 'out':
-            return self.setup.mon
-        elif self.grouptype == '':
-            warn('Grouptype has not been set')
-            return None
-        elif self.grouptype == '':
-            raise ValueError('Grouptype should be None, "in" or "out", not {0}'.
-                format(self.grouptype))
-
-    @property
     def channel(self):
-        if self._channel == None:
-            # if it is None generate the necesary addresses
-            if self.grouptype == 'in':
-                self._channel =\
-                self.setup.aerSlot[self.setup.chipslots[self.chipid]]['seqIn'][0]
-            elif self.grouptype == 'out':
-                self._channel =\
-                self.setup.aerSlot[self.setup.chipslots[self.chipid]]['monOut'][0]
-
         return self._channel
-
+    
+    @channel.setter
+    def channel(self, ch):
+        self._channel = ch 
+    
+    @property
+    def laddr(self):
+        return self._laddr
+    
+    @property
+    def paddr(self):
+        return self._paddr   
+    
+    @laddr.setter
+    def laddr(self, laddr):
+        self._laddr = laddr
+    
+    @paddr.setter
+    def paddr(self, paddr):
+        self._paddr = paddr    
+ 
+     
     def __len__(self):
         """
         x.__len__() ==> len(x)
@@ -164,17 +120,6 @@ class AddrGroup(object):
             g._laddr = self._laddr[i:j]
         return g
 
-    def repopulate(self, setup):
-        """
-        Repopulates laddr and paddr with respect to addr
-        """
-        self.setup = setup
-        if self.grouptype is '':
-            raise Exception("Group has never been populated before.")
-        self._channel = None
-        self._laddr = None
-        self._paddr = None
-        self.addr = self.addr.copy()
 
     def sort(self, order=None):
         """
@@ -220,6 +165,97 @@ class AddrGroup(object):
             self.addr = np.concatenate([self.addr, addr])
         else:
             self.addr = addr
+
+
+    def is_empty(self):
+        return len(self) == 0
+
+    # TODO: convert spiketrains methods to spiketrains(fashion='poisson') style
+class AddrGroup(AddrGroupBase):
+    #TODO: merge function
+    """
+    A AddrGroup is a group of chip addresses. They can be of grouptype 'in' or
+    of grouptype 'out'. A description is needed for populating the group.
+
+    Ex.:
+        setup = pyNCS.Setup('setuptype.xml')
+        setup.load('setup')
+        setup.apply()
+
+        # output from the retina
+        group1 = AddrGroup('retina output')
+        group1.populate_rectangle(
+            setup, 'retina', 'out', [0,0,0], [64,64,0], n = 28*28 )
+
+        # input from the ifslwta_0 chip
+        group2 = AddrGroup('A1 cortex learning input')
+        group2.populate_rectangle(setup, 'ifslwta_0', 'in', [0,4], [28,32])
+
+        # input from the sequencer
+        group3 = AddrGroup('A1 cortex excitatory input')
+        group3.populate_rectangle(setup, 'sequencer', 'in', [0,2], [28,2])
+
+        # input from the sequencer
+        group4 = AddrGroup('A1 cortex excitatory inhibitory')
+        group4.populate_rectangle(setup, 'ifslwta_0', 'in', [0,2], [28,2])
+
+        group5 = AddrGroup('56 trains from sequencer')
+        group4.populate_by_number(setup, 'seq', 'out', 56)
+
+        # you want to treat group3 and group4 as a whole
+        group4.join_with(group3)
+
+        mapping = []
+        mapping = group1.connect_one2one(group2)
+             # the connect functions will maybe go in some Mapping module
+        # ... and so on and so forth ...
+
+        setMappings(mapping)
+
+    """
+
+
+
+    @property
+    def ch_addr(self):
+        if self.grouptype == 'in':
+            return self.setup.seq
+        elif self.grouptype == 'out':
+            return self.setup.mon
+        elif self.grouptype == '':
+            warn('Grouptype has not been set')
+            return None
+        elif self.grouptype == '':
+            raise ValueError('Grouptype should be None, "in" or "out", not {0}'.
+                format(self.grouptype))
+
+    @property
+    def channel(self):
+        if self._channel == None:
+            # if it is None generate the necesary addresses
+            if self.grouptype == 'in':
+                self._channel =\
+                self.setup.aerSlot[self.setup.chipslots[self.chipid]]['seqIn'][0]
+            elif self.grouptype == 'out':
+                self._channel =\
+                self.setup.aerSlot[self.setup.chipslots[self.chipid]]['monOut'][0]
+
+        return self._channel
+
+
+
+    def repopulate(self, setup):
+        """
+        Repopulates laddr and paddr with respect to addr
+        """
+        self.setup = setup
+        if self.grouptype is '':
+            raise Exception("Group has never been populated before.")
+        self._channel = None
+        self._laddr = None
+        self._paddr = None
+        self.addr = self.addr.copy()
+
 
 #    def remove(self, address):
 #        """
@@ -307,7 +343,7 @@ class AddrGroup(object):
         try:
             assert( ((np.array(p2) - np.array(p1)) <= 0).sum() == 0 )
         except AssertionError, e:
-            warnings.warn('Zero volume for given vertices')
+            warn('Zero volume for given vertices')
         
         edges = []
         for i in range(len(p1)):
@@ -375,10 +411,7 @@ class AddrGroup(object):
 #            r_low = self.__unfold_dims__(vect[1:])
 #        return np.column_stack([[np.repeat(i, len(r_low)) for i in dim], r_low.repeat(len(dim))])
 
-    def is_empty(self):
-        return len(self) == 0
 
-    # TODO: convert spiketrains methods to spiketrains(fashion='poisson') style
 
     def spiketrains(self, spikes=[], t_start=0, t_stop=None, dims=None):
         '''
@@ -593,7 +626,7 @@ class AddrGroup(object):
 
     def setLaddr(self, ad):
         self._laddr = ad
-        warnings.warn('Not advisable to modify AddrGroup.laddr. Change AddrGroup.addr and repopulate() instead')
+        warn('Not advisable to modify AddrGroup.laddr. Change AddrGroup.addr and repopulate() instead')
 
     def getPaddr(self):
         '''
@@ -611,7 +644,7 @@ class AddrGroup(object):
 
     def setPaddr(self, ad):
         self._paddr = ad
-        warnings.warn('Not advisable to modify AddrGroup.paddr. Change AddrGroup.addr and repopulate() instead')
+        warn('Not advisable to modify AddrGroup.paddr. Change AddrGroup.addr and repopulate() instead')
 
     # Properties of AddrGroup
     laddr = property(getLaddr, setLaddr, doc='Logical addresses')
