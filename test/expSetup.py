@@ -1,12 +1,8 @@
-import pyNCS, pyAex
 import pyNCS.pyST as pyST
-from pyAex import aextcpclientcom, aexionetcom, mapconf #Aex xio module, Aex client using server, mapper module
-import pyAMDA.api
-
 import time,sys,random
+import pyAex, pyNCS
 import numpy as np
 import pylab
-from pyAexServer import ServerStarter
 from pyNCS.neurosetup import NeuroSetup
 
 

@@ -10,8 +10,7 @@
     </chip>
     <virtualchip chipfile="linear.csv" id="seq" slot="0" />
     <defaultchip chipfile="linear.csv" id="default"/>
-    <communicator module="pyNCS.ComAPI">
-    </communicator>
+    <communicator module="testComAPI" />    
     <mapper module='pyNCS.ConfAPI'>
     </mapper>
 </setup>

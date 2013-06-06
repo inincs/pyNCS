@@ -6,17 +6,11 @@
 # Copyright : University of Zurich, Giacomo Indiveri, Emre Neftci, Sadique Sheik, Fabio Stefanini
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
-import sys
-import pyNCS
 import pyAex
+import pyNCS
 import pyNCS.pyST as pyST
-import time
 import numpy as np
-import unittest
-import warnings
-import optparse
-import os
-from pyAexServer import ServerStarter
+import unittest, warnings, optparse, os, time, sys
 
 try:
     SETUPSDIR = os.environ['NCS_SETUPFILES']
@@ -121,7 +115,7 @@ class TestSequenceFunctions(unittest.TestCase):
     def testPopulationFunctions(self):
         N=5
         test_pops1=create_default_population(self.nsetup,'seq',N)
-        test_pops2=create_default_population(self.nsetup,'seq',N,offset=N)
+        test_pops2=create_default_population(self.nsetup,'seq',2*N,offset=N)
         pop=pyNCS.Population('', '')
         pop.init(self.nsetup, 'seq', 'excitatory')
         pop.union(test_pops1)
