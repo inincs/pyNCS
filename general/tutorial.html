@@ -249,13 +249,12 @@ python Server.py</pre>
 <div class="section" id="monitors-and-plots">
 <h2>Monitors and plots<a class="headerlink" href="#monitors-and-plots" title="Permalink to this headline">¶</a></h2>
 <p>There are several ways to visualize spiketrains. Assuming stim is a SpikeList object, the most basic vizualization is as follows:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="n">show</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="n">ion</span>
+<span class="n">ion</span><span class="p">()</span>
 
 <span class="n">stim</span><span class="p">[</span><span class="n">input_pop</span><span class="o">.</span><span class="n">soma</span><span class="o">.</span><span class="n">channel</span><span class="p">]</span><span class="o">.</span><span class="n">raster_plot</span><span class="p">()</span>
-<span class="n">show</span><span class="p">()</span>
 
 <span class="n">output</span><span class="p">[</span><span class="n">my_pop</span><span class="o">.</span><span class="n">soma</span><span class="o">.</span><span class="n">channel</span><span class="p">]</span><span class="o">.</span><span class="n">raster_plot</span><span class="p">()</span>
-<span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Monitors are a much more convenient way of visualizing data when dealing with
@@ -271,8 +270,7 @@ several populations of neurons. A monitor will slice addresses and times accordi
 </div>
 <p>When <tt class="docutils literal"><span class="pre">nsetup.run</span></tt> is run, <tt class="docutils literal"><span class="pre">my_mon</span></tt> gets automatically populated with the relevant output spikes. You will have to run <tt class="docutils literal"><span class="pre">nsetup.run</span></tt> again or <tt class="docutils literal"><span class="pre">nsetup.monitors.populate_monitors(output)</span></tt>.
 Raster plots and rate plots can be convienently obtained with:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="n">show</span>
-<span class="kn">from</span> <span class="nn">pyNCS.monitors</span> <span class="kn">import</span> <span class="n">RasterPlot</span><span class="p">,</span> <span class="n">MeanRatePlot</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">pyNCS.monitors</span> <span class="kn">import</span> <span class="n">RasterPlot</span><span class="p">,</span> <span class="n">MeanRatePlot</span>
 <span class="n">RasterPlot</span><span class="p">(</span><span class="n">my_mon</span><span class="p">)</span>
 <span class="n">MeanRatePlot</span><span class="p">(</span><span class="n">my_mon</span><span class="p">)</span>
 </pre></div>
