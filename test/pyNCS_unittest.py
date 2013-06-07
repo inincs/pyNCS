@@ -22,9 +22,12 @@ try:
 except KeyError:
     CHIPSDIR = 'chipfiles/'
 
-def create_default_population(setup,chipname,N,*args,**kwargs):
+def create_default_population(setup,chipname='seq',N=10,*args,**kwargs):
+    '''
+    Creates a default population
+    '''
     test_pops = pyNCS.Population('default', 'Default Population') 
-    test_pops.populate_by_number(setup, 'seq', 'excitatory', N, *args, **kwargs)
+    test_pops.populate_by_number(setup, chipname, 'excitatory', N, *args, **kwargs)
     return test_pops
 
 def evs_loopback(nsetup, sequencer):
@@ -112,12 +115,24 @@ class TestSequenceFunctions(unittest.TestCase):
 
         self.nsetup.prepare()
 
-    def testPopulationFunctions(self):
+    def testSeqPopulationFunctions(self):
         N=5
         test_pops1=create_default_population(self.nsetup,'seq',N)
         test_pops2=create_default_population(self.nsetup,'seq',2*N,offset=N)
         pop=pyNCS.Population('', '')
         pop.init(self.nsetup, 'seq', 'excitatory')
+        pop.union(test_pops1)
+        pop.union(test_pops2)
+        testaddr = np.concatenate([test_pops1.soma.paddr,test_pops2.soma.paddr])
+        for a in testaddr:
+            self.assertTrue(a in pop.soma.paddr)
+            
+    def testIFSLWTAPopulationFunctions(self):
+        N=5
+        test_pops1=create_default_population(self.nsetup,'ifslwta',N)
+        test_pops2=create_default_population(self.nsetup,'ifslwta',2*N,offset=N)
+        pop=pyNCS.Population('', '')
+        pop.init(self.nsetup, 'ifslwta', 'excitatory')
         pop.union(test_pops1)
         pop.union(test_pops2)
         testaddr = np.concatenate([test_pops1.soma.paddr,test_pops2.soma.paddr])

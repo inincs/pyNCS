@@ -188,7 +188,7 @@ class Population(object):
         # dimensions
 
         if len(self.soma.addr) != 0 and len(population.soma.addr) != 0:
-            self.soma.addr = np.row_stack([self.soma.addr,
+            self.soma.addr = np.hstack([self.soma.addr,
                                            population.soma.addr])
         else:  # self.soma is empty
             self.soma.addr = population.soma.addr.copy()
