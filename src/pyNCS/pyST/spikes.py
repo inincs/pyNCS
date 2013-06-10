@@ -490,7 +490,7 @@ class SpikeTrain(object):
     #            pylab.draw()
     #    ====================
 
-    def time_offset(self, offset, t_start=None, t_stop=None):
+    def time_offset(self, offset = None, t_start=None, t_stop=None):
         """
         Add an offset to the SpikeTrain object. t_start and t_stop are
         shifted from offset, so does all the spike times.
@@ -505,6 +505,9 @@ class SpikeTrain(object):
                 [  50.,   60.,   70.,   80.,   90.,  100.,  110.,
                 120.,  130.,  140.]
         """
+        if isinstance(self, emptySpikeTrain) or offset is None:
+            return
+        
         if t_start == None:
             self.t_start += offset
         else:
@@ -514,8 +517,7 @@ class SpikeTrain(object):
             self.t_stop += offset
         else:
             self.t_stop = t_stop
-        if isinstance(self, emptySpikeTrain):
-            return
+
         self.spike_times += offset
 
     def time_slice(self, t_start, t_stop):
@@ -1121,7 +1123,7 @@ class SpikeList(object):
         new_SpkList.__calc_startstop()
         return new_SpkList
 
-    def time_offset(self, offset, t_start=None, t_stop=None):
+    def time_offset(self, offset=None, t_start=None, t_stop=None):
         """
         Add an offset to the whole SpikeList object. t_start and t_stop are
         shifted from offset, so does all the SpikeTrain.
@@ -1136,6 +1138,9 @@ class SpikeList(object):
             >> spklist.t_start
                 1050
         """
+        if offset == None:
+            return 
+        
         if t_start == None:
             self.t_start += offset
         else:
@@ -1146,8 +1151,8 @@ class SpikeList(object):
         else:
             self.t_stop = t_stop
 
-        for id in self.id_list():
-            self.spiketrains[id].time_offset(offset, self.t_start, self.t_stop)
+        for i in self.id_list():
+            self.spiketrains[i].time_offset(offset, self.t_start, self.t_stop)
 
     def id_offset(self, offset):
         """

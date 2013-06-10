@@ -340,6 +340,32 @@ class TestSequenceFunctions(unittest.TestCase):
 
         for i,x in enumerate(tin): 
             self.assertAlmostEqual( x, tout[i], delta=1e-3)
+            
+    def testSpikeTrain__time_offset(self):        
+        sl = STCreate.poisson_generator(rate=100)
+        sl2 = sl.copy()
+        sl.time_offset()
+        self.assertTrue(np.all(sl.spike_times == sl2.spike_times))
+        sl.time_offset(100)
+        for i,a in enumerate(sl.spike_times):
+            self.assertAlmostEquals(a-100, sl2.spike_times[i], 3)
+            
+    def testSpikeList__time_offset(self):
+        addrHR=[range(10),5,1]
+        addr=self.STcsMon.addrLogicalConstruct({0:addrHR})[0]
+        sl=SpikeList(spikes=[],id_list=addr)
+        for i in addr:            
+            sl[i]=STCreate.poisson_generator(rate=10)
+        sl2=sl.copy()
+        sl.time_offset()
+        for i,a in enumerate(sl.raw_data()):
+            for c in range(2): 
+                self.assertAlmostEquals(a[c], sl2.raw_data()[i][c], 3)
+        sl.time_offset(100)
+        for i,a in enumerate(sl.raw_data()):
+            a[0]-=100
+            for c in range(2): 
+                self.assertAlmostEquals(a[c], sl2.raw_data()[i][c], 3)
 
 
 #    def testHashTable(self):
