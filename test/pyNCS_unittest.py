@@ -171,6 +171,13 @@ class TestSequenceFunctions(unittest.TestCase):
         pyNCS.monitors.RasterPlot(self.nsetup.monitors.monitors)
         #import pylab
         #pylab.show()
+        
+    def testEmptyMonitorReturnsCorrectDimensions(self):
+        test_pops1=create_default_population(self.nsetup,'seq', N=5)        
+        stmon1=pyNCS.monitors.SpikeMonitor(test_pops1.soma)
+        stmon1.populate(pyNCS.pyST.SpikeList())   
+        self.assertTrue(len(stmon1.sl.mean_rates())==5)
+        
 
 
 

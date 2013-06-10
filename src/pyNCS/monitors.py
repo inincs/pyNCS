@@ -429,6 +429,7 @@ class SpikeMonitor(object):
         assert hasattr(self, '_data'), "SpikeMonitor must be populated first"
         self._populated = True
         self._sl = self.toSpikeListMonitor(self._data)
+        self._sl.complete(self.addr_group.laddr)
         del self._data
 
     def get_normalized_addr(self, s_start=0.0, s_stop=1.0):
