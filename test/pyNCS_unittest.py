@@ -85,7 +85,7 @@ class TestSequenceFunctions(unittest.TestCase):
         p=0.25
         pyAex.MAPVERS=3
         s=create_default_population(self.nsetup, 'seq', N)
-        t=create_default_population(self.nsetup, 'seq', N)
+        t=create_default_population(self.nsetup, 'ifslwta', N)
         m=pyNCS.PMapping('')
         m.__connect_random_all2all__(s.soma,t.synapses['excitatory0'],p=p)
         m.__connect_one2one__(s.soma,t.synapses['excitatory0'])
@@ -95,16 +95,18 @@ class TestSequenceFunctions(unittest.TestCase):
                 self.assert_([i, j, P] in m.mapping)
         for n in range(len(s.soma.paddr)):
             self.assert_([s.soma.paddr[n], t.synapses['excitatory0'].paddr[n], P] in m.mapping)
-
+        self.nsetup.mapping.merge(m)
         self.nsetup.prepare()
+        input_stim=s.soma.spiketrains_poisson(200)
+        self.nsetup.run(input_stim)
 
     def testPConnection(self):
         N=30
-        p=0.25
+        p=0.5
         pyAex.MAPVERS=3
         s=create_default_population(self.nsetup, 'seq', N)
-        t=create_default_population(self.nsetup, 'seq', N)
-        c=pyNCS.PConnection(s,t,'excitatory0','random_all2all',{'p':0.25})
+        t=create_default_population(self.nsetup, 'ifslwta', N)
+        c=pyNCS.PConnection(s,t,'excitatory0','random_all2all',{'p':p})
         m=c.mapping
         P = int(p*127)
         for i in s.soma.paddr:
@@ -113,7 +115,9 @@ class TestSequenceFunctions(unittest.TestCase):
         for n in range(len(s.soma.paddr)):
             self.assert_([s.soma.paddr[n], t.synapses['excitatory0'].paddr[n], P] in m.mapping)
 
-        self.nsetup.prepare()
+        self.nsetup.prepare()            
+        input_stim=s.soma.spiketrains_poisson(200)
+        self.nsetup.run(input_stim)
 
     def testSeqPopulationFunctions(self):
         N=5
