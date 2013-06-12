@@ -217,7 +217,7 @@ class ConfiguratorBase(ResourceManagerBase):
         '''
         Gets parameter param_name.
         '''
-        return None
+        return self.parameters[param_name]
 
     def get_parameters(self, param_names=None):
         #CONVENIENCE FUNCTION. IMPLEMENTATION IS NOT REQUIRED
@@ -245,6 +245,7 @@ class ConfiguratorBase(ResourceManagerBase):
         '''
         Sets parameter param_name with param_value
         '''
+        self.parameters[param_name] = param_value
         return None
 
     def set_parameters(self, param_dict):
@@ -256,7 +257,8 @@ class ConfiguratorBase(ResourceManagerBase):
         '''
         for name, value in param_dict.iteritems():
             self.set_parameter(name, value)
-        return self.get_parameters(param_dict.keys())
+        self.get_parameters(param_dict.keys())
+        return None
 
     def update_parameter(self, param_name, param_value):
         #CONVENIENCE FUNCTION. IMPLEMENTATION NOT REQUIRED
