@@ -16,6 +16,7 @@ import numpy as np
 from xml.dom import minidom as md
 from urllib2 import urlopen
 #chip=pyNCS.Chip('/home/emre/Neuron/software/pyNCS/src/pyNCS/pads_ifslwta.csv')
+from numpy import log,exp
 
 def log(x):
     if x<0:
@@ -140,7 +141,6 @@ def loadBiases(filename):
     return d
 
 if __name__=='__main__':
-    import pyNCS
     configurator = pyNCS.ConfAPI.Configurator()
     configurator._readCSV('chipfiles/ifslwta.csv')
     configurator.set_parameters(loadBiases('biases/defaultBiases_ifslwta'))

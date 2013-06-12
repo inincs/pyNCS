@@ -15,10 +15,13 @@
 
 from pyNCS.ComAPI import *
 from pyNCS.ConfAPI import *
+from pyNCS import pyST
 import IFSLWTA_brian_model as ibm
 import numpy as np
+from brian.directcontrol import PoissonGroup
 
-
+#TODO: multichip mappings
+#TODO: generalize _decode_mappings_list
 
 chipname = 'ifslwta'
 channel_seq = 0
@@ -34,28 +37,33 @@ synapse_trans_dict = {0 : ['Ii', 'w_syn_I'],
 
 def _decode_mappings_list(mappings_list, synapse_id):
     ml = np.array(mappings_list)
-    fr = decode_addr(ml[:,0])[channel_seq][0] #0 for field 0
+    fr = decode_addr(ml[:,0])[channel_seq] #0 for field 0
     to = decode_addr(ml[:,1])[channel_ifslwtain]
     to_syn = to[0,to[1,:]==synapse_id]
+    fr_syn = fr[0,to[1,:]==synapse_id]
     if len(to_syn)==0:
-        return None
+        return []
     else:        
         if np.shape(ml)[1]==3:
             prob = ml[:,2].astype('float')/128
+            prob_syn = prob[to[1,:]==synapse_id]
         else:    
-            prob = np.ones(ml.shape[0])
-        return zip(fr,to_syn,prob)
+            prob = np.ones(ml.shape[0])            
+        return zip(fr_syn,to_syn,prob_syn)
 
 def _dlist_to_mappingdict(mapping):
     from collections import defaultdict
     #sort list
-    mapping_dict = defaultdict(list)
-    mapping_dict_probs = defaultdict(list)
-    def func(srctgt):
-        mapping_dict[srctgt[0]].append(srctgt[1])
-        mapping_dict_probs[srctgt[0]].append(srctgt[2])
-    map(func, mapping)
-    return mapping_dict, mapping_dict_probs
+    if len(mapping)>0:
+        mapping_dict = defaultdict(list)
+        mapping_dict_probs = defaultdict(list)
+        def func(srctgt):
+            mapping_dict[srctgt[0]].append(srctgt[1])
+            mapping_dict_probs[srctgt[0]].append(srctgt[2])
+        map(func, mapping)
+        return mapping_dict, mapping_dict_probs
+    else:
+        return {},{}
 
 def _mappingdict_to_matrix(mapping_dict, mapping_dict_probs):
     N_fr = len(mapping_dict)
@@ -81,9 +89,10 @@ def decode_addr(addr):
 
 class Communicator(BatchCommunicatorBase):
     def run(self, stimulus=None, duration=None, context_manager=None):
-        stimulus_abs = stimulus.copy().astype('float')
+        stimulus = pyST.events(stimulus, atype='p')
+        stimulus_abs = stimulus.get_tmadev().astype('float')
         stimulus_abs[:,1] = np.cumsum(stimulus_abs[:,1])/1e6
-        if duration == None and stimulus is not None:
+        if duration == None and len(stimulus)>0:
             duration = np.max(stimulus_abs[:,1])*1e3
         if duration == None:
             duration = 1.
@@ -103,32 +112,40 @@ class Communicator(BatchCommunicatorBase):
         from brian.directcontrol import SpikeGeneratorGroup
         from brian.synapses.synapses import Synapses
         from brian.network import Network
-
+        self.S = []
         netobjs, M_EIP, MV_EIP = ibm.create_netobjs(stimulus, global_sympy_params.cur)
-
-        N = max(stimulus[:,0])+1
-        In1=SpikeGeneratorGroup(N,stimulus[stimulus[:,0] <N])
-        stimulus[:,1]=stimulus[:,1]
-        stimulus=stimulus[stimulus[:,1].argsort()]
         
+        if len(stimulus)>0: 
+            N = max(stimulus[:,0])+1
+            In1=SpikeGeneratorGroup(N,stimulus[stimulus[:,0] <N])
+            stimulus[:,1]=stimulus[:,1]
+            stimulus=stimulus[stimulus[:,1].argsort()]
+            self.S.append(In1)
         #Create connections, if any
-        if len(global_mappings_list)>0:            
-            gml = np.array(global_mappings_list).reshape(-1,3) 
-            syn_idx = 2                     
-            iname, wname = synapse_trans_dict[syn_idx] 
-            EIP = netobjs['EIP']
-            S=Synapses(In1,EIP,model="""w : 1
-                                        p : 1""",
-                             pre=iname+"+=w*(rand()<p)")
-            gml_dict = _dlist_to_mappingdict(_decode_mappings_list(gml,syn_idx)) 
-            for i in gml_dict[0]:
-                S[i,gml_dict[0][i]]=True                
-                S.w[i,gml_dict[0][i]] = global_sympy_params.cur[wname]*np.random.normal(1,ibm.sigma_mismatch, len(gml_dict[0][i]))
-                S.p[i,gml_dict[0][i]] = gml_dict[1][i]  
-            self.S = S
-            net = Network(netobjs.values()+[S,In1])
-        else:
-            net = Network(netobjs.values()+[In1])
+        if len(global_mappings_list)>0:                 
+            gml = np.array(global_mappings_list).reshape(-1,3)
+            for syn_idx in range(4):   
+                      
+                gml_dict, pgml_dict = _dlist_to_mappingdict(_decode_mappings_list(gml,syn_idx))
+                if len(gml_dict)>0:                
+                    if len(stimulus)==0:
+                        input_pop = PoissonGroup(max(gml_dict.keys())+1, 0)
+                    else:
+                        input_pop = In1
+                    iname, wname = synapse_trans_dict[syn_idx] 
+                    EIP = netobjs['EIP']
+                    S=Synapses(input_pop,EIP,model="""w : 1
+                                                p : 1""",
+                                     pre=iname+"+=w*(rand()<p)")
+                     
+                    for i in gml_dict:
+                        S[i,gml_dict[i]]=True                
+                        S.w[i,gml_dict[i]] = global_sympy_params.cur[wname]*np.random.normal(1,ibm.sigma_mismatch, len(gml_dict[i]))
+                        S.p[i,gml_dict[i]] = pgml_dict[i] 
+                                    
+                    self.S.append(S)
+            
+        net = Network(netobjs.values()+self.S)
                         
         return net, M_EIP, MV_EIP  
         
@@ -157,14 +174,17 @@ class Configurator(ConfiguratorBase):
         '''
         Sets parameter param_name with param_value
         '''
-        self.sympy_params.cur.update({param_name:param_value})   
+        param_dict = {param_name:param_value}
+        self.sympy_params.cur.update(param_dict)   
         self.sympy_params.update()    
+        self.parameters.update(param_dict)
         return None
     
     def set_parameters(self, param_dict):
         #IMPLEMENT
         self.sympy_params.cur.update(param_dict)  
         self.sympy_params.update()     
+        self.parameters.update(param_dict)
         return None
     
     
