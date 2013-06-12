@@ -494,9 +494,11 @@ class SpikeTrain(object):
         """
         Add an offset to the SpikeTrain object. t_start and t_stop are
         shifted from offset, so does all the spike times.
-
+        
         Inputs:
             offset - the time offset, in ms
+            
+        Returns None: changes to the SpikeList are made in-place
 
         Examples:
             >> spktrain = SpikeTrain(arange(0,100,10))
@@ -1131,6 +1133,8 @@ class SpikeList(object):
         Inputs:
             offset - the time offset, in ms
 
+        Returns None: changes to the SpikeList are made in-place
+        
         Examples:
             >> spklist.t_start
                 1000
