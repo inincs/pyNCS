@@ -54,7 +54,7 @@
         <parameter id= "nsynstdw1_fit2"         value="0.8398"/>
         <parameter id= "nsynexcinh_fit"         value="4.9190e-20"/>
         <parameter id= "psynlocinhth_fit"       value="1.0571e-14"/>
-        <parameter id= "psynaerinhth_fit1"       value="0.7"/>
+        <parameter id= "psynaerinhth_fit1"       value="1.0571e-14"/>
     </field> 
 
     <field id="defaultparameters"> 
@@ -102,24 +102,24 @@
     </field>
         
     <field id="translationfunctions">
-        <function standardname="tau_synloc_E"   body="CapsynLoc*Ut/(Kappap*I0p*RLatTau*exp(Kappap*(Vdd-psynloctau)/Ut))-tau_synloc_E*1e-3"/>
-        <function standardname="tau_syn_E"      body="CapsynAER*Ut/(Kappap*I0p*RTau*exp(Kappap*(Vdd-psynstdtau)/Ut))-tau_syn_E*1e-3"/>
-        <function standardname="tau_synloc_IE"  body="CapsynInhE*Ut/(Kappan*I0n*RInhETau*exp(Kappan*(nsynlocinhtau)/Ut))-tau_synloc_IE*1e-3"/>
-        <function standardname="tau_syn_I"      body="CapsynInhE*Ut/(Kappan*I0n*RInhETau*exp(Kappan*(nsynaerinhtau)/Ut))-tau_syn_I*1e-3"/>
-        <function standardname="w_synloc_S"     body="nsynlocself_fit*(RLatW*RLatSyn/RLatTau)*exp(Kappan*nsynlocself/Ut+Kappap*(-nsynlocth+psynloctau)/Ut)-w_synloc_S*1e-9"/>
-        <function standardname="w_synloc_E"     body="nsynloclat1_fit*(RLatW*RLatSyn/RLatTau)*exp(Kappan*nsynloclat1/Ut+Kappap*(-nsynlocth+psynloctau)/Ut)-w_synloc_E *1e-9"/>
-        <function standardname="w_synloc_EE"    body="nsynloclat2_fit*(RLat2W*RLat2Syn/RLat2Tau+RLat3W*RLat3Syn/RLat3Tau)*exp(Kappan*nsynloclat2/Ut+Kappap*(-nsynlocth+psynloctau)/Ut)-w_synloc_EE*1e-9"/>
-        <function standardname="w_syn_E1"       body="nsynstdw0_fit*(Rw*RSyn/RTau)*exp(Kappan*(nsynstdw0_fit2*nsynstdw0)/Ut+Kappap*((psynstdtau-Vdd)+(llVdd-nsynstdth))/Ut)-w_syn_E1*1e-9"/>
-        <function standardname="w_syn_E2"       body="nsynstdw1_fit*(Rw*RSyn/RTau)*exp(Kappan*(nsynstdw1_fit2*nsynstdw1)/Ut+Kappap*((psynstdtau-Vdd)+(llVdd-nsynstdth))/Ut)-w_syn_E2*1e-9"/>
-        <function standardname="w_synloc_IE"    body="psynlocinhth_fit*(RInhEW*RInhESyn/RInhETau)*exp(Kappan*(psynlocinhth-nsynlocinhtau)/Ut)-w_synloc_IE*1e-9"/>
-        <function standardname="w_syn_I"    body="psynaerinhth_fit1*(RInhEW*RInhESyn/RInhETau)*exp(Kappan*(psynlocinhth-nsynaerinhtau)/Ut)-w_syn_I*1e-9"/>
-        <function standardname="w_synloc_EI"    body="nsynexcinh_fit*(RExcIW*RExcISyn/RExcITau)*exp(Kappan*nsynexcinh/Ut+Kappap*(-nsynlocth+psynloctau)/Ut)-w_synloc_EI*1e-9"/>
-        <function standardname="i_inj"          body="I0p*Rinj*exp(Kappap*(Vdd-pinj)/Ut)-i_inj*1e-9"/>
-        <function standardname="i_injinh1"      body="I0p*Rinj*exp(Kappap*(Vdd-pinj1)/Ut)-i_injinh1*1e-9"/>
-        <function standardname="i_injinh2"      body="I0p*Rinj*exp(Kappap*(Vdd-pinj2)/Ut)-i_injinh2*1e-9"/>
-        <function standardname="i_injinh3"      body="I0p*Rinj*exp(Kappap*(Vdd-pinj3)/Ut)-i_injinh3*1e-9"/>
-        <function standardname="i_injinh4"      body="I0p*Rinj*exp(Kappap*(Vdd-pinj4)/Ut)-i_injinh4*1e-9"/>
-        <function standardname="v_thresh"       body="nsf+0.35-v_thresh*1e-3"/>
-        <function standardname="i_leak"         body="I0n*Rlk*exp(Kappan*nlk/Ut)+0.8*Cap-i_leak*1e-9"/>
+        <function standardname="tau_synloc_E"   body="CapsynLoc*Ut/(Kappap*I0p*RLatTau*exp(Kappap*(Vdd-psynloctau)/Ut))"/>
+        <function standardname="tau_syn_E"      body="CapsynAER*Ut/(Kappap*I0p*RTau*exp(Kappap*(Vdd-psynstdtau)/Ut))"/>
+        <function standardname="tau_synloc_IE"  body="CapsynInhE*Ut/(Kappan*I0n*RInhETau*exp(Kappan*(nsynlocinhtau)/Ut))"/>
+        <function standardname="tau_syn_I"      body="CapsynInhE*Ut/(Kappan*I0n*RInhETau*exp(Kappan*(nsynaerinhtau)/Ut))"/>
+        <function standardname="w_synloc_S"     body="nsynlocself_fit*(RLatW*RLatSyn/RLatTau)*exp(Kappan*nsynlocself/Ut+Kappap*(-nsynlocth+psynloctau)/Ut)"/>
+        <function standardname="w_synloc_E"     body="nsynloclat1_fit*(RLatW*RLatSyn/RLatTau)*exp(Kappan*nsynloclat1/Ut+Kappap*(-nsynlocth+psynloctau)/Ut)"/>
+        <function standardname="w_synloc_EE"    body="nsynloclat2_fit*(RLat2W*RLat2Syn/RLat2Tau+RLat3W*RLat3Syn/RLat3Tau)*exp(Kappan*nsynloclat2/Ut+Kappap*(-nsynlocth+psynloctau)/Ut)"/>
+        <function standardname="w_syn_E1"       body="nsynstdw0_fit*(Rw*RSyn/RTau)*exp(Kappan*(nsynstdw0_fit2*nsynstdw0)/Ut+Kappap*((psynstdtau-Vdd)+(llVdd-nsynstdth))/Ut)"/>
+        <function standardname="w_syn_E2"       body="nsynstdw1_fit*(Rw*RSyn/RTau)*exp(Kappan*(nsynstdw1_fit2*nsynstdw1)/Ut+Kappap*((psynstdtau-Vdd)+(llVdd-nsynstdth))/Ut)"/>
+        <function standardname="w_synloc_IE"    body="psynlocinhth_fit*(RInhEW*RInhESyn/RInhETau)*exp(Kappan*(psynlocinhth-nsynlocinhtau)/Ut)"/>
+        <function standardname="w_syn_I"    body="psynaerinhth_fit1*(RInhEW*RInhESyn/RInhETau)*exp(Kappan*(psynlocinhth-nsynaerinhtau)/Ut)"/>
+        <function standardname="w_synloc_EI"    body="nsynexcinh_fit*(RExcIW*RExcISyn/RExcITau)*exp(Kappan*nsynexcinh/Ut+Kappap*(-nsynlocth+psynloctau)/Ut)"/>
+        <function standardname="i_inj"          body="I0p*Rinj*exp(Kappap*(Vdd-pinj)/Ut)"/>
+        <function standardname="i_injinh1"      body="I0p*Rinj*exp(Kappap*(Vdd-pinj1)/Ut)"/>
+        <function standardname="i_injinh2"      body="I0p*Rinj*exp(Kappap*(Vdd-pinj2)/Ut)"/>
+        <function standardname="i_injinh3"      body="I0p*Rinj*exp(Kappap*(Vdd-pinj3)/Ut)"/>
+        <function standardname="i_injinh4"      body="I0p*Rinj*exp(Kappap*(Vdd-pinj4)/Ut)"/>
+        <function standardname="v_thresh"       body="nsf"/>
+        <function standardname="i_leak"         body="I0n*Rlk*exp(Kappan*nlk/Ut)+0.8*Cap"/>
     </field>
 </paramtrans>

@@ -25,6 +25,12 @@ channel_seq = 0
 channel_ifslwtain = 6
 global_mappings_list = []
 global_neurosetup = None
+global_sympy_params = None
+
+synapse_trans_dict = {0 : ['Ii', 'w_syn_I'],
+                      1 : ['Ii', 'w_syn_I'],
+                      2 : ['Ia', 'w_syn_E1'],
+                      3 : ['Ia', 'w_syn_E2']}
 
 def _decode_mappings_list(mappings_list, synapse_id):
     ml = np.array(mappings_list)
@@ -76,20 +82,20 @@ def decode_addr(addr):
 class Communicator(BatchCommunicatorBase):
     def run(self, stimulus=None, duration=None, context_manager=None):
         stimulus_abs = stimulus.copy().astype('float')
-        stimulus_abs[:,1] = np.cumsum(stimulus_abs[:,1])/1000000
+        stimulus_abs[:,1] = np.cumsum(stimulus_abs[:,1])/1e6
+        if duration == None and stimulus is not None:
+            duration = np.max(stimulus_abs[:,1])*1e3
         if duration == None:
-            duration = 1
-        elif duration == None and stimulus is not None:
-            duration = np.max(stimulus_abs[:,1])/1000
+            duration = 1.
         else:
-            duration = float(duration)/1000
-        from brian.network import Network        
+            duration = float(duration)/1e3
         net, M_EIP, MV_EIP = self._prepare_brian_net(stimulus_abs)
-        net.reinit(states=False)   
+        net.reinit(states=False)
+        print 'running virtual IFLSWTA for {0}s'.format(duration)  
         net.run(duration)
-        sp = np.array(M_EIP.spikes)
+        sp = np.array(M_EIP.spikes).reshape(-1,2)
         sp[:,0]+=(2<<13) #slot 2 in text.xml TODO
-        sp[:,1]*=1000 #slot 2 in text.xml TODO
+        sp[:,1]*=1e6 #slot 2 in text.xml TODO
         return sp
         
     
@@ -98,29 +104,36 @@ class Communicator(BatchCommunicatorBase):
         from brian.synapses.synapses import Synapses
         from brian.network import Network
 
-        netobjs, M_EIP, MV_EIP = ibm.create_netobjs(stimulus)
-        gml = np.array(global_mappings_list)
-        N = max(gml[:,0])+1
-        W,P = translate_mappings(global_mappings_list, 2)
+        netobjs, M_EIP, MV_EIP = ibm.create_netobjs(stimulus, global_sympy_params.cur)
+
+        N = max(stimulus[:,0])+1
         In1=SpikeGeneratorGroup(N,stimulus[stimulus[:,0] <N])
         stimulus[:,1]=stimulus[:,1]
         stimulus=stimulus[stimulus[:,1].argsort()]
-        N = max(stimulus[:,0])    
-        EIP = netobjs['EIP']
-        S=Synapses(In1,EIP,model="""w : 1
-                                    p : 1""",
-                         pre="Ia+=w*(rand()<p)")
-        gml_dict = _dlist_to_mappingdict(_decode_mappings_list(gml,2)) 
-        for i in gml_dict[0]:
-            S[i,gml_dict[0][i]]=True
-            S.w[i,gml_dict[0][i]] = ibm.w['a']
-            S.p[i,gml_dict[0][i]] = gml_dict[1][i]  
-        self.S = S
-        net = Network(netobjs.values()+[S,In1])
+        
+        #Create connections, if any
+        if len(global_mappings_list)>0:            
+            gml = np.array(global_mappings_list).reshape(-1,3) 
+            syn_idx = 2                     
+            iname, wname = synapse_trans_dict[syn_idx] 
+            EIP = netobjs['EIP']
+            S=Synapses(In1,EIP,model="""w : 1
+                                        p : 1""",
+                             pre=iname+"+=w*(rand()<p)")
+            gml_dict = _dlist_to_mappingdict(_decode_mappings_list(gml,syn_idx)) 
+            for i in gml_dict[0]:
+                S[i,gml_dict[0][i]]=True                
+                S.w[i,gml_dict[0][i]] = global_sympy_params.cur[wname]*np.random.normal(1,ibm.sigma_mismatch, len(gml_dict[0][i]))
+                S.p[i,gml_dict[0][i]] = gml_dict[1][i]  
+            self.S = S
+            net = Network(netobjs.values()+[S,In1])
+        else:
+            net = Network(netobjs.values()+[In1])
+                        
         return net, M_EIP, MV_EIP  
         
     
-class Configurator(ConfiguratorBase):
+class Configurator(ConfiguratorBase):        
     def register_neurosetup(self, neurosetup):
         '''
         Provides a link to the Neurosetup. This is useful for complex parameter
@@ -137,14 +150,35 @@ class Configurator(ConfiguratorBase):
         '''
         Gets parameter param_name.
         '''
-        return 0
+        return self.parameters[param_name]        
     
     def set_parameter(self, param_name, param_value):
         #IMPLEMENT
         '''
         Sets parameter param_name with param_value
         '''
+        self.sympy_params.cur.update({param_name:param_value})   
+        self.sympy_params.update()    
         return None
+    
+    def set_parameters(self, param_dict):
+        #IMPLEMENT
+        self.sympy_params.cur.update(param_dict)  
+        self.sympy_params.update()     
+        return None
+    
+    
+    def add_parameter(self, param):
+        #CONVENIENCE FUNCITON. IMPLEMENTATION NOT REQUIRED
+        '''
+        Add a parameter to the configurator
+        param: dictionary with all attributes of parameter or an xml element or
+        file name with the <parameter /> element
+        '''
+        if isinstance(param, dict):            
+            self.parameters[param['SignalName']] = 0
+        elif isinstance(param, etree._Element):
+            self.parameters[param.SignalName] = 0
     
     def reset(self):
         #IMPLEMENT
@@ -152,6 +186,23 @@ class Configurator(ConfiguratorBase):
         Resets all the parameters to default values
         '''
         return None
+    
+    def __parseNHML__(self, doc):
+        '''
+        Parse xml file or element tree to generate the object
+        '''
+        super(Configurator,self).__parseNHML__(doc)
+        
+        global global_sympy_params
+        from paramTranslation import params
+        global_sympy_params = self.sympy_params = params(self, 'chipfiles/ifslwta_paramtrans.xml')
+        
+    def _readCSV(self, CSVfile):        
+        super(Configurator,self)._readCSV(CSVfile)
+        
+        global global_sympy_params
+        from paramTranslation import params
+        global_sympy_params = self.sympy_params = params(self, 'chipfiles/ifslwta_paramtrans.xml')
     
 class Mappings(MappingsBase):
     def add_mappings(self, mappings):
