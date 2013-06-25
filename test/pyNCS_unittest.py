@@ -57,18 +57,21 @@ class TestSequenceFunctions(unittest.TestCase):
             self.assert_(a in addrs)
 
     def testMonitors(self):
-        N=10
-        test_pops=create_default_population(self.nsetup,'seq',N)
-        stmon1=pyNCS.monitors.SpikeMonitor(test_pops.soma)
-        stmon2=pyNCS.monitors.SpikeMonitor(test_pops.soma)
-        self.nsetup.monitors.import_monitors([stmon1,stmon2])
-        input_stim=test_pops.soma.spiketrains_poisson(100)
-        self.nsetup.stimulate(input_stim)
-        ird=input_stim[test_pops.soma.channel].raw_data()
-        for mon in self.nsetup.monitors:
-            ord=mon.sl.raw_data()
-            for i in xrange(len(ird)):                
-                self.assertAlmostEqual(ord[i][1],ird[i][1],2)
+        N=3
+        s=create_default_population(self.nsetup,'seq',N)
+        t=create_default_population(self.nsetup, 'ifslwta', N)
+        c=pyNCS.PConnection(s,t,'excitatory0')
+               
+        stmon1=pyNCS.monitors.SpikeMonitor(t.soma)        
+        self.nsetup.monitors.import_monitors([stmon1])
+        input_stim=s.soma.spiketrains_poisson(rate = np.linspace(0,1000,N), duration=200)  
+        self.nsetup.prepare()
+        self.nsetup.chips['ifslwta'].set_parameter('nsynstdw0',.7)       
+        out = self.nsetup.run(input_stim)
+        r= stmon1.sl.mean_rates()        
+        print r
+        self.assertTrue(np.all(r== np.sort(r)))
+        
                 
     def testMonitors_from_SpikeList(self):
         from pyNCS import monitors
@@ -82,10 +85,13 @@ class TestSequenceFunctions(unittest.TestCase):
         
     def testPMapping(self):
         N=30
-        p=0.25
+        p=0.5
         pyAex.MAPVERS=3
         s=create_default_population(self.nsetup, 'seq', N)
-        t=create_default_population(self.nsetup, 'seq', N)
+        t=create_default_population(self.nsetup, 'ifslwta', N)
+        t2=create_default_population(self.nsetup, 'ifslwta', 124-N, offset=N)
+        mon = self.nsetup.monitors.import_monitors_otf(t)[0]
+        mon_zero = self.nsetup.monitors.import_monitors_otf(t2)[0]
         m=pyNCS.PMapping('')
         m.__connect_random_all2all__(s.soma,t.synapses['excitatory0'],p=p)
         m.__connect_one2one__(s.soma,t.synapses['excitatory0'])
@@ -95,16 +101,24 @@ class TestSequenceFunctions(unittest.TestCase):
                 self.assert_([i, j, P] in m.mapping)
         for n in range(len(s.soma.paddr)):
             self.assert_([s.soma.paddr[n], t.synapses['excitatory0'].paddr[n], P] in m.mapping)
-
+        self.nsetup.mapping.merge(m)
         self.nsetup.prepare()
+        self.nsetup.chips['ifslwta'].set_parameter('nsynstdw0',.5)
+        input_stim=s.soma.spiketrains_poisson(400)
+        out = self.nsetup.run(input_stim)
+        self.assertTrue(np.all(350>mon.sl.mean_rates()) and np.all(mon.sl.mean_rates()>100))
+        self.assertTrue(np.all(mon_zero.sl.mean_rates()<2))
 
     def testPConnection(self):
         N=30
-        p=0.25
+        p=0.5
         pyAex.MAPVERS=3
-        s=create_default_population(self.nsetup, 'seq', N)
-        t=create_default_population(self.nsetup, 'seq', N)
-        c=pyNCS.PConnection(s,t,'excitatory0','random_all2all',{'p':0.25})
+        s=create_default_population(self.nsetup, 'seq', N)        
+        t=create_default_population(self.nsetup, 'ifslwta', N)
+        t2=create_default_population(self.nsetup, 'ifslwta', 124-N, offset=N)
+        mon = self.nsetup.monitors.import_monitors_otf(t)[0]
+        mon_zero = self.nsetup.monitors.import_monitors_otf(t2)[0]
+        c=pyNCS.PConnection(s,t,'excitatory0','random_all2all',{'p':p})
         m=c.mapping
         P = int(p*127)
         for i in s.soma.paddr:
@@ -113,7 +127,13 @@ class TestSequenceFunctions(unittest.TestCase):
         for n in range(len(s.soma.paddr)):
             self.assert_([s.soma.paddr[n], t.synapses['excitatory0'].paddr[n], P] in m.mapping)
 
-        self.nsetup.prepare()
+        self.nsetup.prepare()            
+        input_stim=s.soma.spiketrains_poisson(400)
+        self.nsetup.chips['ifslwta'].set_parameter('nsynstdw0',.5)
+        out = self.nsetup.run(input_stim)
+        self.assertTrue(np.all(350>mon.sl.mean_rates()) and np.all(mon.sl.mean_rates()>100))
+        self.assertTrue(np.all(mon_zero.sl.mean_rates()<2))
+        
 
     def testSeqPopulationFunctions(self):
         N=5

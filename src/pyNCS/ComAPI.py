@@ -71,7 +71,6 @@ class RecordableCommunicatorBase(object):
         '''
         Save data using np.savetxt, and adds filename in self._record_fns
         '''
-        import numpy
         if int(numpy.__version__.split('.')[0])==1 and int(numpy.__version__.split('.')[1])<=6:
             kwargs.pop('header')
         self._rec_fns.append(filename)
@@ -82,6 +81,9 @@ class RecordableCommunicatorBase(object):
         '''
         Generate filenames for recording
         '''
+        #Get username
+
+
         import time
         N = self._run_id
         current_time_str = time.strftime("__" + "%d-%m-%Y-%H:%M:%S", time.localtime())

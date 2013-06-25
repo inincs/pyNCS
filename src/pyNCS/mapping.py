@@ -56,7 +56,7 @@ class Mapping(object):
     def __toint__(self):
         """
         Convert all the elements to int because some numpy functions can return
-        longint.
+        longint.#
         """
         self.mapping = [[int(x) for x in v] for v in self.mapping]
 
@@ -86,8 +86,7 @@ class Mapping(object):
 
     def merge(self, pyncs_mapping):
         """
-        Merge the existing mapping with a given one. It acts on two
-        pyNCS.Mapping instancies.
+        Merge the existing mapping with a given one.
         """
         # TODO: check for duplicates
         self.complete()
@@ -147,8 +146,7 @@ class Mapping(object):
 
         if not hide:
             self.add_edge(groupsrc, groupdst, arrowhead='crow', dir='both')
-
-        self.__toint__()
+        
         return self.mapping
 
     def __connect_one2one__(self, groupsrc, groupdst, p=1.0,
@@ -186,8 +184,8 @@ class Mapping(object):
         if not self.is_connect_possible(groupsrc, groupdst):
             return []
 
-        pairs_all = np.array(
-            np.meshgrid(groupsrc.paddr, groupdst.paddr)).transpose()
+        pairs_all = np.array(np.meshgrid(groupsrc.paddr, groupdst.paddr)).transpose()
+        connect_inst = np.array(connect_inst, 'bool')
         pairs_selected = pairs_all[connect_inst]
 
         c1 = pairs_selected[:, 0]
@@ -200,8 +198,7 @@ class Mapping(object):
 
         if not hide:
             self.add_edge(groupsrc, groupdst, arrowhead='crow', dir='both')
-
-        self.__toint__()
+        
         return self.mapping
 
     def __connect_by_probability_matrix__(self, groupsrc, groupdst, M, expand=True, hide=False, return_inst=False):
@@ -278,8 +275,7 @@ class Mapping(object):
 
         if not hide:
             self.add_edge(groupsrc, groupdst, arrowhead='crow', dir='both')
-
-        self.__toint__()
+        
         return self.mapping
 
     def add_edge(self, groupsrc, groupdst, arrowhead='normal', dir='forward'):
@@ -348,8 +344,7 @@ class Mapping(object):
         Loads the mapping from a file.
         """
         self.clear()
-        self.mapping = np.loadtxt(filename)
-        self.__toint__()
+        self.mapping = np.loadtxt(filename)        
 
     def is_connect_possible(self, groupsrc, groupdst):
         if groupsrc.grouptype != 'out':
@@ -362,8 +357,8 @@ class Mapping(object):
         '''
         Run any functions before applying the mapping table
         '''
-        pass
-
+        self.__toint__()
+        
     def write(self, *args, **kwargs):
         warn("Mappings.write has no effect. Use NeuroSetupBase.run or NeuroSetupBase.prepare instead")
 
@@ -428,8 +423,7 @@ class PMapping(Mapping):
 
         if not hide:
             self.add_edge(groupsrc, groupdst, arrowhead='crow', dir='both')
-
-        self.__toint__()
+        
         return self.mapping
 
     def complete(self):
@@ -442,4 +436,5 @@ class PMapping(Mapping):
                 c.append(self.max_p)
 
     def prepare(self):
+        super(PMapping,self).prepare()
         self.complete()
