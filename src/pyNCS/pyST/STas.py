@@ -1618,7 +1618,7 @@ class addrSpec:
       >>> stas.addrPhysicalConstruct([range(5),2])
       array([   2, 2050, 1026, 3074,  514], dtype=uint32)
     """
-    def __init__(self, addrStr='', addrConf=list(), addrPinConf='', id="NoName"):
+    def __init__(self, addrStr='', addrConf=list(), addrPinConf='', id="NoName", nhml = False):
         """
         NOTE: DOCUMENTATION IS OUTDATED!!!
         Address specification class
@@ -1664,11 +1664,8 @@ class addrSpec:
         self.__class__.addrLogicalPhysical = addrLogicalPhysical
         self.__class__.repr_addr_spec = repr_addr_spec
         #Update all parameters
-        try:
+        if not nhml:
             self.update()
-        except:
-            warnings.warn('Address specification not updated during init.' \
-                          + ' Ignore if loading addrSpec from file.')
 
     def update(self):
         '''
@@ -2058,10 +2055,10 @@ def load_stas_from_nhml(doc):
     for elm in doc:
         if elm.tag == 'addressSpecification':
             if elm.get('type') == 'aerIn':
-                aerIn = addrSpec(id=chipclass + 'In')
+                aerIn = addrSpec(id=chipclass + 'In', nhml = True)
                 aerIn.__parseNHML__(elm)
             elif elm.get('type') == 'aerOut':
-                aerOut = addrSpec(id=chipclass + 'Out')
+                aerOut = addrSpec(id=chipclass + 'Out', nhml = True)
                 aerOut.__parseNHML__(elm)
             else:
                 pass
