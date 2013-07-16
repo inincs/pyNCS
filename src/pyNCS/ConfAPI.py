@@ -17,39 +17,8 @@ from contextlib import contextmanager
 from lxml import etree
 import warnings
 
-# Traits imports
-try:
-    from enthought.traits.api import *
-    from enthought.traits.ui.api import *
-except ImportError:
-    from traits.api import *
-    from traitsui.api import * #This causes pyNCS not to run in headless mode (without C)
 
-
-class Parameter(HasTraits):
-    SignalName = Str('Parameter name')  # Parameter name
-    _onlyGui = False  # Flag to only update GUI
-    v = Property(Range(-1., 3.3))
-    _v = None
-
-    def _get_v(self):
-        if self._v is None:
-            self._v = self.getValue()
-        return self._v
-
-    def _set_v(self, value):
-        if not self._onlyGui:
-            self.setValue(value)
-        else:
-            self._v = value
-
-    view = View(Group(Item('SignalName', style='readonly',
-                           show_label=False),
-                      Item('v', show_label=False, resizable=True),
-                      orientation='horizontal'),
-                resizable=True,
-               )
-
+class Parameter:
     def __init__(self, parameters, configurator):
         '''
         Parameter(parameters, configurator)
@@ -58,7 +27,6 @@ class Parameter(HasTraits):
         '''
         self.param_data = dict(parameters)
         self.configurator = configurator
-        # Initialize variable for GUI
         self.SignalName = self.param_data['SignalName']
 
     def __str__(self):
@@ -96,9 +64,11 @@ class Parameter(HasTraits):
         return self.configurator.get_parameter(self.param_data['SignalName'])
 
     def setValue(self, value):
-        x = self.configurator.set_parameter(self.param_data['SignalName'], value)
-        self._v = x  # Update gui
+        x = self.configurator.set_parameter(self.param_data['SignalName'],
+                                            value)
         return x
+    
+    v = property(getValue, setValue)
 
 
 class ConfiguratorBase(ResourceManagerBase):
