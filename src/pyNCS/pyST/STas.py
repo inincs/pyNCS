@@ -298,22 +298,34 @@ class events(object):
             self.set_tm(t)
 
     def get_adisi(self):
-        if self.isISI:
-            return events(ev=self)
 
-        if self.nev > 0:
-            tm = np.concatenate([np.array([self.tm[0]]), np.diff(self.tm)])
-            return events(ev=np.array([tm, self.ad]), isISI=True)
+        if self.isISI:
+            return self.get_adtm()
         else:
-            return np.zeros([0], self.dtype)
+            if self.nev > 0:
+                tm = np.concatenate([np.array([self.tm[0]]), np.diff(self.tm)])
+                return np.array([self.ad, tm])
+            else:
+                return np.zeros([2,0])
+
+    def get_isiad(self):
+
+        if self.isISI:
+            return self.get_tmad()
+        else:
+            if self.nev > 0:
+                tm = np.concatenate([np.array([self.tm[0]]), np.diff(self.tm)])
+                return np.array([tm, self.ad])
+            else:
+                return np.zeros([2,0])
 
     def set_isi(self):
         if self.isISI:
             pass
         else:
-            self.isISI = True
             evs = self.get_adisi()
-            self.__data = evs.__data
+            self.set_data(evs[0],evs[1])
+            self.isISI = True
             
 
     def set_abs_tm(self):
