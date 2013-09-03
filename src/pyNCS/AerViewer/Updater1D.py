@@ -64,7 +64,7 @@ class UpdateEvents:
                 self.gui.updater = self
                 self.stcs = getDefaultMonChannelAddress()
                 pyNCS.pyST.STas.addrBuildHashTable(self.stcs[channel])
-                self.eventsQueue = pyAex.netMonClient(MonChannelAddress=self.stcs,
+                self.eventsQueue = pyAex.aexclient.AEXMonClient(MonChannelAddress=self.stcs,
                                                            channels=[
                                                                self.channel],
                                                            host=self.host,
@@ -98,11 +98,10 @@ class UpdateEvents:
                         try:
                                 eventsPacket = self.eventsQueue.buffer.get(
                                     block=False)
-                                if self.channel in eventsPacket:  # Check if there is any data
-                                        cur_neurons = append(cur_neurons, eventsPacket.
-                                            get_ad(self.channel), axis=0,)
-                                        cur_times = append(cur_times, eventsPacket.get_tm(
-                                            self.channel))
+                                ch_ev = self.stcs.importAER(eventsPacket)
+                                if ch_ev.has_key(self.channel):  # Check if there is any data
+                                        cur_neurons = append(cur_neurons, ch_ev[self.channel].get_ad(), axis=0,)
+                                        cur_times = append(cur_times, ch_ev[self.channel].get_tm())
 
                         except Queue.Empty, e:
                                 break
@@ -233,7 +232,7 @@ class ImagePlot(HasTraits):
                 except:
                         pass
                 pyNCS.pyST.STas.addrBuildHashTable(self.updater.stcs[self.channel])
-                self.updater.eventsQueue = pyAex.netMonClient(MonChannelAddress=self.updater.stcs,
+                self.updater.eventsQueue = pyAex.aexclient.AEXMonClient(MonChannelAddress=self.updater.stcs,
                                                            channels=[
                                                                self.channel],
                                                            host=self.updater.host,
