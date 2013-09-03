@@ -288,9 +288,14 @@ class events(object):
     def get_adtmev(self):
         return self.get_adtm().transpose()
 
-    def normalize_tm(self, t0=0):
-        t_start = self.get_tm().min()
-        self.set_tm(self.get_tm() - t_start + t0)
+    def normalize_tm(self, t0=0.):
+        if not self.isISI:
+            t_start = self.get_tm().min()
+            self.set_tm(self.get_tm() - t_start + t0)
+        else:
+            t = self.get_tm()
+            t[0] = t0
+            self.set_tm(t)
 
     def get_adisi(self):
         if self.isISI:
@@ -298,15 +303,18 @@ class events(object):
 
         if self.nev > 0:
             tm = np.concatenate([np.array([self.tm[0]]), np.diff(self.tm)])
-            return events(ev=np.array([self.ad, tm]), isISI=True)
+            return events(ev=np.array([tm, self.ad]), isISI=True)
         else:
-            return self.ad, self.tm
+            return np.zeros([0], self.dtype)
 
     def set_isi(self):
         if self.isISI:
             pass
         else:
-            self.__data = self.get_adisi().__data
+            self.isISI = True
+            evs = self.get_adisi()
+            self.__data = evs.__data
+            
 
     def set_abs_tm(self):
         if self.isISI:
