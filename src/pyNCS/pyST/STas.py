@@ -328,23 +328,19 @@ class events(object):
         map[src]=[target1,target2,...,targetn],
         """
         #The following is optimized for performance
-
+        assert not self.isISI, "Cannot filter with ISI timestamps"
         evs = self.get_adtmev()
         ff = lambda x: x[0] in mapping
-        filt = filter(ff, evs)
+        filt = filter(ff, evs) #keep only addresses that are mapped
         if len(filt) > 0:
-            ev_filt = events(filt, self.atype)
-            evs_filt = self.get_adtmev()
+            evs_filt = events(filt, self.atype).get_adtmev()
             #Get mapped addresses
             #list(chain(* concatenates lists of lists for low cost (i.e. O(n))
-            m_ad = np.array(list(itertools.chain(*map(mapping.
-                get, evs_filt[:, 0]))), self.dtype['ad'])
+            m_ad = np.array(list(itertools.chain(*map(mapping.get, evs_filt[:, 0]))), self.dtype['ad'])
             #Get the respective timestamps
-            m_tm = np.array(list(itertools.chain(*map(lambda x:
-                 len(mapping.get(x[0])) * [x[1]], evs_filt))), self.dtype['tm'])
+            m_tm = np.array(list(itertools.chain(*map(lambda x: len(mapping.get(x[0])) * [x[1]], evs_filt))), self.dtype['tm'])
 
-            self.set_ad(m_ad)
-            self.set_tm(m_tm)
+            self.set_data(m_ad,m_tm)
         else:
             self.empty()
 
