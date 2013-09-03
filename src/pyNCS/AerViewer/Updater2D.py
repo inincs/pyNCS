@@ -54,7 +54,8 @@ class UpdateEvents:
         self.gui.updater = self
         self.stcs = getDefaultMonChannelAddress()
         pyNCS.pyST.STas.addrBuildHashTable(self.stcs[channel])
-        self.eventsQueue = pyAex.netMonClient(MonChannelAddress=self.stcs,
+
+        self.eventsQueue = pyAex.aexclient.AEXMonClient(MonChannelAddress=self.stcs,
                                                    channels=[
                                                        self.channel],
                                                    host=self.host,
@@ -83,8 +84,8 @@ class UpdateEvents:
         # writing.. something more intelligent can go here.
         while True:
             try:
-                eventsPacket_channel = self.eventsQueue.buffer.get(
-                    block=False)
+                eventsPacket = self.eventsQueue.buffer.get(block=False)
+                eventsPacket_channel = self.stcs.extract(eventsPacket)
                 if self.channel in eventsPacket_channel:  # Check if there is any data
                     pad = eventsPacket_channel.get_ad(self.channel)
                     ad = self.stcs[self.channel].addrPhysicalExtract(pad).transpose()
@@ -244,10 +245,12 @@ class ImagePlot(HasTraits):
                 except:
                         pass
                 pyNCS.pyST.STas.addrBuildHashTable(self.updater.stcs[self.channel])
-                self.updater.eventsQueue = pyAex.netMonClient(MonChannelAddress=self.updater.stcs,
-                                                           channels=[
-                                                               self.channel],
-                                                           host=self.updater.host,
-                                                           port=self.updater.port,
-                                                           autostart=True,
-                                                           fps=self.updater.fps)
+
+
+                self.updater.eventsQueue = pyAex.aexclient.AEXMonClient(MonChannelAddress=self.updater.stcs,
+                                           channels=[
+                                               self.channel],
+                                           host=self.updater.host,
+                                           port=self.updater.port,
+                                           autostart=True,
+                                           fps=self.updater.fps)
