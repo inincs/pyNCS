@@ -141,6 +141,7 @@ def loadBiases(filename):
     return d
 
 if __name__=='__main__':
+    import pyNCS
     configurator = pyNCS.ConfAPI.Configurator()
     configurator._readCSV('chipfiles/ifslwta.csv')
     configurator.set_parameters(loadBiases('biases/defaultBiases_ifslwta'))

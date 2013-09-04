@@ -10,13 +10,8 @@
 #Enthougt and Chaco imports
 # Work around for Ubuntu 11.10 (are other. distributions affected by the new
 # package naming?)
-try:
-    import enthought
-    new_version = False
-except ImportError:
-    new_version = True
 
-if not new_version:
+try:
     from enthought.traits.api import HasTraits, Instance, Int, CFloat, Enum, Trait, Callable, Range
     from enthought.traits.ui.api import View, Item, Group, Handler
     from enthought.chaco.api import Plot, ArrayPlotData, jet, Greys
@@ -25,7 +20,7 @@ if not new_version:
     from enthought.traits.ui.menu import Action, CloseAction, MenuBar, Menu
     #Imports for custom marker
     #from enthought.kiva import CompiledPath
-else:
+except ImportError, e:
     from traits.api import HasTraits, Instance, Int, CFloat, Enum, Trait, Callable, Range
     from traitsui.api import View, Item, Group, Handler
     from chaco.api import Plot, ArrayPlotData, jet, Greys

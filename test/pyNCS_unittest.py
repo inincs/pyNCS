@@ -134,6 +134,19 @@ class TestSequenceFunctions(unittest.TestCase):
         self.assertTrue(np.all(350>mon.sl.mean_rates()) and np.all(mon.sl.mean_rates()>100))
         self.assertTrue(np.all(mon_zero.sl.mean_rates()<2))
         
+    def testPMappingLarge(self):
+        N=124
+        p=0.5
+        pyAex.MAPVERS=3
+        s=create_default_population(self.nsetup, 'seq', N)
+        t=create_default_population(self.nsetup, 'ifslwta', N)
+        m=pyNCS.PMapping('')
+        M = np.random.randint(0,2,size=(len(s.soma),2))
+        m.mapping.extend(np.random.randint(0,50000,size=(500000,2)))       
+        for j in xrange(len(s)):   
+            print j      
+            m.connect(s.soma[j], t.synapses['inhibitory'][(j*2):((j+1)*2)], fashion = 'by_binary_matrix', fashion_kwargs={'connect_inst': M[[j],:]})        
+        
 
     def testSeqPopulationFunctions(self):
         N=5

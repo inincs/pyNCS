@@ -340,6 +340,8 @@ class TestSequenceFunctions(unittest.TestCase):
 
         for i,x in enumerate(tin): 
             self.assertAlmostEqual( x, tout[i], delta=1e-3)
+        #Check that empty spikelists have complete id_lists
+        self.assertEqual(len(raw_out[1].mean_rates()), 128*32)
             
     def testSpikeTrain__time_offset(self):        
         sl = STCreate.poisson_generator(rate=100)

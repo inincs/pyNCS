@@ -399,7 +399,7 @@ class NeuroSetup(object):
 
     def run(self, *args, **kwargs):
         '''
-        Prepares mappings, writes it and stimulates.
+        Prepares and stimulates.
         *args* and *kwargs* are keyword arguments passed to Communicator.run()
         '''
         self.prepare()
@@ -417,11 +417,13 @@ class NeuroSetup(object):
 
     def stimulate(self, stim={}, **kwargs):
         '''
+        Run without preparing.
         Pre-processes, runs communicator, and post-processes.
-        *kwargs* are keyword arguments passed to Communicator.run()
+        *kwargs* are keyword arguments passed to self.communicator.run()
         Returns a Stas.RawOutput object and populates monitors. The latter is the preferred way of reading data out.
         '''
         stim_evs = self._pre_process(stim)
+        #run rec for run and record (consider using run for recording TODO)
         evs = self.communicator.run_rec(stim_evs, **kwargs)
         return self._post_process(evs, self.monitors.channels)
 

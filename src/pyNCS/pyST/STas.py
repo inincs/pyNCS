@@ -21,7 +21,7 @@ from contextlib import contextmanager
 import pyST_globals
 from lxml import etree
 
-
+#TODO: RawOutput should return spikelists with complete id_list even when empy
 class RawOutput(object):
     '''
     RawOutPut is a class which contains raw AER data per channel (Physical addresses).
@@ -114,15 +114,16 @@ class RawOutput(object):
     def check_has_key_somewhere(self, key):
         try:
             yield
-        except KeyError:
-            raiseme = False
+        except KeyError:            
             if not key in self.decoder_dict:
                 raise KeyError("There is no function to decode %d" % key)
             if key in self.decoded_data:
                 print "Channel %d has already been decoded" % key
-            elif not key in self.raw_data:
+            elif not key in self.raw_data and key in self.id_data:
 #                print "Channel %d is not present, assuming no events" % key
-                self.decoded_data[key] = SpikeList([], [])
+                self.decoded_data[key] = SpikeList([], self.id_data[key])
+            else:
+                raise
 
 
 class events(object):
@@ -940,8 +941,9 @@ class channelAddressing:
 
         id_data = {}
         raw_data = {}
-        for ch in ch_events:
+        for ch in self.channels:
             id_data[ch] = self[ch].allpos
+        for ch in ch_events:        
             ch_events.set_tm(ch, ch_events.get_tm(ch))
             raw_data[ch] = ch_events[ch]
         raw_out = RawOutput(
