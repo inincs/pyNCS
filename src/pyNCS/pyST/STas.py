@@ -289,25 +289,45 @@ class events(object):
     def get_adtmev(self):
         return self.get_adtm().transpose()
 
-    def normalize_tm(self, t0=0):
-        t_start = self.get_tm().min()
-        self.set_tm(self.get_tm() - t_start + t0)
+    def normalize_tm(self, t0=0.):
+        if not self.isISI:
+            t_start = self.get_tm().min()
+            self.set_tm(self.get_tm() - t_start + t0)
+        else:
+            t = self.get_tm()
+            t[0] = t0
+            self.set_tm(t)
 
     def get_adisi(self):
-        if self.isISI:
-            return events(ev=self)
 
-        if self.nev > 0:
-            tm = np.concatenate([np.array([self.tm[0]]), np.diff(self.tm)])
-            return events(ev=np.array([self.ad, tm]), isISI=True)
+        if self.isISI:
+            return self.get_adtm()
         else:
-            return self.ad, self.tm
+            if self.nev > 0:
+                tm = np.concatenate([np.array([self.tm[0]]), np.diff(self.tm)])
+                return np.array([self.ad, tm])
+            else:
+                return np.zeros([2,0])
+
+    def get_isiad(self):
+
+        if self.isISI:
+            return self.get_tmad()
+        else:
+            if self.nev > 0:
+                tm = np.concatenate([np.array([self.tm[0]]), np.diff(self.tm)])
+                return np.array([tm, self.ad])
+            else:
+                return np.zeros([2,0])
 
     def set_isi(self):
         if self.isISI:
             pass
         else:
-            self.__data = self.get_adisi().__data
+            evs = self.get_adisi()
+            self.set_data(evs[0],evs[1])
+            self.isISI = True
+            
 
     def set_abs_tm(self):
         if self.isISI:
@@ -321,23 +341,19 @@ class events(object):
         map[src]=[target1,target2,...,targetn],
         """
         #The following is optimized for performance
-
+        assert not self.isISI, "Cannot filter with ISI timestamps"
         evs = self.get_adtmev()
         ff = lambda x: x[0] in mapping
-        filt = filter(ff, evs)
+        filt = filter(ff, evs) #keep only addresses that are mapped
         if len(filt) > 0:
-            ev_filt = events(filt, self.atype)
-            evs_filt = self.get_adtmev()
+            evs_filt = events(filt, self.atype).get_adtmev()
             #Get mapped addresses
             #list(chain(* concatenates lists of lists for low cost (i.e. O(n))
-            m_ad = np.array(list(itertools.chain(*map(mapping.
-                get, evs_filt[:, 0]))), self.dtype['ad'])
+            m_ad = np.array(list(itertools.chain(*map(mapping.get, evs_filt[:, 0]))), self.dtype['ad'])
             #Get the respective timestamps
-            m_tm = np.array(list(itertools.chain(*map(lambda x:
-                 len(mapping.get(x[0])) * [x[1]], evs_filt))), self.dtype['tm'])
+            m_tm = np.array(list(itertools.chain(*map(lambda x: len(mapping.get(x[0])) * [x[1]], evs_filt))), self.dtype['tm'])
 
-            self.set_ad(m_ad)
-            self.set_tm(m_tm)
+            self.set_data(m_ad,m_tm)
         else:
             self.empty()
 
@@ -1620,7 +1636,7 @@ class addrSpec:
       >>> stas.addrPhysicalConstruct([range(5),2])
       array([   2, 2050, 1026, 3074,  514], dtype=uint32)
     """
-    def __init__(self, addrStr='', addrConf=list(), addrPinConf='', id="NoName"):
+    def __init__(self, addrStr='', addrConf=list(), addrPinConf='', id="NoName", nhml = False):
         """
         NOTE: DOCUMENTATION IS OUTDATED!!!
         Address specification class
@@ -1666,11 +1682,8 @@ class addrSpec:
         self.__class__.addrLogicalPhysical = addrLogicalPhysical
         self.__class__.repr_addr_spec = repr_addr_spec
         #Update all parameters
-        try:
+        if not nhml:
             self.update()
-        except:
-            warnings.warn('Address specification not updated during init.' \
-                          + ' Ignore if loading addrSpec from file.')
 
     def update(self):
         '''
@@ -2060,10 +2073,10 @@ def load_stas_from_nhml(doc):
     for elm in doc:
         if elm.tag == 'addressSpecification':
             if elm.get('type') == 'aerIn':
-                aerIn = addrSpec(id=chipclass + 'In')
+                aerIn = addrSpec(id=chipclass + 'In', nhml = True)
                 aerIn.__parseNHML__(elm)
             elif elm.get('type') == 'aerOut':
-                aerOut = addrSpec(id=chipclass + 'Out')
+                aerOut = addrSpec(id=chipclass + 'Out', nhml = True)
                 aerOut.__parseNHML__(elm)
             else:
                 pass
