@@ -152,7 +152,7 @@ class TestSequenceFunctions(unittest.TestCase):
         N=5
         test_pops1=create_default_population(self.nsetup,'seq',N)
         test_pops2=create_default_population(self.nsetup,'seq',2*N,offset=N)
-        pop=pyNCS.Population('', '')
+        pop=pyNCS.Population()
         pop.init(self.nsetup, 'seq', 'excitatory')
         pop.union(test_pops1)
         pop.union(test_pops2)
@@ -164,7 +164,7 @@ class TestSequenceFunctions(unittest.TestCase):
         N=5
         test_pops1=create_default_population(self.nsetup,'ifslwta',N)
         test_pops2=create_default_population(self.nsetup,'ifslwta',2*N,offset=N)
-        pop=pyNCS.Population('', '')
+        pop=pyNCS.Population()
         pop.init(self.nsetup, 'ifslwta', 'excitatory')
         pop.union(test_pops1)
         pop.union(test_pops2)

@@ -60,7 +60,7 @@ class Population(object):
     # TODO: extend to multiple chips
     # TODO: proper pickling
 
-    def __init__(self, name, description,
+    def __init__(self, name = '', description = '',
                  setup=None, chipid=None, neurontype=None):
         """
         Init a population by name and description. Population is empty.
