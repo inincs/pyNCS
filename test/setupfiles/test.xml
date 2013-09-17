@@ -1,16 +1,13 @@
 <?xml version="1.0" ?>
 <setup>
     <chip chipfile="if2dwta.csv" id="if2dwta" slot="1">
-        <configurator module="pyNCS.ConfAPI">
-        </configurator>
+        <configurator module="pyNCS.ConfAPI"/>
     </chip>
     <chip chipfile="ifslwta.csv" id="ifslwta" slot="2">
-        <configurator module="BrianAPI">
-        </configurator>
+        <configurator module="pyNCS.api.BrianAPI"/>
     </chip>
     <virtualchip chipfile="linear.csv" id="seq" slot="0" />
     <defaultchip chipfile="linear.csv" id="default"/>
-    <communicator module="BrianAPI" />    
-    <mapper module='BrianAPI'>
-    </mapper>
+    <communicator module="pyNCS.api.BrianAPI" />    
+    <mapper module='pyNCS.api.BrianAPI'/>
 </setup>

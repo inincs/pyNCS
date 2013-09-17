@@ -15,8 +15,8 @@ from connection import Connection, PConnection
 from mapping import Mapping, PMapping
 from neurosetup import NeuroSetup
 from monitors import Monitors, SpikeMonitor
-import ComAPI
-import ConfAPI
+from api import ComAPI
+from api import ConfAPI
 import pyST
 
 ######################  Utility functions
