@@ -1958,14 +1958,16 @@ def _stas_parse_addrstr(addrStr):
             nBits[i[0]] = 0
 
         addrSpec[i[0]][int(i[1:])] = addrStrsplit.index(i)
+    nBitsTotal = 0
     for k, v in addrSpec.items():
+        nBitsTotal += len(v)
         if k == 'I':
             addrSpec.pop(k)
             nBits.pop(k)
         else:
             nBits[k] = len(v)
 
-    nBitsTotal = np.sum(nBits.values())
+    #nBitsTotal = np.sum(nBits.values())
     return addrSpec, nBits, nBitsTotal
 
 
