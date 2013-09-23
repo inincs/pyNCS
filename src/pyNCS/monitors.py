@@ -211,23 +211,42 @@ class MonitorPlotBase(object):
         for mon in self:
             yield mon.sl
 
-    def iter_remapped_spikelists(self):
+    def iter_remapped_spikelists(self, sminmax = [.1, .9]):
         """
         Iterates over spikelists in monitors and return a spikelist whose addresses are remapped according to position in monitors. Yields a SpikeMonitorTrain object
         """
-        for st, mon, i in self.iter_remapped():
+        for st, mon, i in self.iter_remapped(sminmax):
             return st
 
-    def iter_remapped(self):
+    def iter_remapped(self, sminmax = [.1, .9]):
         """
         Iterates over spikelists in monitors and return a spikelist whose addresses are remapped according to position in monitors. Yields a SpikeMonitor object
         """
-        for i, mon in enumerate(self):
-            yield mon.get_remapped_spikelist(
-                    s_start=float(i + 0.1),
-                    s_stop=float(i + 0.9)),\
-                    mon,\
-                    i
+        if sminmax is not None:
+            for i, mon in enumerate(self):
+                yield mon.get_remapped_spikelist(
+                        s_start=float(i + sminmax[0]),
+                        s_stop=float(i + sminmax[1])),\
+                        mon,\
+                        i,\
+                        i+.5
+        else:
+            ll = [0]
+            for i, mon in enumerate(self):
+                ll.append(max(mon.sl.id_list())-min(mon.sl.id_list()))
+            ll = np.cumsum(ll)
+            ll /= ll.max() / len(self)
+            print ll
+            for i, mon in enumerate(self):
+                print ll[i], ll[i+1]
+                yield mon.get_remapped_spikelist(
+                        s_start=float(ll[i]),
+                        s_stop=float(ll[i+1])),\
+                        mon,\
+                        i,\
+                        (ll[i]+ll[i+1])/2
+
+
 
     def create_multifigure(self):
         """
@@ -259,13 +278,19 @@ class RasterPlot(MonitorPlotBase):
     """
     A Raster Plot Class for plotting several Spike Monitors at once.
     The figure is automatically plotted, unless it is constructed with plot=False.
+    Inputs: 
+    *flat* : if true, the spike lists are flattened before plotting
+    *even_distance* : if true, the distance between the rasters is fixed.
     plot_kwargs is passed to the final matplotlib plotting function.
     kwargs are passed to raster_plot
     """
 
-    def __init__(self, monitors, flat=False, plot_kwargs={}, *args, **kwargs):
+    def __init__(self, monitors, flat=False, even_distance = False, plot_kwargs={}, *args, **kwargs):
         MonitorPlotBase.__init__(self, monitors)
         self.flat = flat
+        self.even = even_distance
+        self.cs = []  #centers of raster plots
+
 
         self.draw(plot_kwargs, *args, **kwargs)
         self.post_process_multifigure()
@@ -274,10 +299,11 @@ class RasterPlot(MonitorPlotBase):
         """
         Sets ylim, labels and ticks
         """
-        self.ha.set_ylim([0., len(self)])
+    
         self.ha.set_xlim([0., self.get_t_stop()])
         self.ha.set_ylabel('Population')
         self.ha.set_xlabel('Time [ms]')
+        self.ha.set_ylim([0., len(self)])
         self.__set_yticks()
         pylab.draw()
 
@@ -288,18 +314,25 @@ class RasterPlot(MonitorPlotBase):
         fr = []
         to = []
         for i, mon in enumerate(self):
-            fr.append(i + 0.5)
+            fr.append(self.cs[i])
             to.append(mon.get_short_name())
         pylab.yticks(fr, to)
+
 
     def draw(self, plot_kwargs={}, *args, **kwargs):
         """
         Draws the raster plot.
         """
         for i in range(len(self)):
-            self.ha.axhline(float(i + 1), linewidth=2, alpha=0.2)
+            if not self.even: self.ha.axhline(float(i + 1), linewidth=2, alpha=0.2)
         kwargs.setdefault('display', self.ha)
-        for st, mon, i in self.iter_remapped():
+        if self.even == True:
+            sminmax=None
+        else:
+            sminmax= [.1,.9]
+        self.cs = []
+        for st, mon, i, c  in self.iter_remapped(sminmax):
+            self.cs.append(c)
             plot_kwargs_mon = mon.set_plotargs(plot_kwargs)
             if not self.flat:
                 st.raster_plot(kwargs=plot_kwargs_mon, *args, **kwargs)
