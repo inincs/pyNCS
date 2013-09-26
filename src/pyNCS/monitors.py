@@ -136,8 +136,8 @@ class Monitors(object):
     def iter_remapped_spikelists(self):
         for i, mon in enumerate(self):
             yield mon.get_remapped_spikelist(
-                    s_start=float(i + 0.1),
-                    s_stop=float(i + 0.9))
+                    s_start=float(i),
+                    s_stop=float(i))
 
     def raster_plot(self, *args, **kwargs):
         """
@@ -236,7 +236,6 @@ class MonitorPlotBase(object):
                 ll.append(max(mon.sl.id_list())-min(mon.sl.id_list()))
             ll = np.cumsum(ll)
             ll /= ll.max() / len(self)
-            print ll
             for i, mon in enumerate(self):
                 print ll[i], ll[i+1]
                 yield mon.get_remapped_spikelist(
@@ -316,7 +315,7 @@ class RasterPlot(MonitorPlotBase):
         for i, mon in enumerate(self):
             fr.append(self.cs[i])
             to.append(mon.get_short_name())
-        pylab.yticks(fr, to)
+        pylab.yticks(fr, to, rotation=90)
 
 
     def draw(self, plot_kwargs={}, *args, **kwargs):
@@ -329,11 +328,11 @@ class RasterPlot(MonitorPlotBase):
         if self.even == True:
             sminmax=None
         else:
-            sminmax= [.1,.9]
+            sminmax= [0,1]
         self.cs = []
         for st, mon, i, c  in self.iter_remapped(sminmax):
             self.cs.append(c)
-            plot_kwargs_mon = mon.set_plotargs(plot_kwargs)
+            plot_kwargs_mon = mon.get_plotargs(plot_kwargs)
             if not self.flat:
                 st.raster_plot(kwargs=plot_kwargs_mon, *args, **kwargs)
             else:
@@ -385,7 +384,7 @@ class MeanRatePlot(MonitorPlotBase):
             mr = mon.firing_rates(time_bin=self.time_bin, mean=self.mean)
             self.max_rate = max(self.max_rate, max(mr))
             t = mon.sl.time_axis(time_bin=self.time_bin)[:-1]
-            plot_args_mon = mon.set_plotargs(plot_args)
+            plot_args_mon = mon.get_plotargs(plot_args)
             labelname = mon.get_short_name()
             if not labelname in labels_dict:
                 plot_args_mon.setdefault('label', labelname)
@@ -408,12 +407,14 @@ class SpikeMonitor(object):
     >>> nsetup.monitors.raster_plot()
 
     """
-    def __init__(self, addr_group=[], plot_args=None):
+    def __init__(self, addr_group=[], plot_args = None):
         # By definition of populations, SpikeMonitor is associated to at most
         # one channel
         self.addr_group = addr_group
-
-        self.plot_args = plot_args
+        if plot_args == None:
+            self.plot_args = {}
+        else:
+            self.plot_args = plot_args
         self._sl = monitorSpikeList(self.addr_group.channel,
              spikes=[], id_list=np.sort(addr_group.laddr))
         self._populated = False
@@ -488,7 +489,7 @@ class SpikeMonitor(object):
         """
         Raster plot of the spikelist. plot_kwargs is passed to the plot in raster_plot, whereas kwargs and args are passed to raster_plot.
         """
-        plot_kwargs_mon = self.set_plotargs(plot_kwargs)
+        plot_kwargs_mon = self.get_plotargs(plot_kwargs)
         self.sl.raster_plot(kwargs=plot_kwargs_mon, *args, **kwargs)
 
     def composite_plot(self, *args, **kwargs):
@@ -500,12 +501,18 @@ class SpikeMonitor(object):
 
     def set_plotargs(self, kwargs):
         """
-        Changes plot arguments according to SpikeMonitor's default, but does not overwrite user-defined keyword arguments
+        Changes plot arguments. Existing plot_args are not removed.
+        """
+        self.plot_args.update(self.get_plotargs(kwargs))
+
+    def get_plotargs(self, kwargs={}):
+        """
+        Get plot arguments according to SpikeMonitor's default. 
+        Optionally, kwargs can be passed: these are added to the plot argumetns, but does not save them.
         """
         plot_kwargs_mon = kwargs.copy()
-        if self.plot_args:
-            for k, v in self.plot_args.iteritems():
-                plot_kwargs_mon.setdefault(k, v)
+        for k, v in self.plot_args.iteritems():
+            plot_kwargs_mon.setdefault(k, v)
         return plot_kwargs_mon
 
     def toSpikeListMonitor(self, st):
@@ -514,7 +521,6 @@ class SpikeMonitor(object):
         """
         adtm = np.fliplr(st.raw_data())
         if adtm.shape[0] == 0:
-            print "Empty SpikeTrain"
             return monitorSpikeList(channel=None, spikes=[], id_list=[])
         t_start, t_stop = min(adtm[:, 1]), max(adtm[:, 1])
         return monitorSpikeList(self.addr_group.channel, spikes=adtm, id_list=np.sort(self.addr_group.laddr), t_start=t_start, t_stop=t_stop)
