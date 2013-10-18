@@ -133,7 +133,7 @@ class Monitors(object):
         monitors: append a SpikeMonitor object or a list of them
         if synapse is None, then the soma is taken as the address group to monitor, otherwise the synapse is taken for all the populations
         """
-        return self.import_monitors_otf(self, populations, synapse=None, append=True)
+        return self.import_monitors_otf(populations, synapse=None, append=True)
 
     def iter_spikelists(self):
         for mon in self:
@@ -338,9 +338,9 @@ class RasterPlot(MonitorPlotBase):
             if not self.even: self.ha.axhline(float(i + 1), linewidth=2, alpha=0.2)
         kwargs.setdefault('display', self.ha)
         if self.even == True:
-            sminmax=None
+            sminmax = None
         else:
-            sminmax= [0,1]
+            sminmax= [0.05,.95]
         self.cs = []
         for st, mon, i, c  in self.iter_remapped(sminmax):
             self.cs.append(c)
