@@ -106,11 +106,9 @@ class Monitors(object):
         return None
 
     def import_monitors_otf(self, populations, synapse=None, append=True):
-        """
-        Create monitors and Import SpikeMonitors to setup on the fly (otf).
-        monitors: append a SpikeMonitor object or a list of them
-        if synapse is None, then the soma is taken as the address group to monitor, otherwise the synapse is taken for all the populations
-        """
+        '''
+        Same as create
+        '''
         if not hasattr(populations, "__iter__"):
             populations = [populations]
 
@@ -129,6 +127,14 @@ class Monitors(object):
 
         return monitors_new
 
+    def create(self, populations, synapse=None, append=True):
+        """
+        Create monitors and import SpikeMonitors to setup.
+        monitors: append a SpikeMonitor object or a list of them
+        if synapse is None, then the soma is taken as the address group to monitor, otherwise the synapse is taken for all the populations
+        """
+        return self.import_monitors_otf(self, populations, synapse=None, append=True)
+
     def iter_spikelists(self):
         for mon in self:
             yield mon.sl
@@ -144,6 +150,12 @@ class Monitors(object):
         Raster Plotting tool which can handle plotting several SpikeLists/ SpikeMonitors/ monitorSpikeLists
         """
         return RasterPlot(self, *args, **kwargs)
+    
+    def rate_plot(self, *args, **kwargs):
+        """
+        Rate Plotting tool which can handle plotting several SpikeLists/ SpikeMonitors/ monitorSpikeLists
+        """
+        return MeanRatePlot(self, *args, **kwargs)
 
     #def composite_plot(self,*args,**kwargs):
     #    """
