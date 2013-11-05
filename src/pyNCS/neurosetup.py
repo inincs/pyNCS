@@ -17,8 +17,8 @@ import warnings
 from contextlib import contextmanager
 from lxml import etree
 from itertools import chain
-import ComAPI
-import ConfAPI
+from pyNCS.api import ComAPI
+from pyNCS.api import ConfAPI
 
 
 URL_SETUPDTD = 'http://ncs.ethz.ch/internal/files/setup.dtd/at_download/file'

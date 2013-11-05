@@ -13,9 +13,9 @@
 # Licence : GPLv2
 #----------------------------------------------------------------------------- 
 
-from pyNCS.ComAPI import *
-from pyNCS.ConfAPI import *
-from pyNCS import pyST
+from pyNCS.api.ComAPI import *
+from pyNCS.api.ConfAPI import *
+import pyNCS.pyST
 import IFSLWTA_brian_model as ibm
 import numpy as np
 from brian.directcontrol import PoissonGroup
