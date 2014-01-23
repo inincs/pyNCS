@@ -10,7 +10,6 @@ import os
 import sys
 import subprocess
 import numpy as np
-import pydot
 from warnings import warn
 
 
@@ -32,20 +31,17 @@ class Mapping(object):
                                 between addresses.'
         self.name = "\"" + 'AER connectivity' + "\""
         self.mapping = []
-        self.graph = pydot.Graph(self.name)
 
     def __getstate__(self):
         """
         """
         d = dict(self.__dict__)
-        del d['graph']
         return d
 
     def __setstate__(self, dict):
         """
         """
         self.__dict__ = dict
-        self.graph = pydot.Graph(self.name)
 
     def __graph_from_mapping__(self):
         pass
@@ -278,66 +274,20 @@ class Mapping(object):
         
         return self.mapping
 
-    def add_edge(self, groupsrc, groupdst, arrowhead='normal', dir='forward'):
-        scluster = pydot.Cluster(str(groupsrc.channel))
-        s = pydot.Node(str(groupsrc.name))
-        scluster.add_node(s)
-
-        dcluster = pydot.Cluster(str(groupdst.channel))
-        d = pydot.Node(str(groupdst.name))
-        dcluster.add_node(d)
-
-        self.graph.add_subgraph(dcluster)
-        self.graph.add_subgraph(scluster)
-
-        e = pydot.Edge(s, d, arrowhead=arrowhead, dir=dir)
-
-        self.graph.add_edge(e)
-
-    def save_graph(self, filename=None):
-        # TODO: load graph
-        if not filename:
-            filename = "graph"
-        f = open(filename + '.dot', 'w')
-        f.write(self.graph.to_string())
-        f.close()
 
     def clear(self):
         """
         Clear mapping list.
         """
         self.mapping = []
-        self.graph = pydot.Graph('AER_connectivity')
 
-    #def gui(self,verbose=False):
-        #if len(self.mapping)==0: raise Exception('no mapping to display')
-        #return MappingGui.MappingGui(self,verbose=verbose)
 
-#Commented because of new map_api bindings
-#
-#    def read(self, verbose = False):
-#        """
-#        Donwnloads the mapping from the mapper. *** API ***
-#        """
-#        # TODO: subprocess doesn't work??!
-# p = subprocess.Popen('ssh -C root@' + self.host + ' "cd mappinglib &&
-# ./getallmappings"')
-#        # p.wait()
-# p = os.popen('ssh -C root@' + self.host + ' "cd mappinglib &&
-# ./getallmappings"')
-#
-#        self.clear()
-#        while True:
-#            l= p.readline()
-#            if l=='': break
-#            x= map(lambda x:int(x), l.strip().split(' ') )
-#            if len(x) == 2: self.mapping.append(x)
-#        self.__toint__()
     def save(self, filename):
         """
         Save the mapping into a file.
         """
         np.savetxt(filename, self.mapping)
+
 
     def load(self, filename, verbose=False):
         """
@@ -346,12 +296,14 @@ class Mapping(object):
         self.clear()
         self.mapping = np.loadtxt(filename)        
 
+
     def is_connect_possible(self, groupsrc, groupdst):
         if groupsrc.grouptype != 'out':
             warn("The source group is not of type 'out'")
         if groupdst.grouptype != 'in':
             warn("The target group is not of type 'in'")
         return True
+
 
     def prepare(self):
         '''
