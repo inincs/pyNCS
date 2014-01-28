@@ -1692,7 +1692,9 @@ class addrSpec:
         self.addrExtractLogicalFast = np.empty([2 ** self.nBitsTotal], 'float')
         self.addrExtractPhysicalFast = dict()
 #        try:
-        addrBuildHashTable(self)
+        # Building addresses on the fly.
+        # Cuses memory errors otherwise for large AER spaces
+        # addrBuildHashTable(self)
 #        except Exception as e:
 #            warnings.warn('Could not BuildHashTable: {0}'.format(e))
 
