@@ -60,7 +60,7 @@ class Population(object):
     # TODO: extend to multiple chips
     # TODO: proper pickling
 
-    def __init__(self, name, description,
+    def __init__(self, name = '', description = '',
                  setup=None, chipid=None, neurontype=None):
         """
         Init a population by name and description. Population is empty.
@@ -348,13 +348,11 @@ class Population(object):
         # check whether neuron is available in the chip
         try:
             neuronblock = chip.neuron[neurontype]
-        except KeyError:
-            print 'ERROR: %s: No such neurontype in current setup.' %\
-                neurontype
-            raise Exception('ERROR: Population has not been populated.')
+        except KeyError:            
+            raise KeyError('ERROR: %s: No such neurontype in current setup.' % neurontype)
 
         self.neuronblock = neuronblock  # neuronblock contains translations
-                                       # for somas AND synapses biases
+                                        # for somas AND synapses biases
 
         self.soma.__populate__(setup, chipid, 'out')
         self.soma.name = self.name + ' ' + 'soma'

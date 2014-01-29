@@ -12,7 +12,7 @@ import pyST
 from pyST.STas import addrSpec
 from pyST.STas import _buildGrid
 import warnings
-from ConfAPI import Configurator
+from pyNCS.api.ConfAPI import Configurator
 from contextlib import contextmanager
 from lxml import etree
 from re import search as res

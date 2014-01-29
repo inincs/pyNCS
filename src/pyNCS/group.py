@@ -123,20 +123,21 @@ class AddrGroupBase(object):
 
     def sort(self, order=None):
         """
-        Sort all the addresses with the given order. If the order is None it
-        orders by the last column of the address (most probably the column of
-        synapses).
-        WARNING: Not advisable to use it unless you are very sure about what you are
-        doing.
+        Sort all the addresses with the given order.
+        If the order is None it orders by the last column of the address (most probably the column of synapses).
+        Otherwise order must be a list of the fields in self.addr. 
+        This is very useful for sorting 2D+ addresses.        
         """
         if order is None:
-            order = np.argsort(self.addr)
+            idx = np.argsort(self.addr)
+        else:
+            idx = np.lexsort(map(self.addr.__getitem__, order))
         # Just to ensure the addresses are generated.
         self.laddr; self.paddr
         # Sort the addresses accordingly.
-        self.addr = self.addr[order]
-        self._laddr = self._laddr[order]
-        self._paddr = self._paddr[order]
+        self.addr = self.addr[idx]
+        self._laddr = self._laddr[idx]
+        self._paddr = self._paddr[idx]
 
     def add(self, addresses):
         """

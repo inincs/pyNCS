@@ -137,6 +137,13 @@ def save_py_scripts():
     for i in all_py:
         h.add(i)
     h.close()
+    
+def save_file(filename):
+    """
+    Save all the python scripts from the current directory into the results directory
+    """
+    import shutil
+    shutil.copy(filename, globaldata.directory+filename)
 
 
 def save(obj=None, filename=None):

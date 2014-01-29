@@ -59,7 +59,7 @@ def create_netobjs(stim, params):
     #w['ei']    =2e-11/N_EP1
         
     eqs    =Equations('''
-    dV/dt=(-I_lk + Ii)/C+(I_fb+I_in+Ia+Iloce+Iloci+Ii)/C: volt
+    dV/dt=(-I_lk + I_fb + I_in + Ia + Iloce - Iloci - Ii)/C: volt
     
     
     I_fb = I0P*exp((V-v_thresh)/Delta_t) : amp
@@ -94,7 +94,7 @@ def create_netobjs(stim, params):
     W *= np.random.normal(1,sigma_mismatch,W.shape)    
     ConnE    =Connection(EP1,EP1,'Iloce');ConnE.connect(EP1,EP1,W)
     ConnEI   =Connection(EP1,IP1,'Iloce');ConnEI.connect(EP1,IP1, W = w_synloc_EI*np.random.normal(1,sigma_mismatch,[len(EP1),len(IP1)]))
-    ConnIE   =Connection(IP1,EP1,'Iloci');ConnIE.connect(IP1,EP1, W = -w_synloc_IE*np.random.normal(1,sigma_mismatch,[len(IP1),len(EP1)]))
+    ConnIE   =Connection(IP1,EP1,'Iloci');ConnIE.connect(IP1,EP1, W = w_synloc_IE*np.random.normal(1,sigma_mismatch,[len(IP1),len(EP1)]))
     
     M_EIP =SpikeMonitor(EIP)    
     MV_EIP= StateMonitor(EIP,'V',record=range(0,N),timestep=int(1*ms/defaultclock.dt))

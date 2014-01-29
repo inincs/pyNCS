@@ -106,11 +106,9 @@ class Monitors(object):
         return None
 
     def import_monitors_otf(self, populations, synapse=None, append=True):
-        """
-        Create monitors and Import SpikeMonitors to setup on the fly (otf).
-        monitors: append a SpikeMonitor object or a list of them
-        if synapse is None, then the soma is taken as the address group to monitor, otherwise the synapse is taken for all the populations
-        """
+        '''
+        Same as create
+        '''
         if not hasattr(populations, "__iter__"):
             populations = [populations]
 
@@ -129,6 +127,14 @@ class Monitors(object):
 
         return monitors_new
 
+    def create(self, populations, synapse=None, append=True):
+        """
+        Create monitors and import SpikeMonitors to setup.
+        monitors: append a SpikeMonitor object or a list of them
+        if synapse is None, then the soma is taken as the address group to monitor, otherwise the synapse is taken for all the populations
+        """
+        return self.import_monitors_otf(populations, synapse=None, append=True)
+
     def iter_spikelists(self):
         for mon in self:
             yield mon.sl
@@ -136,14 +142,20 @@ class Monitors(object):
     def iter_remapped_spikelists(self):
         for i, mon in enumerate(self):
             yield mon.get_remapped_spikelist(
-                    s_start=float(i + 0.1),
-                    s_stop=float(i + 0.9))
+                    s_start=float(i),
+                    s_stop=float(i))
 
     def raster_plot(self, *args, **kwargs):
         """
         Raster Plotting tool which can handle plotting several SpikeLists/ SpikeMonitors/ monitorSpikeLists
         """
         return RasterPlot(self, *args, **kwargs)
+    
+    def rate_plot(self, *args, **kwargs):
+        """
+        Rate Plotting tool which can handle plotting several SpikeLists/ SpikeMonitors/ monitorSpikeLists
+        """
+        return MeanRatePlot(self, *args, **kwargs)
 
     #def composite_plot(self,*args,**kwargs):
     #    """
@@ -211,23 +223,41 @@ class MonitorPlotBase(object):
         for mon in self:
             yield mon.sl
 
-    def iter_remapped_spikelists(self):
+    def iter_remapped_spikelists(self, sminmax = [.1, .9]):
         """
         Iterates over spikelists in monitors and return a spikelist whose addresses are remapped according to position in monitors. Yields a SpikeMonitorTrain object
         """
-        for st, mon, i in self.iter_remapped():
+        for st, mon, i in self.iter_remapped(sminmax):
             return st
 
-    def iter_remapped(self):
+    def iter_remapped(self, sminmax = [.1, .9]):
         """
         Iterates over spikelists in monitors and return a spikelist whose addresses are remapped according to position in monitors. Yields a SpikeMonitor object
         """
-        for i, mon in enumerate(self):
-            yield mon.get_remapped_spikelist(
-                    s_start=float(i + 0.1),
-                    s_stop=float(i + 0.9)),\
-                    mon,\
-                    i
+        if sminmax is not None:
+            for i, mon in enumerate(self):
+                yield mon.get_remapped_spikelist(
+                        s_start=float(i + sminmax[0]),
+                        s_stop=float(i + sminmax[1])),\
+                        mon,\
+                        i,\
+                        i+.5
+        else:
+            ll = [0]
+            for i, mon in enumerate(self):
+                ll.append(max(mon.sl.id_list())-min(mon.sl.id_list()))
+            ll = np.cumsum(ll)
+            ll /= ll.max() / len(self)
+            for i, mon in enumerate(self):
+                print ll[i], ll[i+1]
+                yield mon.get_remapped_spikelist(
+                        s_start=float(ll[i]),
+                        s_stop=float(ll[i+1])),\
+                        mon,\
+                        i,\
+                        (ll[i]+ll[i+1])/2
+
+
 
     def create_multifigure(self):
         """
@@ -259,13 +289,19 @@ class RasterPlot(MonitorPlotBase):
     """
     A Raster Plot Class for plotting several Spike Monitors at once.
     The figure is automatically plotted, unless it is constructed with plot=False.
+    Inputs: 
+    *flat* : if true, the spike lists are flattened before plotting
+    *even_distance* : if true, the distance between the rasters is fixed.
     plot_kwargs is passed to the final matplotlib plotting function.
     kwargs are passed to raster_plot
     """
 
-    def __init__(self, monitors, flat=False, plot_kwargs={}, *args, **kwargs):
+    def __init__(self, monitors, flat=False, even_distance = False, plot_kwargs={}, *args, **kwargs):
         MonitorPlotBase.__init__(self, monitors)
         self.flat = flat
+        self.even = even_distance
+        self.cs = []  #centers of raster plots
+
 
         self.draw(plot_kwargs, *args, **kwargs)
         self.post_process_multifigure()
@@ -274,10 +310,11 @@ class RasterPlot(MonitorPlotBase):
         """
         Sets ylim, labels and ticks
         """
-        self.ha.set_ylim([0., len(self)])
+    
         self.ha.set_xlim([0., self.get_t_stop()])
         self.ha.set_ylabel('Population')
         self.ha.set_xlabel('Time [ms]')
+        self.ha.set_ylim([0., len(self)])
         self.__set_yticks()
         pylab.draw()
 
@@ -288,19 +325,26 @@ class RasterPlot(MonitorPlotBase):
         fr = []
         to = []
         for i, mon in enumerate(self):
-            fr.append(i + 0.5)
+            fr.append(self.cs[i])
             to.append(mon.get_short_name())
-        pylab.yticks(fr, to)
+        pylab.yticks(fr, to, rotation=90)
+
 
     def draw(self, plot_kwargs={}, *args, **kwargs):
         """
         Draws the raster plot.
         """
         for i in range(len(self)):
-            self.ha.axhline(float(i + 1), linewidth=2, alpha=0.2)
+            if not self.even: self.ha.axhline(float(i + 1), linewidth=2, alpha=0.2)
         kwargs.setdefault('display', self.ha)
-        for st, mon, i in self.iter_remapped():
-            plot_kwargs_mon = mon.set_plotargs(plot_kwargs)
+        if self.even == True:
+            sminmax = None
+        else:
+            sminmax= [0.05,.95]
+        self.cs = []
+        for st, mon, i, c  in self.iter_remapped(sminmax):
+            self.cs.append(c)
+            plot_kwargs_mon = mon.get_plotargs(plot_kwargs)
             if not self.flat:
                 st.raster_plot(kwargs=plot_kwargs_mon, *args, **kwargs)
             else:
@@ -352,7 +396,7 @@ class MeanRatePlot(MonitorPlotBase):
             mr = mon.firing_rates(time_bin=self.time_bin, mean=self.mean)
             self.max_rate = max(self.max_rate, max(mr))
             t = mon.sl.time_axis(time_bin=self.time_bin)[:-1]
-            plot_args_mon = mon.set_plotargs(plot_args)
+            plot_args_mon = mon.get_plotargs(plot_args)
             labelname = mon.get_short_name()
             if not labelname in labels_dict:
                 plot_args_mon.setdefault('label', labelname)
@@ -375,12 +419,14 @@ class SpikeMonitor(object):
     >>> nsetup.monitors.raster_plot()
 
     """
-    def __init__(self, addr_group=[], plot_args=None):
+    def __init__(self, addr_group=[], plot_args = None):
         # By definition of populations, SpikeMonitor is associated to at most
         # one channel
         self.addr_group = addr_group
-
-        self.plot_args = plot_args
+        if plot_args == None:
+            self.plot_args = {}
+        else:
+            self.plot_args = plot_args
         self._sl = monitorSpikeList(self.addr_group.channel,
              spikes=[], id_list=np.sort(addr_group.laddr))
         self._populated = False
@@ -455,7 +501,7 @@ class SpikeMonitor(object):
         """
         Raster plot of the spikelist. plot_kwargs is passed to the plot in raster_plot, whereas kwargs and args are passed to raster_plot.
         """
-        plot_kwargs_mon = self.set_plotargs(plot_kwargs)
+        plot_kwargs_mon = self.get_plotargs(plot_kwargs)
         self.sl.raster_plot(kwargs=plot_kwargs_mon, *args, **kwargs)
 
     def composite_plot(self, *args, **kwargs):
@@ -467,12 +513,18 @@ class SpikeMonitor(object):
 
     def set_plotargs(self, kwargs):
         """
-        Changes plot arguments according to SpikeMonitor's default, but does not overwrite user-defined keyword arguments
+        Changes plot arguments. Existing plot_args are not removed.
+        """
+        self.plot_args.update(self.get_plotargs(kwargs))
+
+    def get_plotargs(self, kwargs={}):
+        """
+        Get plot arguments according to SpikeMonitor's default. 
+        Optionally, kwargs can be passed: these are added to the plot argumetns, but does not save them.
         """
         plot_kwargs_mon = kwargs.copy()
-        if self.plot_args:
-            for k, v in self.plot_args.iteritems():
-                plot_kwargs_mon.setdefault(k, v)
+        for k, v in self.plot_args.iteritems():
+            plot_kwargs_mon.setdefault(k, v)
         return plot_kwargs_mon
 
     def toSpikeListMonitor(self, st):
@@ -481,7 +533,6 @@ class SpikeMonitor(object):
         """
         adtm = np.fliplr(st.raw_data())
         if adtm.shape[0] == 0:
-            print "Empty SpikeTrain"
             return monitorSpikeList(channel=None, spikes=[], id_list=[])
         t_start, t_stop = min(adtm[:, 1]), max(adtm[:, 1])
         return monitorSpikeList(self.addr_group.channel, spikes=adtm, id_list=np.sort(self.addr_group.laddr), t_start=t_start, t_stop=t_stop)

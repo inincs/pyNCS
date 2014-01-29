@@ -13,12 +13,13 @@
 # Licence : GPLv2
 #----------------------------------------------------------------------------- 
 
-from pyNCS.ComAPI import *
-from pyNCS.ConfAPI import *
-from pyNCS import pyST
+from pyNCS.api.ComAPI import *
+from pyNCS.api.ConfAPI import *
+import pyNCS.pyST
 import IFSLWTA_brian_model as ibm
 import numpy as np
 from brian.directcontrol import PoissonGroup
+import os
 
 #TODO: multichip mappings
 #TODO: generalize _decode_mappings_list
@@ -215,14 +216,22 @@ class Configurator(ConfiguratorBase):
         
         global global_sympy_params
         from paramTranslation import params
-        global_sympy_params = self.sympy_params = params(self, 'chipfiles/ifslwta_paramtrans.xml')
+        try:
+            test_path = os.environ['PYNCS_TEST_PATH']
+        except KeyError:
+            test_path = './'
+        global_sympy_params = self.sympy_params = params(self, test_path + 'chipfiles/ifslwta_paramtrans.xml')
         
     def _readCSV(self, CSVfile):        
         super(Configurator,self)._readCSV(CSVfile)
         
         global global_sympy_params
         from paramTranslation import params
-        global_sympy_params = self.sympy_params = params(self, 'chipfiles/ifslwta_paramtrans.xml')
+        try:
+            test_path = os.environ['PYNCS_TEST_PATH']
+        except KeyError:
+            test_path = './'
+        global_sympy_params = self.sympy_params = params(self, test_path + 'chipfiles/ifslwta_paramtrans.xml')
     
 class Mappings(MappingsBase):
     def add_mappings(self, mappings):
