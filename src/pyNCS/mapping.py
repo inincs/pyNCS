@@ -154,7 +154,7 @@ class Mapping(object):
         """
 
         if len(groupsrc) != len(groupdst):
-            print "WARNING: source and destination have different sizes"
+            print("WARNING: source and destination have different sizes")
             if len(groupdst) > len(groupsrc):
                 groupdst = groupdst[:len(groupsrc)]
             else:

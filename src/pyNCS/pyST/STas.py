@@ -63,7 +63,7 @@ class RawOutput(object):
         lev = []
         for k, v in raw_data.iteritems():
             lev.append('Ch{0}: {1} evs '.format(k, len(v)))
-        print ''.join(lev)
+        print(''.join(lev))
 
     def __getitem__(self, key):
         key = int(key)
@@ -118,9 +118,9 @@ class RawOutput(object):
             if not key in self.decoder_dict:
                 raise KeyError("There is no function to decode %d" % key)
             if key in self.decoded_data:
-                print "Channel %d has already been decoded" % key
+                print("Channel {0} has already been decoded".format(key))
             elif not key in self.raw_data and key in self.id_data:
-#                print "Channel %d is not present, assuming no events" % key
+                #print("Channel {0} is not present, assuming no events".format(key
                 self.decoded_data[key] = SpikeList([], self.id_data[key])
             else:
                 raise
@@ -380,7 +380,7 @@ class events(object):
             evs.__data = self.__data[id_start:id_stop]
             id_start = id_stop
             rest = tm - evs.get_tdur()
-            print tm, evs.get_tdur()
+            print(tm, evs.get_tdur())
 
             if not evs.get_nev() > 0:
                 rest = 0
@@ -551,7 +551,7 @@ def getDefaultMonChannelAddress():
     try:
         pyST_globals.DefaultMonChannelAddress
     except NameError:
-        print 'Error, run setDefaultMonChannelAddress first'
+        print('Error, run setDefaultMonChannelAddress first')
     return pyST_globals.DefaultMonChannelAddress
 
 
@@ -580,7 +580,7 @@ def getDefaultSeqChannelAddress():
     try:
         pyST_globals.DefaultSeqChannelAddress
     except NameError:
-        print 'Error, run setDefaultSeqChannelAddress first'
+        print('Error, run setDefaultSeqChannelAddress first')
     return pyST_globals.DefaultSeqChannelAddress
 
 
@@ -986,7 +986,8 @@ class channelAddressing:
         #Backward compatilibity
         if 'addresses_in_hex' in kwargs:
             if kwargs['addresses_in_hex']:
-                print 'Warning: addresses_in_hex is deprecated. use addr_format argument instead'
+                print('Warning: addresses_in_hex is deprecated. ' +
+                      'Use addr_format argument instead')
                 addr_format = '%x'
 
         if isinstance(spikeLists, list):
@@ -1028,17 +1029,17 @@ class channelAddressing:
                     # ev.add_adtmev(mapSpikeListAddresses(spikeLists[ch],mappin
                     # g).convert(format='[id,time*1000]'))
                 else:
-                    print "Warning: Empty SpikeList encountered"
+                    print("Warning: Empty SpikeList encountered")
         tictoc = time.time() - tic
         if tictoc > 1.0:
-            print "Address translation took {0} seconds".format(tictoc)
+            print("Address translation took {0} seconds".format(tictoc))
 
         #Multiplex
         tic = time.time()
         sortedIdx = np.argsort(ev.get_tm())
         tictoc = time.time() - tic
         if tictoc > 1.0:
-            print "Multiplexing took {0} seconds".format(tictoc)
+            print("Multiplexing took {0} seconds".format(tictoc))
 
         #Create new sorted events object
         if len(sortedIdx) > 0:
@@ -1412,7 +1413,7 @@ def isValidAddress(stas, addrList):
             try:
                 err_ind = np.where(addrListFilled[hrf_index] == diffs)[0]
             except Exception as e:
-                print np.where(addrListFilled[hrf_index] == diffs), diffs
+                print(np.where(addrListFilled[hrf_index] == diffs), diffs)
                 raise AssertionError(None, None)
             wrongaddr = addrListFilled[:, err_ind]
             print("Address {3} is not in Range list ({0},{1}). Offending addresses on dimension {2}.".format(

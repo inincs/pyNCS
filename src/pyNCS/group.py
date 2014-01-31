@@ -339,11 +339,11 @@ class AddrGroup(AddrGroupBase):
         '''
         try:
             assert( len(p1)==len(p2) )
-        except AssertionError, e:
+        except AssertionError as e:
             raise Exception("Dimensions of vertices do not match")
         try:
             assert( ((np.array(p2) - np.array(p1)) <= 0).sum() == 0 )
-        except AssertionError, e:
+        except AssertionError as e:
             warn('Zero volume for given vertices')
         
         edges = []
@@ -467,7 +467,7 @@ class AddrGroup(AddrGroupBase):
             raise RuntimeError('Rate vector must be of the same length as the number of neurons in population: {0}'.format(len(self.addr)))
 
         if self.is_empty():
-            print "AddrGroup is empty!"
+            print("AddrGroup is empty!")
             return stStim
 
         for i, id in enumerate(self.laddr):
@@ -508,7 +508,7 @@ class AddrGroup(AddrGroupBase):
             raise RuntimeError('Rate vector must be of the same length as the number of neurons in population: {0}'.format(len(self.addr)))
 
         if self.is_empty():
-            print "AddrGroup is empty!"
+            print("AddrGroup is empty!")
             return stStim
 
         for i, id in enumerate(self.laddr):
@@ -537,7 +537,7 @@ class AddrGroup(AddrGroupBase):
             raise RuntimeError('Rate vector must be of the same length as the number of neurons in population: {0}'.format(len(self.addr)))
 
         if self.is_empty():
-            print "AddrGroup is empty!"
+            print("AddrGroup is empty!")
             return stStim
 
         for i, id in enumerate(self.laddr):
@@ -585,7 +585,7 @@ class AddrGroup(AddrGroupBase):
             t), "time vector must be compatible with time axis of rate"
 
         if self.is_empty():
-            print "AddrGroup is empty!"
+            print("AddrGroup is empty!")
             return stStim
         for i, id in enumerate(self.laddr):
             stStim[id] = STCreate.inh_poisson_generator(rate[i],

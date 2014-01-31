@@ -201,7 +201,7 @@ class ConfiguratorBase(ResourceManagerBase):
         d = self.get_parameters()
         with open(filename, 'w') as f:
             f.write("\n".join(["%s\t%.17e" % (k, v) for k, v in d.items()]))
-        print 'Parameters have been saved to the file %s' % filename
+        print('Parameters have been saved to the file {0}'.format(filename))
         return None
 
     def reset(self):
@@ -221,7 +221,7 @@ class ConfiguratorBase(ResourceManagerBase):
         #This implementation raises an informative exception
         try:
             yield
-        except KeyError, e:
+        except KeyError as e:
             raise KeyError('There is no parameter {0} in the configurator'.
                 format(e.message))
 

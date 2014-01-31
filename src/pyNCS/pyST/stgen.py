@@ -321,8 +321,9 @@ class StGen:
             spikes = numpy.concatenate((spikes, extra_spikes))
 
             if debug:
-                print "ISI buf overrun handled. len(spikes)=%d, len(extra_spikes)=%d" % (
-                    len(spikes), len(extra_spikes))
+                print("ISI buf overrun handled." +
+                      "len(spikes)={0}, len(extra_spikes)={1}".format(
+                          len(spikes), len(extra_spikes)))
 
         else:
             spikes = numpy.resize(spikes, (i,))
@@ -807,7 +808,7 @@ class StGen:
             y[i] = y[i - 1] + fac * (y0 - y[i - 1]) + noise * gauss[i - 1]
 
         if time_it:
-            print time.time() - 1
+            print(time.time()-1)
 
         if array:
             return (y, t)
@@ -860,7 +861,7 @@ class StGen:
             y[i] = y[idx] * mfac + gauss[idx]
 
         if time_it:
-            print time.time() - t1
+            print(time.time()-t1)
 
         if array:
             return (y, t)
@@ -928,7 +929,7 @@ class StGen:
                      type_converters=scipy.weave.converters.blitz)
 
         if time_it:
-            print 'Elapsed ', time.time() - t1, ' seconds.'
+            print('Elapsed ', time.time() - t1, ' seconds.')
 
         if array:
             return (y, t)

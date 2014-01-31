@@ -101,7 +101,7 @@ class Communicator(BatchCommunicatorBase):
             duration = float(duration)/1e3
         net, M_EIP, MV_EIP = self._prepare_brian_net(stimulus_abs)
         net.reinit(states=False)
-        print 'running virtual IFLSWTA for {0}s'.format(duration)  
+        print('running virtual IFLSWTA for {0}s'.format(duration))  
         net.run(duration)
         sp = np.array(M_EIP.spikes).reshape(-1,2)
         sp[:,0]+=(2<<13) #slot 2 in text.xml TODO

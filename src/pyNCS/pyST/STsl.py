@@ -197,7 +197,7 @@ def composite_plot_movie(SL, time_bin=10, t_start=None, t_stop=None, output="ani
         files.append(fname)
         t_start += time_bin
         count += 1
-        print 'Generated frame %d' % count
+        print('Generated frame {0}'.format(count))
     command = "mencoder 'mf://_tmp_*.png' -mf type=png:fps=%d -ovc lavc -lavcopts vcodec=wmv2 -oac copy -o %s" % (fps, output)
     os.system(command)
     for fname in files:

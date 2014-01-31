@@ -491,8 +491,8 @@ class Population(object):
             self.soma.populate_line(
                 setup, chipid, grouptype='out', addresses=addresses)
         except:
-            raise Exception, "Chip %s contains no neurons of given id_list on axes %d." % (
-                chipid, axes)
+            raise Exception(("Chip {0} contains no neurons of given" +
+                            "id_list on axes {1}.").format(chipid, axes))
 
         self.__populate_synapses__()
 

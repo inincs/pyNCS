@@ -338,7 +338,7 @@ class SpikeTrain(object):
                 t_stop = self.t_stop
             else:
                 t_stop = min(self.t_stop, t_stop)
-            print t_start, t_stop
+            print(t_start, t_stop)
             isi = self.time_slice(t_start, t_stop).isi()
         if len(isi):
             mean_rate = 1000./numpy.mean(isi)
@@ -1725,7 +1725,7 @@ class SpikeList(object):
                 max_id = numpy.max(idlist)
             else:
                 max_id = min_id = 0
-                print 'Empty Spiketrain'
+                print('Empty Spiketrain')
             length = t_stop - t_start
             set_axis_limits(subplot, t_start - 0.05 *
                 length, t_stop + 0.05 * length, min_id - 2, max_id + 2)

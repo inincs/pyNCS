@@ -249,7 +249,7 @@ class MonitorPlotBase(object):
             ll = np.cumsum(ll)
             ll /= ll.max() / len(self)
             for i, mon in enumerate(self):
-                print ll[i], ll[i+1]
+                print(ll[i], ll[i+1])
                 yield mon.get_remapped_spikelist(
                         s_start=float(ll[i]),
                         s_stop=float(ll[i+1])),\

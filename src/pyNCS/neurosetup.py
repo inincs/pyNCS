@@ -60,14 +60,14 @@ def parse_and_validate(filename, dtd, validate = True):
             parser.validate(doc)
             if len(parser.error_log.filter_from_errors()) > 0:
                 for e in parser.error_log.filter_from_errors():
-                    print e
+                    print(e)
                 raise Exception('setupfile XML is not well formed, corrent the errors given above first')
             elif len(parser.error_log) > 0:
                 for e in parser.error_log.filter_from_errors():
-                    print e
-        except URLError, e:
+                    print(e)
+        except URLError as e:
             warnings.warn('Could not access online setup.dtd (timeout {0}s), not validating'.format(URL_TIMEOUT))
-        except HTTPError, e:
+        except HTTPError as e:
             warnings.warn('Could not access online setup.dtd (timeout {0}s), not validating'.format(URL_TIMEOUT))
         except Exception:
             warnings.warn('Unknown exception occured while validating setupfile (probably timed out)')
@@ -182,7 +182,7 @@ class NeuroSetup(object):
             self.com_kwargs = dict_merge(self.com_kwargs, com_kwargs)
             try:
                 self.com_api = self._import_module(str(ncom.attrib['module']))
-            except ImportError, e:
+            except ImportError as e:
                 warnings.warn(e.message)
                 self.com_api = ComAPI
                 self.com_kwargs = {}
@@ -210,7 +210,7 @@ class NeuroSetup(object):
             conf_kwargs = xml_parse_parameter(nconf)
             try:
                 conf_api = self._import_module(module)
-            except ImportError, e:
+            except ImportError as e:
                 warnings.warn(e.message)
                 conf_api = ConfAPI
                 conf_kwargs = {}
@@ -231,7 +231,7 @@ class NeuroSetup(object):
             self.map_kwargs = dict_merge(self.map_kwargs, map_kwargs)
             try:
                 self.map_api = self._import_module(str(nmapper.attrib['module']))
-            except ImportError, e:
+            except ImportError as e:
                 warnings.warn(e.message)
                 self.map_api = ConfAPI
                 self.map_kwargs = {}
@@ -251,8 +251,8 @@ class NeuroSetup(object):
         try:
             #without fromlist, only the package is returned
             mod = __import__(module, fromlist=[module])
-        except ImportError, error:
-            #print(error)
+        except ImportError as e:
+            #print(e)
             raise ImportError('{0} API failed to be imported'.format(module))
         return mod
 
@@ -284,10 +284,10 @@ class NeuroSetup(object):
                            not self.chips[id].virtual:
                             monList[ii] = self.chips[id].aerIn
                             self.chipsIn[ii] = self.chips[id]
-                except KeyError, e:
+                except KeyError as e:
                     pass
                 #If mon.aerIn doesn't exist, then skip it
-                except AttributeError, e:
+                except AttributeError as e:
                     pass
 
             for ii in self.aerSlot[nslot]['monOut']:
@@ -297,9 +297,9 @@ class NeuroSetup(object):
                            not self.chips[id].virtual:
                             monList[ii] = self.chips[id].aerOut
                             self.chipsOut[ii] = self.chips[id]
-                except KeyError, e:
+                except KeyError as e:
                     raise e
-                except AttributeError, e:
+                except AttributeError as e:
                     pass
 
             for ii in self.aerSlot[nslot]['seqIn']:
@@ -309,9 +309,9 @@ class NeuroSetup(object):
                            not self.chips[id].virtual:
                             seqList[ii] = self.chips[id].aerIn
                             self.chipsIn[ii] = self.chips[id]
-                except KeyError, e:
+                except KeyError as e:
                     raise e
-                except AttributeError, e:
+                except AttributeError as e:
                     pass
                 #If seq.aerIn doesn't exist, then skip it
 
@@ -322,9 +322,9 @@ class NeuroSetup(object):
                            not self.chips[id].virtual:
                             seqList[ii] = self.chips[id].aerOut
                             self.chipsOut[ii] = self.chips[id]
-                except KeyError, e:
+                except KeyError as e:
                     raise e
-                except AttributeError, e:
+                except AttributeError as e:
                     pass
 
         self.seq = pyST.channelAddressing(channelBits=self.seqBits, stasList=seqList)
