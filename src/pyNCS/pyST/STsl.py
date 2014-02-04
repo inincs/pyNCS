@@ -6,14 +6,14 @@
 # Copyright : University of Zurich, Giacomo Indiveri, Emre Neftci, Sadique Sheik, Fabio Stefanini
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
+from __future__ import absolute_import
 import os
 import numpy as np
 import pylab
 import matplotlib
-import pyST_globals
-import STas
-import stgen
-from spikes import SpikeList, SpikeTrain, load, merge, merge_spikelists
+from . import pyST_globals
+from . import stgen
+from .spikes import SpikeList, SpikeTrain, load, merge, merge_spikelists
 
 #Globals
 addrIndex = 0

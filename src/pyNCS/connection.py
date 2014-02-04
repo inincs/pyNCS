@@ -6,10 +6,11 @@
 # Copyright : University of Zurich, Giacomo Indiveri, Emre Neftci, Sadique Sheik, Fabio Stefanini
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
+from __future__ import absolute_import
 import numpy as np
 import pylab
 
-from mapping import Mapping, PMapping
+from .mapping import Mapping, PMapping
 
 class Connection(object):
     """

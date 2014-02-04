@@ -6,12 +6,13 @@
 # Copyright : University of Zurich, Giacomo Indiveri, Emre Neftci, Sadique Sheik, Fabio Stefanini
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
+from __future__ import absolute_import
 import numpy as np
 import copy
 import itertools as it
 from pickle import dump, load
 
-from group import AddrGroup
+from .group import AddrGroup
 
 
 def _buildGrid(inlist):

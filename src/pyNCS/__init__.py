@@ -7,17 +7,19 @@
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
 # -*- coding: utf-8 -*-
-from chip_v2 import Chip, NeuronBlock, NeuroChip, Block
-import experimentTools as et
-from group import AddrGroup, AddrGroupBase
-from population import Population
-from connection import Connection, PConnection
-from mapping import Mapping, PMapping
-from neurosetup import NeuroSetup
-from monitors import Monitors, SpikeMonitor
-from api import ComAPI
-from api import ConfAPI
-import pyST
+from __future__ import absolute_import
+
+from .chip_v2 import Chip, NeuronBlock, NeuroChip, Block
+from . import experimentTools as et
+from .group import AddrGroup, AddrGroupBase
+from .population import Population
+from .connection import Connection, PConnection
+from .mapping import Mapping, PMapping
+from .neurosetup import NeuroSetup
+from .monitors import Monitors, SpikeMonitor
+from .api import ComAPI
+from .api import ConfAPI
+from . import pyST
 
 ######################  Utility functions
 from functools import wraps

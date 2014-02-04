@@ -6,10 +6,10 @@
 # Copyright : University of Zurich, Giacomo Indiveri, Emre Neftci, Sadique Sheik, Fabio Stefanini
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
-
+from __future__ import absolute_import
 import numpy as np
 import pylab
-from pyST.STsl import mapSpikeListAddresses, composite_plot, SpikeList, SpikeTrain
+from .pyST.STsl import mapSpikeListAddresses, composite_plot, SpikeList, SpikeTrain
 import copy
 
 def create_SpikeMonitor_from_SpikeList(st):

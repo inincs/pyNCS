@@ -6,9 +6,10 @@
 # Copyright : University of Zurich, Giacomo Indiveri, Emre Neftci, Sadique Sheik, Fabio Stefanini
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
+from __future__ import absolute_import
 import itertools
 from warnings import warn
-from pyST import *
+from .pyST import *
 
 class AddrGroupBase(object):
     def __init__(self, name, description=None):

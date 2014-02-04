@@ -27,9 +27,9 @@ shotnoise_fromspikes - Convolves the provided spike train with shot decaying exp
 
 gamma_hazard - Compute the hazard function for a gamma process with parameters a,b.
 """
+from __future__ import absolute_import
 
-
-from spikes import SpikeTrain
+from .spikes import SpikeTrain
 from numpy import array, log
 import numpy
 
