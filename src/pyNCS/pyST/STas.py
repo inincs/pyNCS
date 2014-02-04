@@ -1712,7 +1712,7 @@ class addrSpec:
 #        try:
         # Building addresses on the fly.
         # Cuses memory errors otherwise for large AER spaces
-        # addrBuildHashTable(self)
+        addrBuildHashTable(self)
 #        except Exception as e:
 #            warnings.warn('Could not BuildHashTable: {0}'.format(e))
 
