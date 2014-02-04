@@ -140,9 +140,6 @@ class Mapping(object):
         else:
             self.mapping = np.column_stack([c1, c2]).tolist()
 
-        if not hide:
-            self.add_edge(groupsrc, groupdst, arrowhead='crow', dir='both')
-        
         return self.mapping
 
     def __connect_one2one__(self, groupsrc, groupdst, p=1.0,
@@ -177,6 +174,11 @@ class Mapping(object):
 
     def __connect_by_binary_matrix__(self, groupsrc, groupdst, connect_inst,
                                      expand=True, hide=False):
+        '''
+        groupsrc: source group
+        groupdst: destination group
+        connect_inst: array
+        '''
         if not self.is_connect_possible(groupsrc, groupdst):
             return []
 
@@ -191,9 +193,6 @@ class Mapping(object):
             self.mapping.extend(np.column_stack([c1, c2]).tolist())
         else:
             self.mapping = np.column_stack([c1, c2]).tolist()
-
-        if not hide:
-            self.add_edge(groupsrc, groupdst, arrowhead='crow', dir='both')
         
         return self.mapping
 
@@ -269,9 +268,6 @@ class Mapping(object):
         else:
             self.mapping = np.column_stack([c1, c2])
 
-        if not hide:
-            self.add_edge(groupsrc, groupdst, arrowhead='crow', dir='both')
-        
         return self.mapping
 
 
@@ -372,9 +368,6 @@ class PMapping(Mapping):
             self.mapping.extend(p_nonzero)
         else:
             self.mapping = p_nonzero
-
-        if not hide:
-            self.add_edge(groupsrc, groupdst, arrowhead='crow', dir='both')
         
         return self.mapping
 
