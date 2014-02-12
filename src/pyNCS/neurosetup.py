@@ -6,19 +6,23 @@
 # Copyright : University of Zurich, Giacomo Indiveri, Emre Neftci, Sadique Sheik, Fabio Stefanini
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
-from __future__ import with_statement
+from __future__ import with_statement, absolute_import
 from xml.dom import minidom as md
-from urllib2 import urlopen, URLError, HTTPError
-from chip_v2 import NeuroChip
-from mapping import Mapping, PMapping
-from monitors import Monitors
-import pyST
+try:
+    from urllib2 import urlopen, URLError, HTTPError
+except:
+    from urllib.request import urlopen, URLError, HTTPError
+    
+from .chip_v2 import NeuroChip
+from .mapping import Mapping, PMapping
+from .monitors import Monitors
+from . import pyST
 import warnings
 from contextlib import contextmanager
 from lxml import etree
 from itertools import chain
-from pyNCS.api import ComAPI
-from pyNCS.api import ConfAPI
+from .api import ComAPI
+from .api import ConfAPI
 
 
 URL_SETUPDTD = 'http://ncs.ethz.ch/internal/files/setup.dtd/at_download/file'

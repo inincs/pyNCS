@@ -6,13 +6,13 @@
 # Copyright : University of Zurich, Giacomo Indiveri, Emre Neftci, Sadique Sheik, Fabio Stefanini
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
-from __future__ import with_statement
+from __future__ import with_statement, absolute_import
 from xml.dom import minidom as md
-import pyST
-from pyST.STas import addrSpec
-from pyST.STas import _buildGrid
+from . import pyST
+from .pyST.STas import addrSpec
+from .pyST.STas import _buildGrid
 import warnings
-from pyNCS.api.ConfAPI import Configurator
+from .api.ConfAPI import Configurator
 from contextlib import contextmanager
 from lxml import etree
 from re import search as res

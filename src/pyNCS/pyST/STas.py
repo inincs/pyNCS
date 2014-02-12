@@ -10,15 +10,16 @@
 ######################################################################
 # Emre Neftci Author <emre.neftci@ini.phys.ethz.ch>
 #######################################################################
+from __future__ import absolute_import
 import numpy as np
 import os
 import copy
 import time
 import warnings
-from STsl import *
+from .STsl import *
 import itertools
 from contextlib import contextmanager
-import pyST_globals
+from . import pyST_globals
 from lxml import etree
 
 #TODO: RawOutput should return spikelists with complete id_list even when empy
@@ -1425,6 +1426,7 @@ def isValidAddress(stas, addrList):
     return nEntries, addrListFilled
 
 
+# NOTE: Scipy weave isn't ported to python 3
 from scipy import weave
 from scipy.weave import converters
 # ...
@@ -1710,7 +1712,7 @@ class addrSpec:
 #        try:
         # Building addresses on the fly.
         # Cuses memory errors otherwise for large AER spaces
-        # addrBuildHashTable(self)
+        addrBuildHashTable(self)
 #        except Exception as e:
 #            warnings.warn('Could not BuildHashTable: {0}'.format(e))
 

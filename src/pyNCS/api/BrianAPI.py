@@ -15,7 +15,7 @@
 
 from pyNCS.api.ComAPI import *
 from pyNCS.api.ConfAPI import *
-import pyNCS.pyST
+import pyNCS.pyST as pyST
 import IFSLWTA_brian_model as ibm
 import numpy as np
 from brian.directcontrol import PoissonGroup

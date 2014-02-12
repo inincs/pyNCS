@@ -11,8 +11,9 @@
 #Api for modules having pyAMDA-like functionality
 #Api for modules having pyAEX-like functionality
 
-from BaseConfAPI import *
-from ComAPI import ResourceManagerBase
+from __future__ import absolute_import
+from .BaseConfAPI import *
+from .ComAPI import ResourceManagerBase
 
 class ConfiguratorBase(ResourceManagerBase):
     def __init__(self):
