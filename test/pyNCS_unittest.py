@@ -173,7 +173,7 @@ class TestSequenceFunctions(unittest.TestCase):
             self.assertTrue(a in pop.soma.paddr)
 
     def testComAPI_RecordableCommunicatorBase(self):
-        import pyNCS.ComAPI, os
+        import pyNCS.api.ComAPI, os
         rec_com = pyNCS.ComAPI.RecordableCommunicatorBase()
         rec_com.run_rec(np.ones([0,2]))
         self.assertTrue(len(rec_com._rec_fns)==2)
