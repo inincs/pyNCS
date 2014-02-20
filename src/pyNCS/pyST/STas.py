@@ -45,11 +45,10 @@ class RawOutput(object):
     >>> client.stop()
     >>> for sl in raw_output: sl.raster_plot()
     '''
-    def __init__(self, raw_data, id_data, decoder_dict, t_start=0, t_stop=1000, filter_duplicates=False):
+    def __init__(self, raw_data, decoder_dict, t_start=0, t_stop=1000, filter_duplicates=False):
 
         #Inputs
         self.raw_data = raw_data.copy()
-        self.id_data = id_data
         self.decoder_dict = decoder_dict
         self.filter_duplicates = filter_duplicates
 
@@ -91,7 +90,7 @@ class RawOutput(object):
             evs.add_adtm(ad_data, tm_data)
             st_data = SpikeList(
                     evs.get_adtmev(),
-                    self.id_data[key])
+                    evs.get_ad())
             if self.filter_duplicates:
                 st_data.filter_duplicates()
             self.raw_data.pop(key)
@@ -120,9 +119,9 @@ class RawOutput(object):
                 raise KeyError("There is no function to decode %d" % key)
             if key in self.decoded_data:
                 print("Channel {0} has already been decoded".format(key))
-            elif not key in self.raw_data and key in self.id_data:
+            elif not key in self.raw_data:
                 #print("Channel {0} is not present, assuming no events".format(key
-                self.decoded_data[key] = SpikeList([], self.id_data[key])
+                self.decoded_data[key] = SpikeList([], [])
             else:
                 raise
 
@@ -389,6 +388,10 @@ class events(object):
             t -= rest
             #ISI or not is determined
             yield evs, tm - rest
+
+    def __iter__(self):
+        for ev in self.get_tmadev():
+            yield ev[0],ev[1]
 
     def sort(self):
         '''
@@ -886,40 +889,40 @@ class channelAddressing:
             ch_events.set_tm(ch, ch_events.get_tm(ch) - tStartGlobal)
         return ch_events
 
-    def generateST(self, ch_events, normalize=True):
-        """
-        Extracts events from eventsChannel, using the address specification specified for the given channels, returns a list of SpikeList
-        """
-        assert ch_events.atype == 'l', 'channelEvents must be of type logical'
-
-        STStimOut = dict(zip(range(self.nChannels), [SpikeList([], [])
-             for i in range(self.nChannels)]))
-        t_start = 0
-        t_stop = 0
-        if ch_events.get_nev() > 0:
-            if normalize:
-                ch_events = self.normalizeAER(ch_events)
-                t_start = 0
-            else:
-                t_start = ch_events.get_all_tm().min() * 1e-3
-            t_stop = ch_events.get_all_tm().max() * 1e-3
-
-        if t_start == t_stop:
-            t_stop += 1
-
-        for ch in ch_events:
-            stas = self[ch]
-            #To ms
-            ch_events.set_tm(ch, ch_events.get_tm(ch) / 1000)
-            #eventsLogicalChannel[:,0]=eventsChannel[channelIdx][:,0]
-            STStimOut[ch] = SpikeList(
-                    ch_events.get_adtmev(ch),
-                    stas.allpos,
-                    t_start=t_start,
-                    t_stop=t_stop
-                    )
-
-        return STStimOut
+#    def generateST(self, ch_events, normalize=True):
+#        """
+#        Extracts events from eventsChannel, using the address specification specified for the given channels, returns a list of SpikeList
+#        """
+#        assert ch_events.atype == 'l', 'channelEvents must be of type logical'
+#
+#        STStimOut = dict(zip(range(self.nChannels), [SpikeList([], [])
+#             for i in range(self.nChannels)]))
+#        t_start = 0
+#        t_stop = 0
+#        if ch_events.get_nev() > 0:
+#            if normalize:
+#                ch_events = self.normalizeAER(ch_events)
+#                t_start = 0
+#            else:
+#                t_start = ch_events.get_all_tm().min() * 1e-3
+#            t_stop = ch_events.get_all_tm().max() * 1e-3
+#
+#        if t_start == t_stop:
+#            t_stop += 1
+#
+#        for ch in ch_events:
+#            stas = self[ch]
+#            #To ms
+#            ch_events.set_tm(ch, ch_events.get_tm(ch) / 1000)
+#            #eventsLogicalChannel[:,0]=eventsChannel[channelIdx][:,0]
+#            STStimOut[ch] = SpikeList(
+#                    ch_events.get_adtmev(ch),
+#                    stas.allpos,
+#                    t_start=t_start,
+#                    t_stop=t_stop
+#                    )
+#
+#        return STStimOut
 
     def rawoutput_from_chevents(self, ch_events, func=None, normalize=True, filter_duplicates=False):
         """
@@ -956,16 +959,13 @@ class channelAddressing:
         if t_start == t_stop:
             t_stop += 1
 
-        id_data = {}
         raw_data = {}
-        for ch in self.channels:
-            id_data[ch] = self[ch].allpos
+
         for ch in ch_events:        
             ch_events.set_tm(ch, ch_events.get_tm(ch))
             raw_data[ch] = ch_events[ch]
         raw_out = RawOutput(
                 raw_data,
-                id_data,
                 func_data,
                 t_start=t_start,
                 t_stop=t_stop,
@@ -1212,21 +1212,23 @@ def addrPhysicalLogical(stas, addrPhys, checkLevel=1):
     """
     Direct translation from Physical Addresses to Logical addresses using a hash table
     """
-#    if checkLevel is 1:
-#        addrPhys=isValidPhysicalAddress(stas, addrPhys)
-#        failedIndex=np.where(stas.addrExtractLogicalFast[addrPhys]==-1)[0]
-#        #Don't even bother calling decode if everyone is in
-#        if len(failedIndex)>0:
-#            try:
-# addrPhysicalLogicalDecode(stas, failedIndex) #Failed? decode the address
-#            except AssertionError as e:
-#                print('Error in addrPhysicalLogicalDecode.')
-# print('No. of addresses in the packet : {0}'.format(len(addrPhys)))
-#                raise e
-#
+    addrPhys=isValidPhysicalAddress(stas, addrPhys)
+    #failedIndex=np.where(stas.addrExtractLogicalFast[addrPhys]==-1)[0]
+    failedIndex = np.setdiff1d(addrPhys, stas.addrExtractLogicalFast.keys())
+    #Don't even bother calling decode if everyone is in
+    if len(failedIndex)>0:
+       try:
+           addrPhysicalLogicalDecode(stas, failedIndex) #Failed? decode the address
+       except AssertionError as e:
+           print('Error in addrPhysicalLogicalDecode.')
+           print('No. of addresses in the packet : {0}'.format(len(addrPhys)))
+           raise e
+
+
 # NOTE: If you get a ValueError, you probably have checkLevel=0 and forgot to
 # build the hash tables using addrBuildHashTable
-    fastAddr = stas.addrExtractLogicalFast[addrPhys]
+    fastAddr = np.array(
+        map(stas.addrExtractLogicalFast.get, addrPhys), 'float')
 
     # Loop should run over addresses only once if all addresse are in dict.
     # Small overhead
@@ -1307,8 +1309,8 @@ def addrBuildHashTable(stas):
     grid = _buildGrid(addrLens)
 
     stas.allpos = stas.addrLogicalConstruct(grid.transpose())
-    addr_phys = addrLogicalPhysicalDecode(stas, stas.allpos)
-    addr_log = addrPhysicalLogicalDecode(stas, addr_phys)
+    addrLogicalPhysicalDecode(stas, stas.allpos)
+    addrPhysicalLogicalDecode(stas, addr_phys)
 
 
 def addrPhysicalExtractDecode(stas, addrPhys):
@@ -1341,7 +1343,8 @@ def addrPhysicalLogicalDecode(stas, addrPhys):
     '''
     addr = addrPhysicalExtractDecode(stas, addrPhys)
     addrLog = addrLogicalConstruct(stas, addr)
-    stas.addrExtractLogicalFast[addrPhys] = addrLog
+    #stas.addrExtractLogicalFast[addrPhys] = addrLog
+    stas.addrExtractLogicalFast.update(zip(addrPhys, addrLog))
     return addrLog
 
 
@@ -1549,39 +1552,39 @@ class layoutFieldEncoder:  # private
 #
 #
 
-def generateST(stas, events, normalize=True):
-    """
-    Extracts events from eventsChannel, using the address specification specified for the given channels, returns a list of SpikeList
-    Inputs:
-    *stas*: STas.addrSpec object
-    *events*: STas.events object
-    *normalize*: if True (default), the timestamp of the first event is set to zeros and all the timestamps of the subsequent events are shifted accordingly.
-    """
-    assert events.atype == 'l', 'channelEvents must be of type logical'
-
-    spike_list = SpikeList([], [])
-    t_start = 0
-    t_stop = 0
-
-    if normalize:
-        events.normalize_tm()
-
-    if events.get_nev() > 0:
-        t_start = events.get_tm().min() * 1e-3
-        t_stop = events.get_tm().max() * 1e-3
-
-    if t_start == t_stop:
-        t_stop += 1.
-
-    events.set_tm(events.get_tm() * 1e-3)
-    spike_list = SpikeList(
-            spikes=events.get_adtmev(),
-            id_list=stas.allpos,
-            t_start=t_start,
-            t_stop=t_stop
-            )
-
-    return spike_list
+#def generateST(id_list, events, normalize=True):
+#    """
+#    Extracts events from eventsChannel, using the address specification specified for the given channels, returns a list of SpikeList
+#    Inputs:
+#    *stas*: STas.addrSpec object
+#    *events*: STas.events object
+#    *normalize*: if True (default), the timestamp of the first event is set to zeros and all the timestamps of the subsequent events are shifted accordingly.
+#    """
+#    assert events.atype == 'l', 'channelEvents must be of type logical'
+#
+#    spike_list = SpikeList([], [])
+#    t_start = 0
+#    t_stop = 0
+#
+#    if normalize:
+#        events.normalize_tm()
+#
+#    if events.get_nev() > 0:
+#        t_start = events.get_tm().min() * 1e-3
+#        t_stop = events.get_tm().max() * 1e-3
+#
+#    if t_start == t_stop:
+#        t_stop += 1.
+#
+#    events.set_tm(events.get_tm() * 1e-3)
+#    spike_list = SpikeList(
+#            spikes=events.get_adtmev(),
+#            id_list=id_list,
+#            t_start=t_start,
+#            t_stop=t_stop
+#            )
+#
+#    return spike_list
 
 TYPE_TO_NAME_DICT = { -1 : 'synapse dimension', 0 : 'other dimension', 1 : 'neuron dimension'}
 
@@ -1707,12 +1710,12 @@ class addrSpec:
         #    [2 ** np.sum(self.nbits.values())], 'float')
         # NOTE: The above code is modified to accomodate for blank bits in the
         # address space and hence use of nBitsTotal might be more accurate.
-        self.addrExtractLogicalFast = np.empty([2 ** self.nBitsTotal], 'float')
+        self.addrExtractLogicalFast = dict()
         self.addrExtractPhysicalFast = dict()
 #        try:
         # Building addresses on the fly.
         # Cuses memory errors otherwise for large AER spaces
-        addrBuildHashTable(self)
+        #addrBuildHashTable(self)
 #        except Exception as e:
 #            warnings.warn('Could not BuildHashTable: {0}'.format(e))
 
@@ -1823,6 +1826,8 @@ class addrSpec:
                     dim['type'] = -1
                 elif elm.get('type') == 'soma':
                     dim['type'] = 1
+                elif elm.get('type') == 'connection':
+                    dim['type'] = 2
                 else:
                     # If there are any new types they should be added here!
                     dim['type'] = None
@@ -1906,7 +1911,7 @@ def _stas_create_fields(nBits, addrSpec, addrConf, addrPinConf):
 
 
 def _stas_compute_nbits(addrConf):
-    nbits = {-1: 0, 1: 0, 0: 0}
+    nbits = {-1: 0, 1: 0, 0: 0, 2:0}
     for a in addrConf:
         nbits[a['type']] += a['bits']
     return nbits
