@@ -106,9 +106,12 @@ class ConfiguratorBase(ResourceManagerBase):
         if isinstance(doc, str):
             # parse the file
             doc = etree.parse(doc).getroot()
+            if not doc.tag == 'paramters':
+                doc = doc.find('parameters')
         else:
             # assuming doc is an lxml Element object.
             assert doc.tag == 'parameters'
+
         for param in doc:
             self.add_parameter(param)
 
@@ -203,6 +206,37 @@ class ConfiguratorBase(ResourceManagerBase):
         with open(filename, 'w') as f:
             f.write("\n".join(["%s\t%.17e" % (k, v) for k, v in d.items()]))
         print('Parameters have been saved to the file {0}'.format(filename))
+        return None
+
+    def load_parameters(self, filename, *kwargs):
+        #CONVENIENCE FUNCTION. IMPLEMENTATION IS NOT REQUIRED
+        '''
+        Saves parameters to a file
+        '''
+        name_value_pairs = {}
+        with open(filename, 'r') as f:
+            while True:
+                s = f.readline()
+                if len(s) == 0:
+                    break
+                else:
+                    s = s.strip()
+
+                if s[0] == '%' or s[0] == '#':
+                    continue
+                if s.find(' ')!=-1:
+                    sp = s.split(' ')
+                elif s.find('\t')!=-1:
+                    sp = s.split(' ')
+                else:
+                    raise Exception('Unknown delimiter. Reads spaces or tabs.')
+
+                name_value_pairs[sp[0]] = sp[1]
+        self.set_parameters(name_value_pairs)
+
+
+
+
         return None
 
     def reset(self):

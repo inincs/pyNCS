@@ -68,3 +68,9 @@ class Parameter:
         return x
     
     v = property(getValue, setValue)
+
+    def __repr__(self):
+        return self.getValue()
+
+    def __str__(self):
+        return self.getValue()
