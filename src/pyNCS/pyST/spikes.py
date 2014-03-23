@@ -796,6 +796,7 @@ class SpikeList(object):
         self.dimensions = dims
         self.spiketrains = {}
         id_list = numpy.sort(id_list)
+        id_set = set(id_list) #For fast membership testing
 
         # Implementaion base on pure Numpy arrays, that seems to be faster for
         # large spike files. Still not very efficient in memory, because we are
@@ -816,7 +817,7 @@ class SpikeList(object):
             break_points = numpy.concatenate((break_points, [N]))
             for idx in xrange(len(break_points) - 1):
                 id = spikes[break_points[idx], 0]
-                if id in id_list:
+                if id in id_set:
                     self.spiketrains[id] = SpikeTrain(spikes[break_points[idx]
                         :break_points[idx + 1], 1], self.t_start, self.t_stop)
 
@@ -1757,10 +1758,8 @@ class SpikeList(object):
         is_times = re.compile("times")
         is_ids = re.compile("ids")
         if len(self) > 0:
-            times = numpy.concatenate([st.format(
-                relative, quantized) for st in self.spiketrains.itervalues()])
-            ids = numpy.concatenate([id * numpy.ones(len(st.
-                spike_times), int) for id, st in self.spiketrains.iteritems()])
+            times = numpy.concatenate([st.format(relative, quantized) for st in self.spiketrains.itervalues()])
+            ids = numpy.concatenate([id * numpy.ones(len(st.spike_times), int) for id, st in self.spiketrains.iteritems()])
         else:
             times = []
             ids = []
@@ -1797,9 +1796,13 @@ class SpikeList(object):
         See also:
             convert()
         """
-        data = numpy.array(self.convert("[times, ids]"), numpy.float32)
-        data = numpy.transpose(data)
-        return data
+        if len(self) > 0:
+            times = numpy.concatenate([st.spike_times for st in self.spiketrains.itervalues()])
+            ids = numpy.concatenate([id * numpy.ones(len(st.spike_times), int) for id, st in self.spiketrains.iteritems()])
+        else:
+            times = []
+            ids = []
+        return numpy.column_stack([times,ids])
 
     def composite_plot(self, id_list=None, t_start=None, t_stop=None, t_start_rate=None, t_stop_rate=None, display=True, kwargs={}, kwargs_bar={}):
         """

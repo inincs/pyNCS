@@ -93,8 +93,8 @@ class TestSequenceFunctions(unittest.TestCase):
         mon = self.nsetup.monitors.import_monitors_otf(t)[0]
         mon_zero = self.nsetup.monitors.import_monitors_otf(t2)[0]
         m=pyNCS.PMapping('')
-        m.__connect_random_all2all__(s.soma,t.synapses['excitatory0'],p=p)
-        m.__connect_one2one__(s.soma,t.synapses['excitatory0'])
+        m.connect(s.soma,t.synapses['excitatory0'], fashion='random_all2all', fashion_kwargs={'p':p})
+        m.connect(s.soma,t.synapses['excitatory0'], fashion='one2one',fashion_kwargs={'p':p}, expand = True)
         P = int(p*127)
         for i in s.soma.paddr:
             for j in t.synapses['excitatory0'].paddr:
@@ -145,7 +145,7 @@ class TestSequenceFunctions(unittest.TestCase):
         m.mapping.extend(np.random.randint(0,50000,size=(500000,2)))       
         for j in xrange(len(s)):   
             print j      
-            m.connect(s.soma[j], t.synapses['inhibitory'][(j*2):((j+1)*2)], fashion = 'by_binary_matrix', fashion_kwargs={'connect_inst': M[[j],:]})        
+            m.connect(s.soma[j], t.synapses['inhibitory'][(j*2):((j+1)*2)], fashion = 'by_boolean_matrix', fashion_kwargs={'connection': M[[j],:]})        
         
 
     def testSeqPopulationFunctions(self):

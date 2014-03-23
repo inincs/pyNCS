@@ -330,8 +330,12 @@ class events(object):
             
 
     def set_abs_tm(self):
+        '''
+        Transform ISI timestamps into absolute time 
+        '''
         if self.isISI:
             self.ad, self.set_tm(np.cumsum(self.get_tm()))
+            self.isISI = False
         else:
             pass
 
@@ -341,7 +345,10 @@ class events(object):
         map[src]=[target1,target2,...,targetn],
         """
         #The following is optimized for performance
-        assert not self.isISI, "Cannot filter with ISI timestamps"
+        wasISI = False
+        if self.isISI:
+            wasISI = True
+            self.set_abs_tm()
         evs = self.get_adtmev()
         ff = lambda x: x[0] in mapping
         filt = filter(ff, evs) #keep only addresses that are mapped
@@ -356,6 +363,8 @@ class events(object):
             self.set_data(m_ad,m_tm)
         else:
             self.empty()
+        if wasISI:
+            self.set_isi()
 
     def empty(self):
         self.__data = np.zeros([0], self.dtype)
@@ -766,9 +775,8 @@ class channelAddressing:
         """
         Constructs Physical addresses to human readable addresses
 
-        *addr*: numpy array of human readable numbers ( the physical addresses )
+        *addr*: dictionary of human readable numbers ( the physical addresses ), with channel numbers as keys
 
-        *channel*: which channel addressing should be appended.
         """
         addr = self.isChannelAddrList(addr)
         mainAddr = np.zeros([0], dtype='uint32')
@@ -889,40 +897,40 @@ class channelAddressing:
             ch_events.set_tm(ch, ch_events.get_tm(ch) - tStartGlobal)
         return ch_events
 
-#    def generateST(self, ch_events, normalize=True):
-#        """
-#        Extracts events from eventsChannel, using the address specification specified for the given channels, returns a list of SpikeList
-#        """
-#        assert ch_events.atype == 'l', 'channelEvents must be of type logical'
-#
-#        STStimOut = dict(zip(range(self.nChannels), [SpikeList([], [])
-#             for i in range(self.nChannels)]))
-#        t_start = 0
-#        t_stop = 0
-#        if ch_events.get_nev() > 0:
-#            if normalize:
-#                ch_events = self.normalizeAER(ch_events)
-#                t_start = 0
-#            else:
-#                t_start = ch_events.get_all_tm().min() * 1e-3
-#            t_stop = ch_events.get_all_tm().max() * 1e-3
-#
-#        if t_start == t_stop:
-#            t_stop += 1
-#
-#        for ch in ch_events:
-#            stas = self[ch]
-#            #To ms
-#            ch_events.set_tm(ch, ch_events.get_tm(ch) / 1000)
-#            #eventsLogicalChannel[:,0]=eventsChannel[channelIdx][:,0]
-#            STStimOut[ch] = SpikeList(
-#                    ch_events.get_adtmev(ch),
-#                    stas.allpos,
-#                    t_start=t_start,
-#                    t_stop=t_stop
-#                    )
-#
-#        return STStimOut
+    def generateST(self, ch_events, normalize=True):
+        """
+        Extracts events from eventsChannel, using the address specification specified for the given channels, returns a list of SpikeList
+        """
+        assert ch_events.atype == 'l', 'channelEvents must be of type logical'
+
+        STStimOut = dict(zip(range(self.nChannels), [SpikeList([], [])
+             for i in range(self.nChannels)]))
+        t_start = 0
+        t_stop = 0
+        if ch_events.get_nev() > 0:
+            if normalize:
+                ch_events = self.normalizeAER(ch_events)
+                t_start = 0
+            else:
+                t_start = ch_events.get_all_tm().min() * 1e-3
+            t_stop = ch_events.get_all_tm().max() * 1e-3
+
+        if t_start == t_stop:
+            t_stop += 1
+
+        for ch in ch_events:
+            stas = self[ch]
+            #To ms
+            ch_events.set_tm(ch, ch_events.get_tm(ch) / 1000)
+            #eventsLogicalChannel[:,0]=eventsChannel[channelIdx][:,0]
+            STStimOut[ch] = SpikeList(
+                    ch_events.get_adtmev(ch),
+                    ch_events.get_ad(ch),
+                    t_start=t_start,
+                    t_stop=t_stop
+                    )
+
+        return STStimOut
 
     def rawoutput_from_chevents(self, ch_events, func=None, normalize=True, filter_duplicates=False):
         """
@@ -984,13 +992,6 @@ class channelAddressing:
         out = []
         assert format in ['t', 'a'], 'Format must be "a" or "t"'
 
-        #Backward compatilibity
-        if 'addresses_in_hex' in kwargs:
-            if kwargs['addresses_in_hex']:
-                print('Warning: addresses_in_hex is deprecated. ' +
-                      'Use addr_format argument instead')
-                addr_format = '%x'
-
         if isinstance(spikeLists, list):
             assert len(spikeLists) == self.nChannels, "spikeLists must have dimension %d" % self.nChannels
             for i in range(len(spikeLists)):
@@ -1016,32 +1017,34 @@ class channelAddressing:
         tic = time.time()
         for ch in spikeLists:
             if isinstance(spikeLists[ch], SpikeList):
-                if len(spikeLists[ch].raw_data()) > 0:
+                slrd = spikeLists[ch].raw_data()
+                if len(slrd) > 0:
                     #addr_present=spikeLists[ch].id_list()
                     # mapping=dict(zip(addr_present,self.addrPhysicalConstruct(
                     # {ch:self[ch].addrLogicalExtract(addr_present)})))
                     # Not using convert because it is very slow ( iterates over
                     # all events )
-                    mapped_SL = np.fliplr(spikeLists[ch].raw_data())
-                    mapped_SL[:, 1] = mapped_SL[:, 1] * 1000  # ms
-                    mapped_SL[:, 0] = self[ch].addrLogicalPhysical(
-                        mapped_SL[:, 0]) + self.getValue(ch)
+                    tmp_mapped_SL = np.fliplr(slrd)
+                    mapped_SL = np.zeros_like(tmp_mapped_SL, dtype='uint32')
+                    mapped_SL[:, 1] = tmp_mapped_SL[:, 1] * 1000  # ms
+                    mapped_SL[:, 0] = self[ch].addrLogicalPhysical(tmp_mapped_SL[:, 0]) + self.getValue(ch)
                     ev.add_adtmev(mapped_SL)
                     # ev.add_adtmev(mapSpikeListAddresses(spikeLists[ch],mappin
                     # g).convert(format='[id,time*1000]'))
                 else:
                     print("Warning: Empty SpikeList encountered")
         tictoc = time.time() - tic
-        if tictoc > 1.0:
+        if tictoc > .1:
             print("Address translation took {0} seconds".format(tictoc))
 
         #Multiplex
         tic = time.time()
         sortedIdx = np.argsort(ev.get_tm())
         tictoc = time.time() - tic
-        if tictoc > 1.0:
+        if tictoc > .1:
             print("Multiplexing took {0} seconds".format(tictoc))
 
+        tic = time.time()
         #Create new sorted events object
         if len(sortedIdx) > 0:
             ev = events(ev.get_adtmev()[sortedIdx, :], atype='p')
@@ -1235,32 +1238,47 @@ def addrPhysicalLogical(stas, addrPhys, checkLevel=1):
     return fastAddr.transpose()
 
 
+#def addrLogicalPhysical(stas, addrLogical, checkLevel=1):
+#    """
+#    Direct translation from Logical Addresses to Physical addresses using a hash table
+#    """
+#    if checkLevel is 1:
+#        failedIndex = np.setdiff1d(
+#            addrLogical, stas.addrExtractPhysicalFast.keys())
+#        #Don't even bother calling decode if everyone is in
+#        if len(failedIndex) > 0:
+#            try:
+#                addrLogicalPhysicalDecode(
+#                    stas, failedIndex)  # Failed? decode the address
+#            except AssertionError as e:
+#                print('Error in addrLogicalPhysicalDecode.')
+#                print('No. of addresses in the packet : {0}'.
+#                    format(len(addrLogical)))
+#                raise e
+#
+#    # NOTE: If you get a ValueError, you probably have checkLevel=0 and forgot
+#    # to build the hash tables using addrBuildHashTable
+#    fastAddr = np.array(
+#        map(stas.addrExtractPhysicalFast.get, addrLogical), 'uint32')
+#
+#    # Loop should run over addresses only once if all addresse are in dict.
+#    # Small overhead
+#    return fastAddr.transpose()
+
 def addrLogicalPhysical(stas, addrLogical, checkLevel=1):
     """
     Direct translation from Logical Addresses to Physical addresses using a hash table
     """
-    if checkLevel is 1:
-        failedIndex = np.setdiff1d(
-            addrLogical, stas.addrExtractPhysicalFast.keys())
-        #Don't even bother calling decode if everyone is in
-        if len(failedIndex) > 0:
-            try:
-                addrLogicalPhysicalDecode(
-                    stas, failedIndex)  # Failed? decode the address
-            except AssertionError as e:
-                print('Error in addrLogicalPhysicalDecode.')
-                print('No. of addresses in the packet : {0}'.
-                    format(len(addrLogical)))
-                raise e
+    #Don't even bother calling decode if everyone is in
+    try:
+        return addrLogicalPhysicalDecode(
+            stas, addrLogical)  # Failed? decode the address
+    except AssertionError as e:
+        print('Error in addrLogicalPhysicalDecode.')
+        print('No. of addresses in the packet : {0}'.
+            format(len(addrLogical)))
+        raise e
 
-    # NOTE: If you get a ValueError, you probably have checkLevel=0 and forgot
-    # to build the hash tables using addrBuildHashTable
-    fastAddr = np.array(
-        map(stas.addrExtractPhysicalFast.get, addrLogical), 'uint32')
-
-    # Loop should run over addresses only once if all addresse are in dict.
-    # Small overhead
-    return fastAddr.transpose()
 
 
 def _buildGrid(inlist):
@@ -1437,7 +1455,7 @@ from scipy.weave import converters
 
 def _extract(x, a, r):
     '''
-    Internal functions for applying the bit permutatiouuuuuns defined in chip.csv file
+    Internal functions for applying the bit permutations defined in the chip file
     '''
     N = int(len(x))
     d = int(r.shape[0])
@@ -1461,7 +1479,7 @@ def _extract(x, a, r):
 
 def _construct(x, a, r):
     '''
-    Internal functions for applying the bit permutations defined in chip.csv file
+    Internal functions for applying the bit permutations defined in the chip file
     '''
     N = int(len(x))
     d = int(r.shape[0])
@@ -1541,12 +1559,15 @@ class layoutFieldEncoder:  # private
         self.r2Width = 2 ** self.rWidth
         self.position = position
         self.pin = pin
+        #Check if transformation is an identity function. If so, just mask and shift
+        if aspec == range(aspec[0],aspec[-1]):
+            self.mask = np.sum([2**i for i in aspec]).astype('uint32')
+            self.extract = (x&self.mask)>>aspec[0]
+            self.construct = (x&self.mask)>>aspec[0]
+        else:
+            self.extract = lambda x: _extract(x, self.aspec, self.rWidth)
+            self.construct = lambda x: _construct(x, self.aspec, self.rWidth)
 
-        self.extract = lambda x: _extract(x, self.aspec, self.rWidth)
-        self.construct = lambda x: _construct(x, self.aspec, self.rWidth)
-
-        def mask(self, addr):
-            pass
 
 #TODO: Create fieldstruct for logical part and get rid of addrConf
 #
@@ -1615,65 +1636,17 @@ class addrSpec:
     Address specification class
     # NOTE : Documentation is outdated!!
 
-    *addrConf*: should be a list of dicts. Each dict should contain the following fields:
+    *addrConf*: should be a list of dicts. Each dict provides the address specificatoin information for one field, and should contain the following entries:
 
-    - 'id', whose value is equal to a single, unique, lowercase character.
-    - 'range', an iterable containing the possible values the address field can take
-    - 'type', which is either 1 (Neuron) or -1 (Synapse).
+    - 'f' : Function for translating the address of the field into its physical counterpart
+    - 'id' : whose value is equal to a single, unique, lowercase character.
+    - 'range' : an iterable containing the possible values the address field can take
+    - 'type': which is either 1 (Neuron) or -1 (Synapse) or -2 (Connection parameter).
 
-    *addrStr*: should contain a list of space-separated pins with a number follwing an uppercase character defining the position on the chip. For example: "X0 X1 X2 X3 X4 X5 X6 Y4 Y3 Y2 Y1 Y0"
+    *addrStr*: should contain a list of space-separated pins with a number following an uppercase character defining the position on the chip. For example: "X0 X1 X2 X3 X4 X5 X6 Y4 Y3 Y2 Y1 Y0"
 
-    *fe*: extraction function. this should be a string like '[X,Y*2]', The letters must correspond to those in addrStr
-    *fc*: construction function '[x,y/2]', the letters must corrspond to those in addrConf
-
-    fe(fc(a)) should be the identity function
-
-    *IMPORTANT:* fe and fc are called vectorally (using numpy arrays), so check that the given functions also work with vectors (otherwise numpy.vstack will complain)
-
-    *Example*:
-
-    .. code-block:python
-
-      >>> addrConf=[{'id':'x','range':range(32),'type':1},{'id':'s','range':range(64),'type':-1}]
-      >>> addrStr="X0 X1 X2 X3 X4 X5 X6 Y4 Y3 Y2 Y1 Y0"
-      >>> fe='[X,Y]'
-      >>> fc='[x,s]'
-      >>> stas=addrSpec(fe,fc,addrStr,addrConf)
-      >>> stas.addrPhysicalConstruct([range(5),2])
-      array([   2, 2050, 1026, 3074,  514], dtype=uint32)
     """
     def __init__(self, addrStr='', addrConf=list(), addrPinConf='', id="NoName", nhml = False):
-        """
-        NOTE: DOCUMENTATION IS OUTDATED!!!
-        Address specification class
-
-        *addrConf*: should be a list of dicts. Each dict should contain the following fields:
-
-        - 'id', whose value is equal to a single, unique, lowercase character.
-        - 'range', an iterable containing the possible values the address field can take
-        - 'type', which is either 1 (Neuron), -1 (Synapse), 0 (Non encoded/decoded property, used for mappings).
-
-        *addrStr*: should contain a list of space-separated pins with a number following an uppercase character defining the position on the chip. For example: "X0 X1 X2 X3 X4 X5 X6 Y4 Y3 Y2 Y1 Y0"
-
-        *fe*: extraction function. this should be a string like '[X,Y*2]', The symbols must correspond to those in addrStr in alphabetical order
-        *fc*: construction function '[x,y/2]', the symbols and their order must corrspond to those in addrConf
-
-        fe(fc(a)) should be the identity function
-
-        *IMPORTSNT:* fe and fc are called vectorally (using numpy arrays), so check that the given functions also work with vectors (otherwise numpy.vstack will complain)
-
-        *Example*:
-
-        .. code-block:python
-
-          >>> addrConf=[{'id':'x','range':range(32),'type':'1'},{'id':'s','range':range(64),'type':'-1'}]
-          >>> addrStr="X0 X1 X2 X3 X4 X5 X6 Y4 Y3 Y2 Y1 Y0"
-          >>> fe='[X,Y]'
-          >>> fc='[x,s]'
-          >>> stas=addrSpec(fe,fc,addrStr,addrConf)
-          >>> stas.addrPhysicalConstruct([range(5),2])
-          array([   2, 2050, 1026, 3074,  514], dtype=uint32)
-        """
         ##script for parsing the adddrStr
         self.id = id
         self.addrPinConf = addrPinConf
@@ -1775,6 +1748,8 @@ class addrSpec:
                 dimdoc.attrib['type'] = 'soma'
             elif conf['type'] == -1:
                 dimdoc.attrib['type'] = 'synapse'
+            elif conf['type'] == -2:
+                dimdoc.attrib['type'] = 'connection'
             else:
                 # NOTE: In future if there are more types this is where they
                 # are
@@ -1827,7 +1802,7 @@ class addrSpec:
                 elif elm.get('type') == 'soma':
                     dim['type'] = 1
                 elif elm.get('type') == 'connection':
-                    dim['type'] = 2
+                    dim['type'] = -2
                 else:
                     # If there are any new types they should be added here!
                     dim['type'] = None
@@ -1911,7 +1886,7 @@ def _stas_create_fields(nBits, addrSpec, addrConf, addrPinConf):
 
 
 def _stas_compute_nbits(addrConf):
-    nbits = {-1: 0, 1: 0, 0: 0, 2:0}
+    nbits = {-1: 0, 1: 0, 0: 0, -2:0}
     for a in addrConf:
         nbits[a['type']] += a['bits']
     return nbits

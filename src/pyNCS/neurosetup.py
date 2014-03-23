@@ -182,14 +182,18 @@ class NeuroSetup(object):
         # Load communicator, currently, only only communicator per setup is
         # supported
         for ncom in nsetup.iterfind('communicator'):
-            com_kwargs = xml_parse_parameter(ncom)
-            self.com_kwargs = dict_merge(self.com_kwargs, com_kwargs)
-            try:
-                self.com_api = self._import_module(str(ncom.attrib['module']))
-            except ImportError as e:
-                warnings.warn(e.message)
+            if offline:
                 self.com_api = ComAPI
                 self.com_kwargs = {}
+            else:
+                com_kwargs = xml_parse_parameter(ncom)
+                self.com_kwargs = dict_merge(self.com_kwargs, com_kwargs)
+                try:
+                    self.com_api = self._import_module(str(ncom.attrib['module']))
+                except ImportError as e:
+                    warnings.warn(e.message)
+                    self.com_api = ComAPI
+                    self.com_kwargs = {}
             self.communicator = self.com_api.Communicator(**self.com_kwargs)
         
         # Load virtual chips
@@ -225,6 +229,7 @@ class NeuroSetup(object):
             self.chipslots[chipid] = slot
             self.slots[slot] = chipid
             chip.configurator.register_neurosetup(self)
+            chip.configurator.reset()
 
         #Load Mapper
         # load a virtual mapping table by defauld
@@ -248,8 +253,9 @@ class NeuroSetup(object):
 
         #If there is no mapper tag in setup, build an empty mapper
         if not hasattr(self, 'mapper'):
-            from ConfAPI import Mappings
+            from .api.ConfAPI import Mappings
             self.mapper = Mappings()
+
 
     def _import_module(self, module):
         try:
@@ -354,11 +360,11 @@ class NeuroSetup(object):
         return self.__copy__()
 
     def __getstate__(self):
-        return {'setuptype': self.setuptype,
-                "setupfile": self.setupfile,
-                "prefix": self.prefix,
-                "offline":self.offline,
-                "validate": self.validate,
+        return {'setuptype' : self.setuptype,
+                "setupfile" : self.setupfile,
+                "prefix" : self.prefix,
+                "offline" : self.offline,
+                "validate" : self.validate,
                }
 
     def reload(self):
@@ -381,8 +387,9 @@ class NeuroSetup(object):
         return self.setuptype, self.setupfile
 
     def _pre_process(self, stim):
-        evs_in = self.seq.exportAER(stim, isi=True)
-        return evs_in.get_adtmev()
+        evs_in = self.mon.exportAER(stim, isi=True)
+        evs = self.mapper.filter_events(evs_in)
+        return evs.get_adtmev()
 
     def _post_process(self, evs, filter_channels=None):
         evs_out = pyST.events(evs, 'p')
