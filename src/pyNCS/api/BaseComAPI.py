@@ -88,20 +88,21 @@ class RecordableCommunicatorBase(object):
         #CONVIENIENCE FUNCTION, IMPLEMENTATION NOT REQUIRED
         stim_fn, mon_fn = self.__gen_rec_fns()
         #Save stim before in case something goes wrong        
-        self.__save_rec_file(stimulus, stim_fn, header = self.REC_HEADER_SEQ)
+        self.__save_rec_file(stimulus, stim_fn)
         mon_evs = self.run(stimulus = stimulus, *args, **kwargs)
-        self.__save_rec_file(mon_evs, mon_fn, header = self.REC_HEADER_MON)
+        self.__save_rec_file(mon_evs, mon_fn)
 
         return mon_evs
 
     def __save_rec_file(self, ev_array, filename, *args, **kwargs):
         '''
-        Save data using np.savetxt, and adds filename in self._record_fns
+        Save data using np.save, and adds filename in self._record_fns
         '''
         if int(numpy.__version__.split('.')[0])==1 and int(numpy.__version__.split('.')[1])<=6:
             kwargs.pop('header')
-        self._rec_fns.append(filename)
-        numpy.savetxt(filename, ev_array, delimiter = ' ', newline = '\n', fmt = ['%u', '%u'], *args, **kwargs)
+        self._rec_fns.append(filename+'.npy')
+        numpy.save(filename, ev_array)
+
         self._run_id += 1
 
     def __gen_rec_fns(self):
