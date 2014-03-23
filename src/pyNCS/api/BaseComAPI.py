@@ -50,7 +50,7 @@ class RecordableCommunicatorBase(object):
     def __init__(self):
         self._rec_fns = []
         self._run_id = 0
-        self.reset()
+        self.__reset()
         self.del_all()
 
     def get_exp_rec(self):
@@ -64,7 +64,7 @@ class RecordableCommunicatorBase(object):
         #CONVIENIENCE FUNCTION, IMPLEMENTATION NOT REQURIED
         import copy
         rec_fns = copy.copy(self._rec_fns)
-        self.reset()
+        self.__reset()
         return rec_fns
 
     def run_rec(self, stimulus = None, *args, **kwargs):
@@ -114,15 +114,19 @@ class RecordableCommunicatorBase(object):
         import time
         N = self._run_id
         current_time_str = time.strftime("__" + "%d-%m-%Y-%H:%M:%S", time.localtime())
-        filename = self.REC_PATH + '_{2}_{0}__run{1}.dat'
+        filename = self.REC_PATH + '_{2}_{0}__run{1}'
         stim_fn = filename.format(current_time_str, N, self.REC_FN_SEQ)
         mon_fn = filename.format(current_time_str, N, self.REC_FN_MON )
         return stim_fn, mon_fn
 
-    def reset(self):
+    def __reset(self):
         self._run_id = 0
         self._rec_fns = []
         return None
+
+    def reset(self):
+        #CONVIENIENCE FUNCTION, IMPLEMENTATION NOT REQURIED
+        pass
     
     def del_all(self):
         import glob, os

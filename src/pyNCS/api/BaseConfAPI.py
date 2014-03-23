@@ -63,14 +63,13 @@ class Parameter:
         return self.configurator.get_parameter(self.param_data['SignalName'])
 
     def setValue(self, value):
-        x = self.configurator.set_parameter(self.param_data['SignalName'],
-                                            value)
+        x = self.configurator.set_parameter(self.param_data['SignalName'], value)
         return x
     
     v = property(getValue, setValue)
 
-    def __repr__(self):
-        return self.getValue()
-
-    def __str__(self):
-        return self.getValue()
+#    def __repr__(self):
+#        return str(self.getValue())
+#
+#    def __str__(self):
+#        return str(self.getValue())

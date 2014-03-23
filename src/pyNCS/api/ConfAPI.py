@@ -25,7 +25,7 @@ class ConfiguratorBase(ResourceManagerBase):
         - get_parameter (required)
         - add_parameter (required)
         - get_parameter_names (required)
-        - reset (required)
+        - reset (optional)
         - set_parameters (optional)
         - get_parameters (optional)
         - context_get_param (optional)
@@ -106,7 +106,7 @@ class ConfiguratorBase(ResourceManagerBase):
         if isinstance(doc, str):
             # parse the file
             doc = etree.parse(doc).getroot()
-            if not doc.tag == 'paramters':
+            if not doc.tag == 'parameters':
                 doc = doc.find('parameters')
         else:
             # assuming doc is an lxml Element object.
@@ -240,7 +240,7 @@ class ConfiguratorBase(ResourceManagerBase):
         return None
 
     def reset(self):
-        #IMPLEMENT
+        #CONVENIENCE FUNCTION. IMPLEMENTATION IS NOT REQUIRED
         '''
         Resets all the parameters to default values
         '''
@@ -317,6 +317,13 @@ class MappingsBase(ResourceManagerBase):
         Clears the mapping table. No inputs
         '''
         raise NotImplementedError('del_mappings has not been implemented')
+
+    def filter_events(self, events):
+        #CONVIENCE FUNCTION, IMPLEMENTATION NOT REQUIRED 
+        '''
+        Before Neurosetup sends the physical events are setup, they are first passed through this function. Useful if there are no virtual neurons.
+        '''
+        return events
 
 # Default blank initializations
 # Override these classes in custom API as required
