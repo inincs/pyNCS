@@ -37,13 +37,12 @@ class AddrGroupBase(object):
         g = AddrGroup(self.name, self.description)
         g._channel = self._channel
         g.chipid = self.chipid
-        g.addr = self.addr
+        g.addr = self.addr.copy()
         g.setup = self.setup
-#        g.chadspec = self.chadspec
-        g._laddr = self._laddr
-        g._paddr = self._paddr
+        g.addrspec = self.addrspec
         g.grouptype = self.grouptype
         g.dtype = self.dtype
+        g.repopulate()
         return g
 
     @property
@@ -246,11 +245,12 @@ class AddrGroup(AddrGroupBase):
 
 
 
-    def repopulate(self, setup):
+    def repopulate(self, setup = None):
         """
         Repopulates laddr and paddr with respect to addr
         """
-        self.setup = setup
+        if setup is not None:
+            self.setup = setup
         if self.grouptype is '':
             raise Exception("Group has never been populated before.")
         self._channel = None
@@ -274,6 +274,14 @@ class AddrGroup(AddrGroupBase):
         self.chipid = chipid
         self.grouptype = grouptype
         self.setup = setup
+
+        if self.grouptype is 'in':
+            self.addrspec = setup.seq[self.channel]
+        elif self.grouptype is 'out':
+            self.addrspec = setup.mon[self.channel]
+        else:
+            self.addrspec = None
+
         self.dtype = self._get_dtype(setup, chipid, grouptype)
         self.addr = np.array([], dtype=self.dtype)
         self._paddr = None  # np.array([],dtype='uint32')
@@ -540,7 +548,11 @@ class AddrGroup(AddrGroupBase):
         if self.is_empty():
             print("AddrGroup is empty!")
             return stStim
-
+        
+#        generator = lambda r:  STCreate.poisson_generator(r, t_start=t_start, t_stop=t_start + duration)
+#        id_list = self.laddr
+#        ad_lists = map(generator,rate)
+#        stStim.spiketrains = {v: ad_lists[i] for i,v in enumerate(id_list)}
         for i, id in enumerate(self.laddr):
             stStim[id] = STCreate.poisson_generator(
                 rate[i], t_start=t_start, t_stop=t_start + duration)
@@ -632,7 +644,7 @@ class AddrGroup(AddrGroupBase):
 
     def getPaddr(self):
         '''
-        Regenerates Physical addresses from the address list.
+        Generates Physical addresses from the address list. To regenerate use self.repopulate
         '''
         if self._paddr != None:
             return self._paddr

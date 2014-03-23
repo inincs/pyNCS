@@ -44,7 +44,7 @@ class Mapping(object):
         self.__dict__ = dict
 
     def __graph_from_mapping__(self):
-        pass
+        raise NotImplementedError
 
     def __len__(self):
         return len(self.mapping)
@@ -61,9 +61,6 @@ class Mapping(object):
             return np.random.binomial(1, M.tolist()).astype('bool')
         except:
             return np.random.binomial(1,M).astype('bool')
-
-    def __build_from_pmatrix_shuffle(self, M):
-        raise NotImplementedError
 
     def import_from_connections(self, connections_list):
         """
@@ -108,42 +105,71 @@ class Mapping(object):
         else:
             self.mapping = pyncs_mapping.mapping
 
-    def connect(self, groupsrc, groupdst, expand=True, fashion='one2one', fashion_kwargs={},
-                check=True):
+    def connect(self, groupsrc, groupdst, expand=True, fashion='one2one', fashion_kwargs={}, connection_kwargs={}, check=True):
         """
         Wrap the connect call to all type of different connectivity functions.
-        Arguments to specific fashion can be passed through keyword arguments.
-        Default fashion is 'one2one'. When check is True synapses cannot be
-        output addresses and somas cannot be input addresses.
-        Example:
-            mymapping.connect(src, dst, "all2all", {'expand':False}
+        
+        *fashion*: Connection fashion, arguments to specific fashion can be passed through keyword arguments *fashion_kwargs*.
+                   Default fashion is 'one2one'.
+        
+        When check is True synapses cannot be output addresses and somas cannot be input addresses.
+
+        *Example:*
+        >>  mymapping.connect(src, dst, "all2all", expand = false)
         which is equivalent to:
-            mymapping.__connect_all2all__(src, dst, expand=False}
+        >>  mymapping.__connect_all2all__(src, dst, expand=False}
         """
+        if not expand:
+            self.clear()
+
+
         if check and not self.is_connect_possible(groupsrc, groupdst):
             return []
 
-        return getattr(self, '__connect_' + fashion + '__', )(groupsrc, groupdst,
-                                                   expand=expand,
+        #__connect__ function return a list of indexes of addresses
+        connlist =  getattr(self, '__connect_' + fashion + '__', )(
+                range(len(groupsrc)), 
+                range(len(groupdst)),
                                                    **fashion_kwargs)
 
-    def __connect_all2all__(self, groupsrc, groupdst,
-                            expand=True, hide=False):
+        #... and the following function creates a list of physical addresses
+        self.mapping += self.connlist_to_mapping(groupsrc, groupdst, connlist, connection_kwargs)
+
+        return self.mapping
+        
+
+    def connlist_to_mapping(self, groupsrc, groupdst, connlist, connect_kwargs):
+        '''
+        Creates a list of connections of physical addresses given the list of indexes in connlist.
+        '''
+        if len(connlist)>0:
+            self.groupsrc = groupsrc.__copy__()[np.array(connlist)[:,0]]
+            self.groupdst = groupdst.__copy__()[np.array(connlist)[:,1]]
+
+            if connect_kwargs:
+                for k,v in connect_kwargs.iteritems():
+                    field_idx = self.groupdst.addrspec.addrDict[k]
+                    #Slow, consider vectorizing
+                    if not hasattr(v, '__len__'):
+                        v = [v]*len(self.groupdst.addr)
+                    for i, a in enumerate(self.groupdst.addr):
+                        a[field_idx] = v[i]
+                        self.groupdst.addr[i] = a
+                    self.groupdst.repopulate()
+
+            return np.column_stack([self.groupsrc.paddr,self.groupdst.paddr]).tolist()
+        else:
+            return []
+
+        
+
+    def __connect_all2all__(self, groupsrc, groupdst):
         """
         Connect groups in an all to all fashion.
         """
-        c1 = np.concatenate([np.repeat(i, len(groupdst.paddr)) for i in
-                             groupsrc.paddr])
-        c2 = list(groupdst.paddr) * len(groupsrc.addr)
-        if expand:
-            self.mapping.extend(np.column_stack([c1, c2]).tolist())
-        else:
-            self.mapping = np.column_stack([c1, c2]).tolist()
+        return self.__connect_random_all2all__(groupsrc, groupdst, p=1.0)
 
-        return self.mapping
-
-    def __connect_one2one__(self, groupsrc, groupdst, p=1.0,
-                            expand=True, hide=False):
+    def __connect_one2one__(self, groupsrc, groupdst, p=1.0):
         """
         Connects in a one to one fashion, from the first of the source to the
         last of the source.  If the sizes are different it just raises a
@@ -157,11 +183,9 @@ class Mapping(object):
             else:
                 groupsrc = groupsrc[:len(groupdst)]
         connect_dist = np.eye(len(groupsrc))*p
-        return self.__connect_by_probability_matrix__(groupsrc, groupdst,
-                                                      connect_dist, expand=True, hide=False)
+        return self.__connect_by_probability_matrix__(groupsrc, groupdst, connect_dist)
 
-    def __connect_random_all2all__(self, groupsrc, groupdst, p=0.25,
-                                   expand=True, hide=False):
+    def __connect_random_all2all__(self, groupsrc, groupdst, p=0.25):
         """
         Connects in an all to all fashion with probability p for every
         connection, from the first of the source to the last of the source.
@@ -169,38 +193,29 @@ class Mapping(object):
 
         connect_dist = np.ones([len(groupsrc), len(groupdst)]) * p
 
-        return self.__connect_by_probability_matrix__(groupsrc, groupdst,
-                                                      connect_dist, expand=True, hide=False)
+        return self.__connect_by_probability_matrix__(groupsrc, groupdst, connect_dist)
 
-    def __connect_by_binary_matrix__(self, groupsrc, groupdst, connect_inst,
-                                     expand=True, hide=False):
+    def __connect_by_boolean_matrix__(self, groupsrc, groupdst, connection):
         '''
         groupsrc: source group
         groupdst: destination group
-        connect_inst: array
+        connection: matrix of connections
         '''
-        if not self.is_connect_possible(groupsrc, groupdst):
-            return []
 
-        pairs_all = np.array(np.meshgrid(groupsrc.paddr, groupdst.paddr)).transpose()
-        connect_inst = np.array(connect_inst, 'bool')
-        pairs_selected = pairs_all[connect_inst]
+
+        pairs_all = np.array(np.meshgrid(groupsrc, groupdst)).transpose()
+        connection = np.array(connection, 'bool')
+        pairs_selected = pairs_all[connection]
 
         c1 = pairs_selected[:, 0]
         c2 = pairs_selected[:, 1]
 
-        if expand:
-            self.mapping.extend(np.column_stack([c1, c2]).tolist())
-        else:
-            self.mapping = np.column_stack([c1, c2]).tolist()
-        
-        return self.mapping
+        return np.column_stack([c1, c2]).tolist()
 
-    def __connect_by_probability_matrix__(self, groupsrc, groupdst, M, expand=True, hide=False, return_inst=False):
+    def __connect_by_probability_matrix__(self, groupsrc, groupdst, M, return_inst = False):
 
         connect_inst = self.__instance_from_matrix_random(M)
-        mapping = self.__connect_by_binary_matrix__(
-            groupsrc, groupdst, connect_inst, expand=True, hide=False)
+        mapping = self.__connect_by_boolean_matrix__(groupsrc, groupdst, connect_inst)
 
         if return_inst:
             return connect_inst
@@ -214,29 +229,27 @@ class Mapping(object):
             x_resampled.transpose(), len(groupdst), window='blk').transpose()
         return np.minimum(np.maximum(xy_resampled, 0), 1)
 
-    def __connect_by_arbitrary_matrix__(self, groupsrc, groupdst, M, resize_method='resample', expand=True, hide=False):
+    def __connect_by_arbitrary_matrix__(self, groupsrc, groupdst, M, resize_method='resample'):
 
         M = getattr(self, '_Mapping__resize_matrix_' + resize_method)(
             groupsrc, groupdst, M)
         connect_inst = self.__instance_from_matrix_random(M)
 
-        return self.__connect_by_binary_matrix__(groupsrc, groupdst, connect_inst, expand=True, hide=False)
+        return self.__connect_by_boolean_matrix__(groupsrc, groupdst, connect_inst)
 
-    def __connect_shuffle_all2all__(self, groupsrc, groupdst, p=0.25, expand=True, hide=False):
+    def __connect_shuffle_all2all__(self, groupsrc, groupdst, p=0.25):
         """
         Connects in an all to all fashion by shuffling p*N/N 1's and 1-p*N/N 0's for every source, from the first of the source to the last of the source.
         Has the advantage that the number of connections is kept fixed, which can reduce inhomogeneity in the outputs.
         p can be an iterable, in which case the probability of each source to connect to the target i is equal to p[i].
         i.e. creates a matrix M such that P(M_{src,tgt}==1) = p[tgt] with src=1, ..., Nsrc and tgt=1, ... ,Ntgt
         """
-        if not self.is_connect_possible(groupsrc, groupdst):
-            return []
 
         if not hasattr(p, '__len__'):
             p = p * np.ones(len(groupdst))
 
         N = [p[i] * len(groupsrc) for i in range(len(groupdst))]
-        connect_dist = np.zeros([len(groupsrc), len(groupdst)]).astype('bool')
+        connect_inst = np.zeros([len(groupsrc), len(groupdst)]).astype('bool')
 
         # It is important to know that p is intepreted as the probability to
         # connect to the target, not that the source connects to any target
@@ -246,29 +259,19 @@ class Mapping(object):
         for i in range(len(groupdst)):
             #Separate integer and factional parts
             frac, integ = np.modf(N[i])
-            connect_dist[:integ, i] = True
+            connect_inst[:integ, i] = True
             # Deal with fractional part by rolling a dice and checking not to
             # overrun
             if np.random.rand() < frac and integ + 1 < len(groupsrc):
-                connect_dist[integ + 1, i] = True
+                connect_inst[integ + 1, i] = True
 
         #... and shuffle them
-        for i in range(connect_dist.shape[1]):
-            np.random.shuffle(connect_dist[:, i])
+        for i in range(connect_inst.shape[1]):
+            np.random.shuffle(connect_inst[:, i])
 
-        pairs_all = np.array(
-            np.meshgrid(groupsrc.paddr, groupdst.paddr)).transpose()
-        pairs_selected = pairs_all[connect_dist]
+        #TODO: go through binary matrix
 
-        c1 = pairs_selected[:, 0]
-        c2 = pairs_selected[:, 1]
-
-        if expand:
-            self.mapping.extend(np.column_stack([c1, c2]))
-        else:
-            self.mapping = np.column_stack([c1, c2])
-
-        return self.mapping
+        return self.__connect_by_boolean_matrix__(groupsrc, groupdst, connect_inst)
 
 
     def clear(self):
@@ -339,20 +342,17 @@ class PMapping(Mapping):
     """
     max_p = 127
 
+
     def __instance_from_matrix_random(self, M):
         return M
 
-    def __connect_by_probability_matrix__(self, groupsrc, groupdst, M, expand=True, hide=False, return_inst=False):
+    def __connect_by_probability_matrix__(self, groupsrc, groupdst, M, return_inst=False):
         '''
-        M : shape -> (len(groupsrc), len(groupdst))
+        M : connection matrix, where each entry is the transmission probability
         '''
-
-        if not self.is_connect_possible(groupsrc, groupdst):
-            return []
 
         #Create pairs of source - destinations and reshape as appropiately
-        pairs = np.array(np.meshgrid(groupsrc.paddr, groupdst.paddr)
-            ).transpose().reshape(-1, 2)
+        pairs = np.array(np.meshgrid(groupsrc, groupdst)).transpose().reshape(-1, 2)
 
         p = np.column_stack([pairs, M.flatten()])
 
@@ -361,25 +361,46 @@ class PMapping(Mapping):
         p[:, 2] = np.array(p[:, 2] * self.max_p, 'uint32')
 
         #Remove all zero probabilities
-        zp = (p[:, 2] != 0)
-        p_nonzero = p[zp, :].tolist()
+        zp = p[:, 2] != 0
+        p_nonzero = p[zp, :].astype('uint32').tolist()
 
-        if expand:
-            self.mapping.extend(p_nonzero)
+        return p_nonzero
+
+
+    def connlist_to_mapping(self, groupsrc, groupdst, connlist, connect_kwargs={}):
+        '''
+        Creates a list of connections of physical addresses given the list of indexes in connlist.
+        '''
+        if len(connlist)>0:
+            self.groupsrc = groupsrc.__copy__()[np.array(connlist)[:,0]]
+            self.groupdst = groupdst.__copy__()[np.array(connlist)[:,1]]
+
+            connlist = self.complete(connlist)
+
+            if connect_kwargs:
+                for k,v in connect_kwargs.iteritems():
+                    field_idx = self.groupdst.addrspec.addrDict[k]
+                    #Slow, consider vectorizing
+                    if not hasattr(v, '__len__'):
+                        v = [v]*len(self.groupdst.addr)
+                    for i, a in enumerate(self.groupdst.addr):
+                        a[field_idx] = v[i]
+                        self.groupdst.addr[i] = a
+                    self.groupdst.repopulate()
+
+            return np.column_stack([self.groupsrc.paddr,self.groupdst.paddr,np.array(connlist)[:,2]]).tolist()
         else:
-            self.mapping = p_nonzero
-        
-        return self.mapping
+            return []
 
-    def complete(self):
+    def complete(self, connlist):
         '''
         For all connections without a probability, assume the probability is one
         '''
-        m = self.mapping
-        for c in m:
+        for c in connlist:
             if len(c) == 2:
                 c.append(self.max_p)
+        return connlist
+
 
     def prepare(self):
         super(PMapping,self).prepare()
-        self.complete()

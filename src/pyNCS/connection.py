@@ -19,6 +19,7 @@ class Connection(object):
     def __init__(self, popsrc, popdst, synapse,
                  fashion='one2one',
                  fashion_kwargs={},
+                 connection_kwargs={},
                  append=True,
                  setup=None):
         """
@@ -31,8 +32,12 @@ class Connection(object):
         - setup: specify setup if different from popsrc.setup
         """
         self.mapping = self._create_mapping(popsrc, popdst, synapse)
-        self.mapping.connect(popsrc.soma, popdst.synapses[synapse],
-                             fashion=fashion, fashion_kwargs=fashion_kwargs)
+        self.mapping.connect(
+                popsrc.soma,
+                popdst.synapses[synapse],
+                connection_kwargs = connection_kwargs,
+                fashion=fashion,
+                fashion_kwargs=fashion_kwargs)
         self.mapping.prepare()
         if setup is None:
             setup = popsrc.setup
@@ -42,6 +47,7 @@ class Connection(object):
         self.synapse = synapse
         self.popsrc = popsrc
         self.popdst = popdst
+        self.connection_kwargs = connection_kwargs
 
     def _create_mapping(self, popsrc, popdst, synapse):
         return Mapping(popsrc.name + '_to_' + popdst.name,
