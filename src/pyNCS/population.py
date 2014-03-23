@@ -331,7 +331,7 @@ class Population(object):
         # Soma addresses repeated for all synapse addresses
         soma_addr_all = addresses.repeat(len(synaddrs_all))
         # Full addresses space
-        syn_addr_full = np.empty(soma_addr_all.shape, dtype=dtp)
+        syn_addr_full = np.zeros(soma_addr_all.shape, dtype=dtp)
         for fld in soma_addr_all.dtype.names:
             syn_addr_full[fld] = soma_addr_all[fld]
         for fld in synaddrs_all.dtype.names:
@@ -468,7 +468,19 @@ class Population(object):
             setup, chipid, grouptype='out', addresses=addresses)
         self.__populate_synapses__()
 
-    def populate_by_id(self, setup, chipid, neurontype, id_list, axes=0):
+#    def populate_by_dimension(self, setup, chipid, neurontype, filt_list = [[-1],[-1],[-1]]:
+#        """
+#        """
+#
+#        self.__populate_init__(setup, chipid, neurontype)
+#
+#        def f(x):
+#            if all([xx in filt_list[i] for i,xx in enumerate(x)])
+#            
+#            
+#
+
+    def populate_by_id(self, setup, chipid, neurontype, id_list=[], axes=[]):
         """
         Takes the given addresses (as list) from the neuronblock available
         addresses. It takes the first n addresses if offset is not set.
@@ -477,16 +489,31 @@ class Population(object):
             - chipid: id of the chip as expressed in setup.xml
             - neurontype: id of neurons as expressed in chipfile.xml (e.g.
             'excitatory')
-            - id_list: the list of ids for neurons to allocate (human addresses)
-            - axes: chosse the axes by which to filter the addresses
+            - axes: list of axes by which to filter the addresses
+            - id_list: the list of ids for neurons to allocate (human readable addresses).  
+
+        *Example*: populate all neurons on a 3d grid x,y,z such that 24<= x < 26, y=5:
+
+        .. code-block:python
+
+        >> populate_by_id(setup, chipid, neurontype, id_list = [[24,25], [5]], axes = [0,1]
+
+        where x is defined to be on axis = 0, and y to be on axis = 1
         """
 
         self.__populate_init__(setup, chipid, neurontype)
+        #Backward compatibility
+        if not hasattr(axes, '__iter__'):
+            axes = [axes]
+        
+        for i, l in enumerate(id_list):
+            if not hasattr(l, '__iter__'):
+                id_list[i] = [l]
 
         # filter addresses
         addresses = []
         for t in self.neuronblock.soma.addresses:
-            if int(t[axes]) in id_list:
+            if all([int(t[a]) in id_list[i] for i, a in enumerate(axes)]):
                 addresses.append(t)
         try:
             self.soma.populate_line(
