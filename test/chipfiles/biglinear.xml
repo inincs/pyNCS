@@ -2,7 +2,7 @@
 <chip chipclass="biglinear" chipfile="biglinear.csv"  >
     <neuron id='excitatory'>
         <soma id='general'>
-            <dim id='x' range='range(2**16)'/>
+            <dim id='x' range='range(2**15)'/>
         </soma>
         <synapse id='excitatory0' type='excitatory'>
             <dim id='s' range='range(1)'/>

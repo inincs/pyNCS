@@ -14,13 +14,19 @@ nsetup = build_setup(setupfile = 'test_performance.xml')
 seq_pop = pyNCS.Population('default', 'Default Population') 
 seq_pop.populate_all(nsetup, 'seq', 'excitatory')
 
-fps = 25
+fps = 1
+stim = seq_pop.soma.spiketrains_poisson(rate=100, duration=1000/fps)
 t0 = time.time()
 for i in range(max(fps,0)):
-    stim = seq_pop.soma.spiketrains_poisson(rate=50, duration=1000/fps)
     out = nsetup.run(stim)
+    out[0]
 
 t1 = time.time()-t0
 print t1
 
 print 'Performance is {0} events per second'.format(float(stim[0].raw_data().__len__())/t1*fps)
+
+
+#2**15 neurons, 100 Hz, 1s. Coding, Decoding. 298682 events/second
+
+
