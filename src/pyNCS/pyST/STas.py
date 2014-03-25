@@ -22,6 +22,9 @@ from contextlib import contextmanager
 from . import pyST_globals
 from lxml import etree
 
+
+PERFORMANCE_DEBUG=False
+
 #TODO: RawOutput should return spikelists with complete id_list even when empy
 class RawOutput(object):
     '''
@@ -57,11 +60,11 @@ class RawOutput(object):
         self.channels = self.raw_data.keys()
         self.t_start = t_start
         self.t_stop = t_stop
-        self.print_num_events(raw_data)
+        self.print_num_events()
 
-    def print_num_events(self, raw_data):
+    def print_num_events(self):
         lev = []
-        for k, v in raw_data.iteritems():
+        for k, v in self.raw_data.iteritems():
             lev.append('Ch{0}: {1} evs '.format(k, len(v)))
         print(''.join(lev))
 
@@ -84,13 +87,23 @@ class RawOutput(object):
 
     def decode_data(self, key):
         with self.check_has_key_somewhere(key):
+            if PERFORMANCE_DEBUG: t0=time.time()
             ad_data = self.decoder_dict[key](self.raw_data[key].get_ad())
             tm_data = self.raw_data[key].get_tm().astype('float') / 1000
+            if PERFORMANCE_DEBUG:
+                print('Decoding events took {0} seconds'.format(time.time()-t0))
+
+            if PERFORMANCE_DEBUG: t0=time.time()
             evs = events(atype='l')
             evs.add_adtm(ad_data, tm_data)
-            st_data = SpikeList(
-                    evs.get_adtmev(),
-                    evs.get_ad())
+            if PERFORMANCE_DEBUG:
+                print('Building events took {0} seconds'.format(time.time()-t0))
+
+            if PERFORMANCE_DEBUG: t0=time.time()
+            st_data = SpikeList( evs.get_adtmev(), np.unique(evs.get_ad()))
+            if PERFORMANCE_DEBUG:
+                print('Building SpikeList took {0} seconds'.format(time.time()-t0))
+
             if self.filter_duplicates:
                 st_data.filter_duplicates()
             self.raw_data.pop(key)
@@ -509,6 +522,18 @@ class channelEvents(dict):
     def get_all_tm(self):
         return self.flatten().get_tm()
 
+    def get_last_tm(self):
+        t = 0
+        for evs in self.itervalues():
+            t=max(t,evs.get_tm()[-1])
+        return t
+
+    def get_first_tm(self):
+        t = np.inf
+        for evs in self.itervalues():
+            t=min(t,evs.get_tm()[0])
+        return t
+
     def get_all_ad(self):
         return self.flatten().get_ad()
 
@@ -519,7 +544,10 @@ class channelEvents(dict):
         return self.flatten().get_tmadev()
 
     def get_nev(self):
-        return self.flatten().get_nev()
+        n = 0
+        for v in self.itervalues():
+            n+=len(v)
+        return n
 
     def iter_by_timeslice(self, tm):
         return self.flatten().iter_by_timeslice(tm)
@@ -961,8 +989,8 @@ class channelAddressing:
                 ch_events = self.normalizeAER(ch_events)
                 t_start = 0
             else:
-                t_start = ch_events.get_all_tm().min() * 1e-3
-            t_stop = ch_events.get_all_tm().max() * 1e-3
+                t_start = ch_events.get_first_tm() * 1e-3
+            t_stop = ch_events.get_last_tm() * 1e-3
 
         if t_start == t_stop:
             t_stop += 1
@@ -1034,14 +1062,14 @@ class channelAddressing:
                 else:
                     print("Warning: Empty SpikeList encountered")
         tictoc = time.time() - tic
-        if tictoc > .1:
-            print("Address translation took {0} seconds".format(tictoc))
+        if PERFORMANCE_DEBUG:
+            print("Address encoding took {0} seconds".format(tictoc))
 
         #Multiplex
         tic = time.time()
         sortedIdx = np.argsort(ev.get_tm())
         tictoc = time.time() - tic
-        if tictoc > .1:
+        if PERFORMANCE_DEBUG:
             print("Multiplexing took {0} seconds".format(tictoc))
 
         tic = time.time()
