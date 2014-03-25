@@ -26,12 +26,15 @@ class BatchCommunicator(BatchCommunicatorBase):
 # localhost).
         ResourceManagerBase.__init__(self)
         RecordableCommunicatorBase.__init__(self)
+        self.t_last = 0.
         self.queue = collections.deque()
 
     def run(self, stimulus=None, duration=None, context_manager=None):
         '''
         Loopback API simply puts an event packet in the API, and reads it back
         '''
+        stimulus[:,1] = stimulus[:,1].cumsum()+self.t_last
+        t_last = stimulus[-1,1]
         self.queue.appendleft(stimulus)
         return self.queue.pop()
 
@@ -51,6 +54,8 @@ class ContinuousCommunicator(BatchCommunicator):
         '''
         Adds an event packet to the queue, independent of duration and reads it.
         '''
+        stimulus[:,1] = stimulus[:,1].cumsum()+ self.t_last
+        t_last = stimulus[-1,1]
         self.queue.appendleft(stimulus)
         return self.mon()
 
