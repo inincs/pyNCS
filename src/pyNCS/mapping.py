@@ -71,18 +71,18 @@ class Mapping(object):
         self.mapping = np.concatenate([c.mapping.mapping for c in
                                        connections_list]).tolist()
 
-    def complete(self):
+    def complete(self, connlist):
         '''
         Completes the fields if there are any blank fields in the table
         '''
-        pass
+        return connlist
 
     def merge(self, pyncs_mapping):
         """
         Merge the existing mapping with a given one.
         """
         # TODO: check for duplicates
-        self.complete()
+        self.mapping = self.complete(self.mapping)
         if len(self.mapping) > 0:
             # check for shape
             my_cols = np.shape(self.mapping)[1]
@@ -93,7 +93,7 @@ class Mapping(object):
                 if my_cols > their_cols:
                     # Do something
                     self.mapping.extend(pyncs_mapping.mapping)
-                    self.complete()
+                    self.mapping = self.complete(self.mapping)
                 elif my_cols < their_cols:
                     warn('Connection cannot be merged. Ignoring probability')
                     # NOTE: Assuming the only missing dimension is probability
