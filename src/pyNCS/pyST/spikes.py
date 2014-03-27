@@ -159,11 +159,10 @@ class SpikeTrain(object):
                 self.t_start = self._spike_times[0]
             if self.t_stop is None:
                 self.t_stop = self._spike_times[-1]
-            if len(self._spike_times)>0:
-                if self._spike_times[-1] > self.t_stop):
-                    raise ValueError("Spike times must not be greater than t_stop")
-                if self._spike_times[0] < self.t_start):
-                    raise ValueError("Spike times must not be less than t_start")
+            if self._spike_times[-1] > self.t_stop:
+                raise ValueError("Spike times must not be greater than t_stop")
+            if self._spike_times[0] < self.t_start:
+                raise ValueError("Spike times must not be less than t_start")
 
         if self.t_start > self.t_stop:
             raise Exception("Incompatible time interval : t_start = %s, t_stop = %s" %
@@ -179,6 +178,7 @@ class SpikeTrain(object):
         if len(self._spike_times)>0:
             if self._spike_times[0] < 0:
                 raise ValueError("Spike times must not be negative")
+
 
     def __str__(self):
         return str(self.spike_times)

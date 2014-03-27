@@ -7,7 +7,7 @@
 # Author: Emre Neftci
 #
 # Creation Date : 05-06-2013
-# Last Modified : Sun 23 Mar 2014 11:59:18 AM PDT
+# Last Modified : Sun 23 Mar 2014 12:15:44 PM PDT
 #
 # Copyright : (c) 
 # Licence : GPLv2
@@ -106,7 +106,7 @@ class Communicator(BatchCommunicatorBase):
         print('running virtual IFLSWTA for {0}s'.format(duration))  
         net.run(duration)
         sp = np.array(M_EIP.spikes).reshape(-1,2)
-        sp[:,0]+=(2**16) #slot 2 in text.xml TODO
+        sp[:,0]+=(2**16) #slot 2 in text.xml. THIS IS A POSSIBLE SOURCE OF TEST ERROR
         sp[:,1]*=1e6 
         return sp
         
