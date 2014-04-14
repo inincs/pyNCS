@@ -38,7 +38,7 @@ import Queue
 import wx
 
 #Imports for AER monitoring
-import pyAex
+#import pyAex
 from pyNCS.pyST import *
 import pyNCS, pyNCS.pyST.STas
 
