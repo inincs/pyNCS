@@ -760,7 +760,7 @@ class channelAddressing:
         """
         Constructs Logical addresses, *i.e.* addresses in float format useful for plotting because they keep the neuron - synapse order.
 
-        Returns a float32 numpy array.
+        Returns a float numpy array.
 
         **NOTE:** Logical addresses do not contain channel information
 
@@ -777,7 +777,7 @@ class channelAddressing:
         for channelIdx in range(len(addr)):
             if addr[channelIdx] != None:
                 mainAddr[channelIdx] = np.array(self[channelIdx]
-                    .addrLogicalConstruct(addr[channelIdx]), 'float32')
+                    .addrLogicalConstruct(addr[channelIdx]), 'float')
 
         return mainAddr
 
@@ -793,7 +793,7 @@ class channelAddressing:
         #Construct channel by channel if not empty
         for channelIdx in xrange(self.nChannels):
             if addr[channelIdx] != None:
-                addr[channelIdx] = np.array(addr[channelIdx], 'float32')
+                addr[channelIdx] = np.array(addr[channelIdx], 'float')
                 mainAddr[channelIdx] = self[
                     channelIdx].addrLogicalExtract(addr[channelIdx])
 
@@ -1588,10 +1588,10 @@ class layoutFieldEncoder:  # private
         self.position = position
         self.pin = pin
         #Check if transformation is an identity function. If so, just mask and shift
-        if aspec == range(aspec[0],aspec[-1]):
-            self.mask = np.sum([2**i for i in aspec]).astype('uint32')
-            self.extract = (x&self.mask)>>aspec[0]
-            self.construct = (x&self.mask)>>aspec[0]
+        if np.all(aspec == np.arange(aspec[0],aspec[-1]+1)):
+            mask = np.sum([2**i for i in aspec]).astype('uint32')
+            self.extract = lambda x: (x&mask)>>aspec[0]
+            self.construct = lambda x: (x)<<aspec[0]
         else:
             self.extract = lambda x: _extract(x, self.aspec, self.rWidth)
             self.construct = lambda x: _construct(x, self.aspec, self.rWidth)

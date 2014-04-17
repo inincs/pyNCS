@@ -85,7 +85,7 @@ class SpikeTrain(object):
 
     @spike_times.setter
     def spike_times(self, value):
-        self._spike_times = numpy.sort(value).astype(numpy.float32)
+        self._spike_times = numpy.sort(value).astype(numpy.float)
 
     #######################################################################
     ## Constructor and key methods to manipulate the SpikeTrain objects  ##
@@ -104,9 +104,9 @@ class SpikeTrain(object):
         self.t_start = t_start
         self.t_stop = t_stop
         if not hasattr(spike_times, 'size'): #Assume it is a numpy array
-            self._spike_times = numpy.array(spike_times,numpy.float32)
+            self._spike_times = numpy.array(spike_times,numpy.float)
         else:
-            self._spike_times = spike_times.astype(numpy.float32)
+            self._spike_times = spike_times.astype(numpy.float)
 
 
         # We sort the spike_times if necessary. Is slower, but necessary for a lot of methods...
@@ -709,7 +709,7 @@ class emptySpikeTrain(SpikeTrain):
 
     @property
     def spike_times(self):
-        return numpy.array([], dtype=numpy.float32)
+        return numpy.array([], dtype=numpy.float)
 
     @spike_times.setter
     def spike_times(self, value):
@@ -824,7 +824,7 @@ class SpikeList(object):
         ## using a generator to build the SpikeList...
 
         if not hasattr(spikes, 'size'):  # is not an array:
-            spikes = numpy.array(spikes, 'float32')
+            spikes = numpy.array(spikes, 'float')
         N = len(spikes)
 
         if N > 0:
@@ -910,7 +910,7 @@ class SpikeList(object):
         if len(self) > 0:
           #  if self.t_start is None:
             start_times = numpy.array([self.spiketrains[idx].
-                t_start for idx in self.id_list()], numpy.float32)
+                t_start for idx in self.id_list()], numpy.float)
             self.t_start = numpy.min(start_times)
             logging.debug("Warning, t_start is infered from the data : %f" %
                 self.t_start)
@@ -918,7 +918,7 @@ class SpikeList(object):
                 self.spiketrains[id].t_start = self.t_start
           #  if self.t_stop is None:
             stop_times = numpy.array([self.spiketrains[idx].
-                t_stop for idx in self.id_list()], numpy.float32)
+                t_stop for idx in self.id_list()], numpy.float)
             self.t_stop = numpy.max(stop_times)
             logging.debug(
                 "Warning, t_stop  is infered from the data : %f" % self.t_stop)
@@ -1492,7 +1492,7 @@ class SpikeList(object):
         N = len(self)
         M = len(nbins)
         M -= 1
-        spike_hist = numpy.zeros((N, M), numpy.float32)
+        spike_hist = numpy.zeros((N, M), numpy.float)
         subplot = get_display(display)
         for idx, id in enumerate(self.id_list()):
             s = self.spiketrains[id].time_histogram(time_bin, normalized)
