@@ -257,6 +257,8 @@ class StGen:
 
         if jitter:
             spikes += numpy.random.rand() * 1000. / rate
+            #Remove any spikes that extend beyond t_stop
+            spikes = spikes[spikes<t_stop]
 
         if not array:
             spikes = SpikeTrain(spikes, t_start=t_start, t_stop=t_stop)
