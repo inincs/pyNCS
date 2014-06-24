@@ -84,29 +84,6 @@ or if you have several chips:
 *Remark:* Technically there exists functions for translating from physical to logical directly (without using extraction/construction functions). But these are intended for internal use only. 
 
 
-
-
-
-.. aafig::
-    :aspect: 60
-    :scale: 80
-    :proportional:
-    :textual:
-
-    +-----------+   "addrPhysicalExtract"   +-----------+   "addrLogicalConstruct"  +-----------+
-    | Physical  + ------------------------> | Human     + ------------------------> | Logical   +
-    | Addresses +                           | Addresses +                           | Addresses +
-    |           + <------------------------ |           + <------------------------ |           +
-    +-----------+   "addrPhysicalConstruct" +-----------+   "addrLogicalExtract"    +-----------+
-
-     -----------                             -----------                            ------------
-    /           \                           /           \                          /            \
-    "For Hardware"                          "For Defining"                          "For plotting" 
-                                            "Neuron addresses"                      "or analysis"   
-                                            "and Synapse Addr-"                     "tools such as" 
-                                            "esses by the user"                     "Neurotools"  
-
-
 .. Using pyST for creating mappings
 .. ________________________________
 .. 
