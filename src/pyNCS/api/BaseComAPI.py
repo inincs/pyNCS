@@ -94,12 +94,10 @@ class RecordableCommunicatorBase(object):
 
         return mon_evs
 
-    def __save_rec_file(self, ev_array, filename, *args, **kwargs):
+    def __save_rec_file(self, ev_array, filename):
         '''
         Save data using np.save, and adds filename in self._record_fns
         '''
-        if int(numpy.__version__.split('.')[0])==1 and int(numpy.__version__.split('.')[1])<=6:
-            kwargs.pop('header')
         self._rec_fns.append(filename+'.npy')
         numpy.save(filename, ev_array)
 
