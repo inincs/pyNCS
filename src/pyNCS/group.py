@@ -537,32 +537,35 @@ class AddrGroup(AddrGroupBase):
         """
         Create a poisson spiketrain for each address on the group.
         You can use channel argument to enforce a particular channel.
+
+        Implementation
+        --------------
+        We generate a fake spiketrain of rate = sum(rates), then we assign each
+        spike randomly to each neuron using the np.choice function, sampling
+        with a probability which is proportional to each neuron's firing rate.
+        The original spike train is generated using pyNCS.pyST.STCreate factory.
         """
-        stStim = SpikeList([], id_list=[])
+        rate = np.r_[rate]
+        if len(rate) == 1:
+            rate = np.repeat(rate, len(self.laddr))
+        else:
+            rate = np.r_[rate]
 
-        if not hasattr(rate, '__len__'):
-            rate = rate * np.ones_like(self.laddr)
-        elif len(self.laddr) != len(rate):
+        stStim = SpikeList([], [])
+        if len(self.laddr) != len(rate):
             raise RuntimeError('Rate vector must be of the same length as the number of neurons in population: {0}'.format(len(self.addr)))
-
-        if self.is_empty():
-            print("AddrGroup is empty!")
-            return stStim
-        
-#        generator = lambda r:  STCreate.poisson_generator(r, t_start=t_start, t_stop=t_start + duration)
-#        id_list = self.laddr
-#        ad_lists = map(generator,rate)
-#        stStim.spiketrains = {v: ad_lists[i] for i,v in enumerate(id_list)}
-        for i, id in enumerate(self.laddr):
-            stStim[id] = STCreate.poisson_generator(
-                rate[i], t_start=t_start, t_stop=t_start + duration)
-
         if channel is None:
             channel = self.channel
-
+        if self.is_empty():
+            print("AddrGroup is empty!")
+        elif sum(rate) > 0:
+            spiketimes = STCreate.poisson_generator(rate=sum(rate),
+                            t_start=t_start, t_stop=t_start + duration).spike_times
+            assignments = np.random.choice(self.laddr, len(spiketimes),
+                                           p=1.*rate/sum(rate))
+            stStim = SpikeList(np.column_stack((assignments, spiketimes)),
+                               np.sort(np.unique(assignments)))
         return {channel: stStim}
-
-    # TODO: add descriptions
 
     def spiketrains_inh_poisson(self, rate, t, channel=None, **kwargs):
         """
