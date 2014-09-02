@@ -160,9 +160,11 @@ class SpikeTrain(object):
             if self.t_stop is None:
                 self.t_stop = self._spike_times[-1]
             if self._spike_times[-1] > self.t_stop:
-                raise ValueError("Spike times must not be greater than t_stop")
+                logging.debug("Spike times are greater than t_stop, clipping")
+                self._spike_times = self._spike_times[self._spike_times<t_stop]
             if self._spike_times[0] < self.t_start:
-                raise ValueError("Spike times must not be less than t_start")
+                logging.debug("Spike times are smaller than t_stop, clipping")
+                self._spike_times = self._spike_times[self._spike_times>=t_start]
 
         if self.t_start > self.t_stop:
             raise Exception("Incompatible time interval : t_start = %s, t_stop = %s" %
@@ -589,21 +591,18 @@ class SpikeTrain(object):
 
     def time_histogram(self, time_bin=10, normalized=True):
         """
-        Bin the spikes with the specified bin width. The first and last bins
-        are calculated from `self.t_start` and `self.t_stop`.
+        Bin the spikes with the specified bin width. The first and last bins are calculated from `self.t_start` and `self.t_stop`.
 
         Inputs:
-            time_bin   - the bin width for gathering spikes_times
-            normalized - if True, the bin values are scaled to represent firing rates
-                         in spikes/second, otherwise otherwise it's the number of spikes
-                         per bin.
+        time_bin   - the bin width for gathering spikes_times
+        normalized - if True, the bin values are scaled to represent firing rates in spikes/second, otherwise otherwise it's the number of spikes per bin.
 
         Examples:
-            >> st=SpikeTrain(range(0,100,5),0.1,0,100)
-            >> st.time_histogram(10)
-                [200, 200, 200, 200, 200, 200, 200, 200, 200, 200]
-            >> st.time_histogram(10, normalized=False)
-                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+        >> st=SpikeTrain(range(0,100,5),0.1,0,100)
+        >> st.time_histogram(10)
+            [200, 200, 200, 200, 200, 200, 200, 200, 200, 200]
+        >> st.time_histogram(10, normalized=False)
+            [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
 
         See also
             time_axis
@@ -872,8 +871,7 @@ class SpikeList(object):
     def __del__(self):
         pass
 
-    def filter_duplicates(self):
-        time_window = 0.01  # in ms
+    def filter_duplicates(self, time_window = .01):
         for st in self:
             isi = st.isi()
             if not isinstance(st, emptySpikeTrain):

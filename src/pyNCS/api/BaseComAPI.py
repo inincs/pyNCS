@@ -94,7 +94,7 @@ class RecordableCommunicatorBase(object):
 
         return mon_evs
 
-    def __save_rec_file(self, ev_array, filename, *args, **kwargs):
+    def __save_rec_file(self, ev_array, filename):
         '''
         Save data using np.save, and adds filename in self._record_fns
         '''
