@@ -510,11 +510,17 @@ class Population(object):
             if not hasattr(l, '__iter__'):
                 id_list[i] = [l]
 
-        # filter addresses
-        addresses = []
-        for t in self.neuronblock.soma.addresses:
-            if all([int(t[a]) in id_list[i] for i, a in enumerate(axes)]):
-                addresses.append(t)
+#        #filter addresses
+#        addresses = []
+#        for t in self.neuronblock.soma.addresses:
+#            if all([int(t[a]) in id_list[i] for i, a in enumerate(axes)]):
+#                addresses.append(t)
+
+        #filter addresses faster than commented code above, but uses slightly more memory
+        mask = np.zeros_like(self.neuronblock.soma.addresses, dtype='bool')
+        for i, a in enumerate(axes):
+            mask[:,a]=np.in1d(self.neuronblock.soma.addresses[:,a], id_list[i])
+        addresses = self.neuronblock.soma.addresses[np.prod(mask, axis=1, dtype='bool')]
         try:
             self.soma.populate_line(
                 setup, chipid, grouptype='out', addresses=addresses)
