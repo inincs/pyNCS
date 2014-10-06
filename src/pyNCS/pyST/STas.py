@@ -1012,7 +1012,12 @@ class channelAddressing:
 
     def exportAER(self, spikeLists, filename=None, format='a', isi=True, sep='\t', addr_format='%u', time_format='%u', *args, **kwargs):
         '''
-        spikeLists can be a spikeList, a list of spikelists of dimension nChannels, a dictionary i.e.{channel: spikeList}. If a SpikeList is given, it will be equivalent to {0: spikeLists}.
+        spikeLists can be of the follwing type:
+        - Monitors
+        - SpikeList
+        - list of SpikeLists of dimension nChannels
+        - dictionary with channels as keys and SpikeLists as values
+        - SpikeList is given, it will be interpreted as {0: spikeLists}.
         format specifies whether timestamps (format='t') or addresses (format='a') should be on the first column.
         *addr_format* and *time_format* format to be used by np.savetxt
         '''
@@ -1020,7 +1025,10 @@ class channelAddressing:
         out = []
         assert format in ['t', 'a'], 'Format must be "a" or "t"'
 
-        if isinstance(spikeLists, list):
+        if hasattr(spikeLists, 'to_chstlist'):
+            #Assuming it is of type Monitors
+            spikeLists = spikeLists.to_chstlist()
+        elif isinstance(spikeLists, list):
             assert len(spikeLists) == self.nChannels, "spikeLists must have dimension %d" % self.nChannels
             for i in range(len(spikeLists)):
                 if not isinstance(spikeLists[i], SpikeList):

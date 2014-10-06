@@ -9,7 +9,8 @@
 from __future__ import absolute_import
 import numpy as np
 import pylab
-from .pyST.STsl import mapSpikeListAddresses, composite_plot, SpikeList, SpikeTrain
+from collections import defaultdict
+from .pyST.STsl import mapSpikeListAddresses, composite_plot, SpikeList, SpikeTrain, merge_spikelists
 import copy
 
 def create_SpikeMonitor_from_SpikeList(st):
@@ -43,6 +44,25 @@ class Monitors(object):
     def __len__(self):
         return len(self.monitors)
 
+    def __getitem__(self, item_id):
+        return self.monitors[item_id]
+
+    def __setitem__(self, item_id, item):
+        self.monitors[item_id] = item
+
+    def append(self, spikemonitor):
+        if not isinstance(spikemonitor, SpikeMonitor):
+            raise TypeError('Can only append a object of type SpikeMonitor')
+
+    def to_chstlist(self):
+        '''
+        Returns a dictionary with channels as keys and merged SpikeLists as values.
+        '''
+        chstlist = defaultdict(SpikeList)
+        for spk_mon in self:
+            chstlist[spk_mon.channel] = merge_spikelists(spk_mon.sl,chstlist[spk_mon.channel])
+        return chstlist
+
     @property
     def channels(self):
         '''
@@ -67,7 +87,7 @@ class Monitors(object):
             if not m.sl.t_stop > t_stop:
                 m.sl.t_stop = t_stop
 
-    def populate_monitors(self, chstlist):
+    def populate(self, chstlist):
         """
         Populates SpikeMonitors in the list of monitors
         chstlist is the dictionary returned by NeuroSetup.stimulate.
@@ -76,6 +96,12 @@ class Monitors(object):
         """
         for mon, st in self.iterchst(chstlist):
             mon.populate(st)
+
+    def populate_monitors(self, chstlist):
+        '''
+        backward compatibility
+        '''
+        return self.populate(chstlist)
 
     def iterchst(self, chstlist):
         """
@@ -189,7 +215,7 @@ def get_t_stop(self):
     return t_stop
 
 
-class MonitorPlotBase(object):
+class PlotBase(object):
     """
     Base Class for plotting SpikeMonitors.
     Virtual class, use RasterPlot or MeanRatePlot instead.
@@ -285,7 +311,7 @@ class LinearTickLocator(mticker.MaxNLocator):
         return mticker.MaxNLocator.__call__(self, *args, **kwargs)
 
 
-class RasterPlot(MonitorPlotBase):
+class RasterPlot(PlotBase):
     """
     A Raster Plot Class for plotting several Spike Monitors at once.
     The figure is automatically plotted, unless it is constructed with plot=False.
@@ -297,7 +323,7 @@ class RasterPlot(MonitorPlotBase):
     """
 
     def __init__(self, monitors, flat=False, even_distance = False, plot_kwargs={}, *args, **kwargs):
-        MonitorPlotBase.__init__(self, monitors)
+        PlotBase.__init__(self, monitors)
         self.flat = flat
         self.even = even_distance
         self.cs = []  #centers of raster plots
@@ -352,7 +378,7 @@ class RasterPlot(MonitorPlotBase):
                     id=i + 0.5, kwargs=plot_kwargs_mon, *args, **kwargs)
 
 
-class MeanRatePlot(MonitorPlotBase):
+class MeanRatePlot(PlotBase):
     """
     A Mean Rate Plot with plots the mean rates of the provided SpikeMonitors.
     The figure is automatically plotted
@@ -364,7 +390,7 @@ class MeanRatePlot(MonitorPlotBase):
         *time_bin*: time bin which will be used to compute the firing rates
         *args* and *kwargs* will be passed to pylab.plot
         """
-        MonitorPlotBase.__init__(self, monitors)
+        PlotBase.__init__(self, monitors)
 
         self.time_bin = int(time_bin)
              #If this is set to float, then y scale gets screwed. No idea why!
@@ -411,7 +437,7 @@ class MeanRatePlot(MonitorPlotBase):
 class SpikeMonitor(object):
     """
     A class for monitoring spiking activity during experimentation.
-    API is the one of AddrGroup.
+    Interface is similar to the one of AddrGroup.
 
     >>> pop_mon = SpikeMonitor(pop.soma, plot_args={'color':'r', 'linewidth':3})
     >>> nsetup.monitors.import_monitors([pop_mon])
@@ -419,7 +445,7 @@ class SpikeMonitor(object):
     >>> nsetup.monitors.raster_plot()
 
     """
-    def __init__(self, addr_group=[], plot_args = None):
+    def __init__(self, addr_group=None, plot_args = None):
         # By definition of populations, SpikeMonitor is associated to at most
         # one channel
         self.addr_group = addr_group
@@ -432,6 +458,15 @@ class SpikeMonitor(object):
         self._populated = False
         self.name = self.addr_group.name
         self.channel = self.addr_group.channel
+
+    def create_spiketrains(self, name, *args, **kwargs):
+        '''
+        Create spike trains from addr_group.
+        Inputs:
+        *name*: specifies spiketrains type. Function calls 'addr_group.spiketrains_'+name
+        **args* and ***kwargs* passed to spiketrains_+name function
+        '''
+        self._sl = self.to_monitorSpikeList(getattr(self.addr_group,'spiketrains_'+name)(*args,**kwargs)[self.channel])
 
     @property
     def sl(self):
@@ -448,6 +483,7 @@ class SpikeMonitor(object):
         return self.addr_group.__len__()
 
     def __getslice__(self, i, j):
+        #TODO: consider returning slices monitor instead
         return self.addr_group.__getslice__(i, j)
 
     def copy(self):
@@ -474,7 +510,7 @@ class SpikeMonitor(object):
     def _do_populate(self):
         assert hasattr(self, '_data'), "SpikeMonitor must be populated first"
         self._populated = True
-        self._sl = self.toSpikeListMonitor(self._data)
+        self._sl = self.to_monitorSpikeList(self._data)
         self._sl.complete(self.addr_group.laddr)
         del self._data
 
@@ -527,7 +563,7 @@ class SpikeMonitor(object):
             plot_kwargs_mon.setdefault(k, v)
         return plot_kwargs_mon
 
-    def toSpikeListMonitor(self, st):
+    def to_monitorSpikeList(self, st):
         """
         Transform SpikeList *st* into a monitorSpikeList object
         """
