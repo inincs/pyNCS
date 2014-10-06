@@ -14,7 +14,13 @@ import glob
 import time
 import os
 import fnmatch
-import pickle
+import warnings
+try:
+    import dill as pickle
+except ImportError:
+    warn.warn('Cannot import dill, falling back to pickle. Several pyNCS objects cannot be pickled')
+    import pickle 
+
 import pylab
 import numpy as np
 from shutil import rmtree
@@ -85,7 +91,6 @@ def load_compatibility(filename):
     Same as experimentTools.load(), but works around recent module renaming problems
     Code from http://wiki.python.org/moin/UsingPickle/RenamingModules
     """
-    import pickle
     
     renametable = {
         'pyST': 'pyNCS.pyST',
