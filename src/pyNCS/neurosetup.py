@@ -88,6 +88,12 @@ def get_addrspec(node, typ):
         else:
             return []
 
+class chAddrSpecs(object):
+    def __init__(self, mon=None, seq=None, chipslots={}, aerSlot={}):
+        self.mon = mon
+        self.seq = seq
+        self.chipslots = chipslots
+        self.aerSlot = aerSlot
 
 class NeuroSetup(object):
     def __init__(self,
@@ -111,6 +117,10 @@ class NeuroSetup(object):
         *validate*: if True, the constructor will attempt to validate the setup and setuptype xml files.
         '''
         #Initialize and save API
+        self.chaddrspecs = chAddrSpecs()
+        self.chipslots = self.chaddrspecs.chipslots
+        self.aerSlot = self.chaddrspecs.aerSlot
+
         self.com_kwargs = com_kwargs
         self.conf_kwargs = conf_kwargs
         self.map_kwargs = map_kwargs
@@ -119,10 +129,10 @@ class NeuroSetup(object):
         self.setuptype = setuptype
         self.prefix = prefix
         self.chips = {}
-        self.chipslots = dict()
         self.slots = {}
         self.offline = offline
         self.validate = validate
+
         self.load_setuptype(self.setuptype, prefix = prefix, validate = validate)
         self.load(self.setupfile, prefix = prefix, offline = offline, validate = validate )
         self.aerDummyIn, self.aerDummyOut = self.aerDummy()
@@ -132,6 +142,22 @@ class NeuroSetup(object):
 
         if self.offline:
             warnings.warn('Running in Offline mode')
+
+    @property
+    def mon(self):
+        return self.chaddrspecs.mon
+
+    @mon.setter
+    def mon(self, mon_ch_addr):
+        self.chaddrspecs.mon = mon_ch_addr
+
+    @property
+    def seq(self):
+        return self.chaddrspecs.seq
+
+    @seq.setter
+    def seq(self, seq_ch_addr):
+        self.chaddrspecs.seq = seq_ch_addr
 
     def load_setuptype(self, filename, prefix='', validate = True):
 
@@ -148,7 +174,6 @@ class NeuroSetup(object):
             else:
                 raise TypeError('channelAddressing type should be either monitor or sequencer')
 
-        self.aerSlot = dict()
         for nslot in nsetup.iterfind('slot'):
             #Considfer defining a function (for esthetic reasons)
             id = int(nslot.attrib['id'])

@@ -250,7 +250,7 @@ class AddrGroup(AddrGroupBase):
         Repopulates laddr and paddr with respect to addr
         """
         if setup is not None:
-            self.setup = setup
+            self.setup = setup.chaddrspecs
         if self.grouptype is '':
             raise Exception("Group has never been populated before.")
         self._channel = None
@@ -273,7 +273,7 @@ class AddrGroup(AddrGroupBase):
 
         self.chipid = chipid
         self.grouptype = grouptype
-        self.setup = setup
+        self.setup = setup.chaddrspecs
 
         if self.grouptype is 'in':
             self.addrspec = setup.seq[self.channel]
@@ -293,11 +293,11 @@ class AddrGroup(AddrGroupBase):
         Returns the data type of AddrGroup.addr variable, ie. the
         format of human readable addresses.
         '''
-        chp = setup.chips[chipid]
+        channel = setup.chipslots[chipid]
         if grouptype == 'in':
-            flds = chp.aerIn.addrDict
+            flds = setup.seq[channel].addrDict
         elif grouptype == 'out':
-            flds = chp.aerOut.addrDict
+            flds = setup.mon[channel].addrDict
         else:
             raise ValueError('Grouptype should be None, "in" or "out", not {0}'.
                 format(grouptype))
@@ -405,22 +405,6 @@ class AddrGroup(AddrGroupBase):
 #        addresses = np.concatenate([addresses, addresses_ret])
 #
 #        self.__populate__(setup, chipid, grouptype, addresses)
-#
-#    def __unfold_dims__(self, vect):
-#        if True:  # Fabio??
-#            if not False:
-#                if False:  # Emre: just to be sure
-#                    pass
-#                else:
-#                    print "Not yet implemented."
-#                    pass
-#        if len(vect) == 0:
-#            return np.array([])
-#        result = []
-#        for dim in vect:
-#            r_low = self.__unfold_dims__(vect[1:])
-#        return np.column_stack([[np.repeat(i, len(r_low)) for i in dim], r_low.repeat(len(dim))])
-
 
 
     def spiketrains(self, spikes=[], t_start=0, t_stop=None, dims=None):
