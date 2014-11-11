@@ -1884,8 +1884,11 @@ def _process_addrConf(addrConf):
 
 
 def _process_addrDict(addrConf):
+    '''
+    Generate a dictionary holding the values of index of every dimension in addrConf
+    '''
     d = dict()
-    #Find number of required bits from range data
+    # Find the index of a dimension in addrConf
     for i, hrf in enumerate(addrConf):
         d[hrf['id']] = i
     return d

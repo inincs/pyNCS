@@ -1,0 +1,57 @@
+<addressSpecification type="aerIn" offset="0" min="0" max="2**26">
+    <pinlayout>P1 P0 A0 A2 A1 F16 F15 F14 F13 F12 F11 F10 F9 F8 F7 F6 F5 F4 F3 F2 F1 F0 H3 H2 H1 H0</pinlayout>
+    <pin id="P">
+       <decoder>p</decoder>
+    </pin>
+    <pin id="A">
+       <decoder>a</decoder>
+    </pin>
+    <pin id="H">
+       <decoder>h</decoder>
+    </pin>
+    <dim id="p" type="soma">
+	<range>range(4)</range>
+	<default>0</default>
+        <description>Port</description>
+        <decoder>P</decoder>
+    </dim>
+    <dim id="a" type="soma">
+        <range>range(16)</range>
+	<default>0</default>
+        <description>Array</description>
+        <decoder>A</decoder>
+    </dim>
+    <dim id="h" type="connection">
+        <range>range(16)</range>
+	<default>0</default>
+       	<description>synapse height</description>
+       	<decoder>H</decoder>
+    </dim>
+    <addressSpecification type="aerIn" field="F" offset="0" min="0" max="2**17" >
+    	<pinlayout>X5 X4 X3 X2 X1 X0 Y4 Y3 Y2 Y1 Y0 S1 S0 W3 W2 W1 W0</pinlayout>
+    	<pin id="X">
+    	   <decoder>x</decoder>
+    	</pin>
+    	<pin id="Y">
+    	   <decoder>s</decoder>
+    	</pin>
+    	<pin id="W">
+    	   <decoder>w</decoder>
+    	</pin>
+        <dim id="x" type="soma">
+            <range>range(62)</range>
+            <description>Row</description>
+            <decoder>X</decoder>
+        </dim>
+        <dim id="y" type="soma">
+           <range>range(32)</range>
+           <description>Column</description>
+           <decoder>Y</decoder>
+        </dim>
+        <dim id="w" type="connection">
+           <range>range(16)</range>
+           <description>synapse width</description>
+           <decoder>W</decoder>
+        </dim>
+    </addressSpecification>
+</addressSpecification>
