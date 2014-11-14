@@ -101,7 +101,7 @@ class AddrSpec:
                 pin['id'] = elm.get('id') # ID
                 pin['f'] = None
                 self.addrPinConf.append({'id' : elm.get('id'),
-                                         'f'  : None})
+                                         'f'  : elm.get('id').lower()})
                 self.addrConf.append({'f' : elm.get('id'),
                                       'id' : elm.get('id').lower(),
                                       'description' : 'Lowlevel physical address space',
