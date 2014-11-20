@@ -10,7 +10,7 @@ from __future__ import absolute_import
 import numpy as np
 from lxml import etree
 from layoutFieldEncoder import LayoutFieldEncoder
-from addressEncoder import AddressEncoder
+from addressEncoder import AddressEncoder, extract_id_list
 
 class AddrSpec:
     """
@@ -97,16 +97,18 @@ class AddrSpec:
             elif elm.tag == 'addressSpecification':
                 addrSpec = AddrSpec(elm)
                 self.subAddrSpec.append(addrSpec)
-                pin = {}
-                pin['id'] = elm.get('id') # ID
-                pin['f'] = None
-                self.addrPinConf.append({'id' : elm.get('id'),
-                                         'f'  : elm.get('id').lower()})
-                self.addrConf.append({'f' : elm.get('id'),
-                                      'id' : elm.get('id').lower(),
-                                      'description' : 'Lowlevel physical address space',
-                                      'range' : addrSpec.offset + np.arange(addrSpec.min,
-                                                                            addrSpec.max)})
+                ids = extract_id_list(self.addrPinConf)
+                try:
+                    ids.index(elm.get('id'))
+                except ValueError as e:
+                    # This field has not been populated yet.
+                    self.addrPinConf.append({'id' : elm.get('id'),
+                                             'f'  : elm.get('id').lower()})
+                    self.addrConf.append({'f' : elm.get('id'),
+                                          'id' : elm.get('id').lower(),
+                                          'description' : 'Lowlevel physical address space',
+                                          'range' : addrSpec.offset + np.arange(addrSpec.min,
+                                                                                addrSpec.max)})
             else:
                 pass
         # Generate address specification properties

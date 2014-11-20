@@ -54,7 +54,7 @@ class AddressEncoder:
         fe = eval('lambda ' + arg_str + ':' + "[" + ''.join([s['f'] +
             ', ' for s in addr_conf]) + ']')
         return lambda x: fe(*x), fe_field
-    
+
     def _stas_create_construct(self, addr_conf, addr_pinconf):
         """
         Parsing the Construction functions
@@ -69,8 +69,11 @@ class AddressEncoder:
             ', ' for s in addr_pinconf]) + ']')
         return lambda x: fc(*x), fc_field
 
-def extract_id_list(addr_conf):
+def extract_id_list(lst):
+    '''
+    Return a list of all 'id' in the list of disctionaries 
+    '''
     id_list = []
-    for i in addr_conf:
+    for i in lst:
         id_list.append(i['id'])
     return id_list

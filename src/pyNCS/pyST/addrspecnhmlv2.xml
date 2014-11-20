@@ -27,8 +27,35 @@
        	<description>synapse height</description>
        	<decoder>H</decoder>
     </dim>
-    <addressSpecification type="aerIn" id="F" offset="0" min="0" max="2**17" >
+    <addressSpecification type="aerIn" id="F" offset="0" min="0" max="2**16" >
     	<pinlayout>X5 X4 X3 X2 X1 X0 Y4 Y3 Y2 Y1 Y0 S1 S0 W3 W2 W1 W0</pinlayout>
+    	<pin id="X">
+    	   <decoder>x</decoder>
+    	</pin>
+    	<pin id="Y">
+    	   <decoder>s</decoder>
+    	</pin>
+    	<pin id="W">
+    	   <decoder>w</decoder>
+    	</pin>
+        <dim id="x" type="soma">
+            <range>range(62)</range>
+            <description>Row</description>
+            <decoder>X</decoder>
+        </dim>
+        <dim id="y" type="soma">
+           <range>range(32)</range>
+           <description>Column</description>
+           <decoder>Y</decoder>
+        </dim>
+        <dim id="w" type="connection">
+           <range>range(16)</range>
+           <description>synapse width</description>
+           <decoder>W</decoder>
+        </dim>
+    </addressSpecification>
+    <addressSpecification type="aerIn" id="F" offset="2**16" min="0" max="2**16" >
+    	<pinlayout>X5 X4 X3 X2 X1 X0 Y4 Y3 Y2 Y1 Y0 S1 S0 W0 W1 W2 W3</pinlayout>
     	<pin id="X">
     	   <decoder>x</decoder>
     	</pin>
