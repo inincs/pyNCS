@@ -10,7 +10,7 @@ from __future__ import absolute_import
 import numpy as np
 from lxml import etree
 from layoutFieldEncoder import LayoutFieldEncoder
-from addressEncoder import AddressEncoder, extract_id_list
+from addressEncoder import AddressCODEC, extract_id_list
 
 class AddrSpec:
     """
@@ -135,11 +135,12 @@ class AddrSpec:
         # Generate the extract and create functions for physical addresses
         self.field, self.nFields = self._stas_create_fields()
         
-        self.addr_encoder = AddressEncoder(self.addrConf, 
-                                           self.addrSpec,
-                                           self.nBits,
-                                           self.nBitsTotal,
-                                           self.addrPinConf)
+        # Old addr_encoder
+        self.codec = AddressCODEC(self.addrConf, 
+                                  self.addrSpec,
+                                  self.nBits,
+                                  self.nBitsTotal,
+                                  self.addrPinConf)
         
         #self.nbits = _stas_compute_nbits(self.addrConf)
         

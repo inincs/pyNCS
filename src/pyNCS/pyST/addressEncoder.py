@@ -1,9 +1,10 @@
 import numpy as np
 
-class AddressEncoder:
+class AddressCODEC:
     def __init__(self, addr_conf, addr_spec, nBits, nBitsTotal, addr_pinconf):
         '''
         This class carries the functions to translate between physical and human readable addresses.
+        NOTE: This class replaces addressEncoder class.
         '''
         #Construct Extract, Construct
         self.fc, fc_field = self._stas_create_construct(addr_conf, addr_pinconf)
@@ -48,7 +49,7 @@ class AddressEncoder:
         Parsing the Extraction functions
         of the type Physical -> Human
         """
-        #TODO: These funcitons are purely dependent on the order in addrConf
+        #NOTE: These funcitons are purely dependent on the order in addrConf and addrPinConf
         arg_str = ''.join([i + ', ' for i in extract_id_list(addr_pinconf)])
         fe_field = [eval('lambda ' + arg_str + ':' + s['f']) for s in addr_conf]
         fe = eval('lambda ' + arg_str + ':' + "[" + ''.join([s['f'] +
@@ -60,11 +61,9 @@ class AddressEncoder:
         Parsing the Construction functions
         of the type Human -> Physical
         """
-        #TODO: These funcitons are purely dependent on the order in addrConf
+        #NOTE: These funcitons are purely dependent on the order in addrConf and addrPinConf
         arg_str = ''.join([i + ', ' for i in extract_id_list(addr_conf)])
-        print arg_str
         fc_field = [eval('lambda ' + arg_str + ':' + v['f']) for v in addr_pinconf]
-        print fc_field
         fc = eval('lambda ' + arg_str + ':' + "[" + ''.join([s['f'] +
             ', ' for s in addr_pinconf]) + ']')
         return lambda x: fc(*x), fc_field
