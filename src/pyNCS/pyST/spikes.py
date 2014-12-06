@@ -1955,3 +1955,32 @@ def merge_sequencers(*l_seq):
     for k, lseq in new_seq.iteritems():
         merged_seq[k] = merge_spikelists(*lseq)
     return merged_seq
+
+def qmerge(l):
+    '''
+    Helper function to merge spiketrain lists in divide-and-conquer
+    style. Takes list of spiketrains, returns pair-wise merged list.
+    '''
+    if len(l) == 1:
+        return l
+    elif len(l) == 2:
+        return [merge_sequencers(l[0],l[1])]
+    else:
+        a = qmerge(l[:len(l)/2])
+        b = qmerge(l[len(l)/2:])
+        a.extend(b)
+        return a
+
+
+def merge_spiketrain_list(L):
+    '''
+    Takes list of spiketrains and merges them into a single spiketrain. 
+    Returns a spiketrain.
+
+    Should only perform a logarithmic number of merges (in terms of list-length)
+    '''
+    x = qmerge(L)
+    while len(x) > 1:
+        x = qmerge(x)
+    return x[0]
+
