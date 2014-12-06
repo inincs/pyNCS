@@ -10,5 +10,5 @@ setup(name='pyNCS',
 	url='https://github.com/inincs/pyNCS',
 	packages = ['pyNCS', 'pyNCS.pyST', 'pyNCS.api'],
         package_dir={'pyNCS' : 'src/pyNCS'},
-	package_data={'pyNCS' : ['data/chipfiles/*']},
+	package_data={'pyNCS' : ['data/*','data/chipfiles/*']},
      )

@@ -1,0 +1,16 @@
+<!ELEMENT setuptype (channelAddressing+,slot+)>
+<!ELEMENT slot (aerMon?,aerSeq?)>
+<!ELEMENT aerMon EMPTY>
+<!ELEMENT aerSeq EMPTY>
+<!ELEMENT channelAddressing EMPTY>
+
+<!ATTLIST setuptype version CDATA #REQUIRED>
+<!ATTLIST slot id CDATA #REQUIRED>
+<!ATTLIST aerMon in CDATA #IMPLIED>
+<!ATTLIST aerMon out CDATA #IMPLIED>
+<!ATTLIST aerSeq in CDATA #IMPLIED>
+<!ATTLIST aerSeq out CDATA #IMPLIED>
+<!ATTLIST channelAddressing name CDATA #IMPLIED>
+<!ATTLIST channelAddressing type (monitor|sequencer) "monitor">
+<!ATTLIST channelAddressing bits CDATA #REQUIRED>
+

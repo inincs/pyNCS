@@ -24,16 +24,18 @@ from itertools import chain
 from .api import ComAPI
 from .api import ConfAPI
 
+_ROOT = os.path.abspath(os.path.dirname(__file__))
+def get_data(path):
+    return os.path.join(_ROOT, 'data', path)
+
 CHIPFILESDIR ='chipfiles/' 
-URL_SETUPDTD = 'http://ncs.ethz.ch/internal/files/setup.dtd/at_download/file'
-URL_SETUPTYPEDTD = 'http://ncs.ethz.ch/internal/files/setuptype.dtd/at_download/file'
+URL_SETUPDTD = get_data('setup.dtd')
+URL_SETUPTYPEDTD = get_data('setuptype.dtd')
 URL_TIMEOUT = 0.3
 # temp
 
 #Useful function to get path to package_data
-_ROOT = os.path.abspath(os.path.dirname(__file__))
-def get_data(path):
-    return os.path.join(_ROOT, 'data', path)
+
 
 def dict_merge(x, y):
     '''
