@@ -56,7 +56,7 @@ class TestSequenceFunctions(unittest.TestCase):
                
         stmon1=pyNCS.monitors.SpikeMonitor(t.soma)        
         self.nsetup.monitors.import_monitors([stmon1])
-        input_stim=s.soma.spiketrains_poisson(rate = np.linspace(0,1000,N), duration=200)  
+        input_stim=s.soma.spiketrains_poisson(rate = np.linspace(100,2000,N), duration=200)  
         self.nsetup.prepare()
         self.nsetup.chips['ifslwta'].set_parameter('nsynstdw0',.7)       
         out = self.nsetup.run(input_stim)
@@ -71,7 +71,7 @@ class TestSequenceFunctions(unittest.TestCase):
 
         sequencer = pyNCS.monitors.Monitors()
         mon_in, = sequencer.create(s)
-        mon_in.create_spiketrains('poisson', rate = np.linspace(0,1000,N), duration = 1000)
+        mon_in.create_spiketrains('poisson', rate = np.linspace(100,2000,N), duration = 1000)
                
         stmon1=pyNCS.monitors.SpikeMonitor(t.soma)        
         self.nsetup.monitors.import_monitors([stmon1])
@@ -91,7 +91,7 @@ class TestSequenceFunctions(unittest.TestCase):
 
         sequencers = self.nsetup.sequencers
         mon_in, = sequencers.create(s)
-        mon_in.create_spiketrains('poisson', rate = np.linspace(0,1000,N), duration = 1000)
+        mon_in.create_spiketrains('poisson', rate = np.linspace(100,2000,N), duration = 1000)
                
         stmon1=pyNCS.monitors.SpikeMonitor(t.soma)        
         self.nsetup.monitors.import_monitors([stmon1])
