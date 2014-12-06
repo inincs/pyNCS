@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<chip chipclass="ifmem" chipfile="chipfiles/ifmem.csv"  >
+    <neuron id='excitatory'>
+        <soma id='general'>
+            <dim id='x' range='range(32)'/>
+        </soma>
+        <synapse id='inhibitory' type='inhibitory'>
+            <dim id='s' range='range(2)'/>
+        </synapse>
+        <synapse id='excitatory0' type='excitatory'>
+            <dim id='s' range='[2]'/>
+        </synapse>
+        <synapse id='excitatory1' type='excitatory'>
+            <dim id='s' range='[3]'/>
+        </synapse>
+        <synapse id='learning' type='excitatory_learn'>
+            <dim id='s' range='range(4, 32)'/>
+        </synapse>
+    </neuron>
+</chip>

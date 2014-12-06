@@ -17,19 +17,23 @@ from .chip_v2 import NeuroChip
 from .mapping import Mapping, PMapping
 from .monitors import Monitors
 from . import pyST
-import warnings
+import warnings, os
 from contextlib import contextmanager
 from lxml import etree
 from itertools import chain
 from .api import ComAPI
 from .api import ConfAPI
 
-
+CHIPFILESDIR ='chipfiles/' 
 URL_SETUPDTD = 'http://ncs.ethz.ch/internal/files/setup.dtd/at_download/file'
 URL_SETUPTYPEDTD = 'http://ncs.ethz.ch/internal/files/setuptype.dtd/at_download/file'
 URL_TIMEOUT = 0.3
 # temp
 
+#Useful function to get path to package_data
+_ROOT = os.path.abspath(os.path.dirname(__file__))
+def get_data(path):
+    return os.path.join(_ROOT, 'data', path)
 
 def dict_merge(x, y):
     '''
@@ -89,11 +93,22 @@ def get_addrspec(node, typ):
             return []
 
 class chAddrSpecs(object):
+    '''
+    Class that internally encapsulates the channelAddressing and chipslots.
+    '''
     def __init__(self, mon=None, seq=None, chipslots={}, aerSlot={}):
         self.mon = mon
         self.seq = seq
         self.chipslots = chipslots
         self.aerSlot = aerSlot
+        self.chip_aerin = {}
+        self.chip_aerout = {}
+        
+    def get_chip_aerin(self, chipid):
+            return self.chip_aerin[chipid]
+
+    def get_chip_aerout(self, chipid):
+            return self.chip_aerout[chipid]
 
 class NeuroSetup(object):
     def __init__(self,
@@ -102,7 +117,7 @@ class NeuroSetup(object):
             com_kwargs={},
             map_kwargs={},
             conf_kwargs={},
-            prefix='./',
+            prefix=None,
             offline=False,
             validate = True):
         '''
@@ -112,7 +127,7 @@ class NeuroSetup(object):
         *com_kwargs*: keyword arguments for communicator module. This gets merged with arguments in setup.xml
         *map_kwargs*: keyword arguments for communicator module. This gets merged with arguments in setup.xml
         *conf_kwargs*: keyword arguments for communicator module. This gets merged with arguments in setup.xml
-        *prefix*: path prefix to setupfiles and chipfiles (default: current directory)
+        *prefix*: path prefix to chipfiles (default: path to files distributed through pyNCS_data package_data)
         *offline*: if True, the setup will not communicate, map or configure.
         *validate*: if True, the constructor will attempt to validate the setup and setuptype xml files.
         '''
@@ -120,6 +135,8 @@ class NeuroSetup(object):
         self.chaddrspecs = chAddrSpecs()
         self.chipslots = self.chaddrspecs.chipslots
         self.aerSlot = self.chaddrspecs.aerSlot
+        self.get_chip_aerout = self.chaddrspecs.get_chip_aerout
+        self.get_chip_aerin = self.chaddrspecs.get_chip_aerin
 
         self.com_kwargs = com_kwargs
         self.conf_kwargs = conf_kwargs
@@ -133,8 +150,8 @@ class NeuroSetup(object):
         self.offline = offline
         self.validate = validate
 
-        self.load_setuptype(self.setuptype, prefix = prefix, validate = validate)
-        self.load(self.setupfile, prefix = prefix, offline = offline, validate = validate )
+        self.load_setuptype(self.setuptype, validate = validate)
+        self.load(self.setupfile, offline = offline, validate = validate )
         self.aerDummyIn, self.aerDummyOut = self.aerDummy()
         self.update()
         self.apply()
@@ -159,7 +176,14 @@ class NeuroSetup(object):
     def seq(self, seq_ch_addr):
         self.chaddrspecs.seq = seq_ch_addr
 
-    def load_setuptype(self, filename, prefix='', validate = True):
+    def get_chipfilename(self, filename):
+        if self.prefix == None:
+            chipfile = get_data(str(CHIPFILESDIR+filename))
+        else:
+            chipfile = self.prefix + str(filename)
+        return chipfile
+
+    def load_setuptype(self, filename, validate = True):
 
         nsetup = parse_and_validate(filename, dtd=URL_SETUPTYPEDTD, validate = validate)
 
@@ -175,7 +199,7 @@ class NeuroSetup(object):
                 raise TypeError('channelAddressing type should be either monitor or sequencer')
 
         for nslot in nsetup.iterfind('slot'):
-            #Considfer defining a function (for esthetic reasons)
+            #Consider defining a function (for esthetic reasons)
             id = int(nslot.attrib['id'])
             self.aerSlot[id] = dict()
             ######### Mon
@@ -190,19 +214,17 @@ class NeuroSetup(object):
             self.aerSlot[id]['seqOut'] = get_addrspec(nslot.
                 find('aerSeq'), 'out')
 
-    def load(self, filename, prefix='', offline=False, validate = True):
+    def load(self, filename, offline=False, validate = True):
         '''
         Loads the setup
         Inputs:
         *filename*: setup file name
-        *prefix*: path to be prepended to chipfile names
         *offline*: if True, the chips will not be configured ("pretend" mode).
         '''
         nsetup = parse_and_validate(filename, dtd=URL_SETUPDTD, validate = validate)
 
         #parse defaultchip (should be unique)
-        self.defaultchipfile = str(
-            nsetup.find('defaultchip').attrib['chipfile'])
+        self.defaultchipfile = self.get_chipfilename(str(nsetup.find('defaultchip').attrib['chipfile']))
         #
         # Load communicator, currently, only only communicator per setup is
         # supported
@@ -224,7 +246,7 @@ class NeuroSetup(object):
         # Load virtual chips
         for nchip in nsetup.iterfind('virtualchip'):
             chipid = str(nchip.attrib['id'])
-            chipfile = prefix + str(nchip.attrib['chipfile'])
+            chipfile = self.get_chipfilename(str(nchip.attrib['chipfile']))
             slot = int(eval(nchip.attrib['slot']))
             chip = NeuroChip(chipfile, id=chipid, offline=True)
             #Be sure that the chip is virtual
@@ -232,12 +254,15 @@ class NeuroSetup(object):
             self.chips[chipid] = chip
             self.chipslots[chipid] = slot
             self.slots[slot] = chipid
+            self.chaddrspecs.chip_aerin[chipid]=chip.aerIn
+            self.chaddrspecs.chip_aerout[chipid]=chip.aerOut
 
         #Load configurators and chips
         for nchip in nsetup.iterfind('chip'):
             chipid = str(nchip.attrib['id'])
             slot = int(eval(nchip.attrib['slot']))
-            chipfile = prefix + str(nchip.attrib['chipfile'])
+            chipfile = self.get_chipfilename(str(nchip.attrib['chipfile']))
+
             nconf = nchip.find('configurator')
             module = str(nconf.attrib['module'])
             conf_kwargs = xml_parse_parameter(nconf)
@@ -253,6 +278,8 @@ class NeuroSetup(object):
             self.chips[chipid] = chip
             self.chipslots[chipid] = slot
             self.slots[slot] = chipid
+            self.chaddrspecs.chip_aerin[chipid]=chip.aerIn
+            self.chaddrspecs.chip_aerout[chipid]=chip.aerOut
             chip.configurator.register_neurosetup(self)
             chip.configurator.reset()
 
@@ -294,11 +321,9 @@ class NeuroSetup(object):
     def aerDummy(self):
         ''' returns a placeholder pyST.addrSpec '''
         if self.defaultchipfile.endswith('.csv'):
-            aerIn, aerOut = pyST.STas.load_stas_from_csv(self.prefix+\
-                                                     self.defaultchipfile)
+            aerIn, aerOut = pyST.STas.load_stas_from_csv(self.defaultchipfile)
         elif self.defaultchipfile.endswith('.nhml'):
-            aerIn, aerOut = pyST.STas.load_stas_from_nhml(self.prefix+\
-                                                     self.defaultchipfile)
+            aerIn, aerOut = pyST.STas.load_stas_from_nhml(self.defaultchipfile)
         return aerIn, aerOut
 
     def update(self):
@@ -403,8 +428,8 @@ class NeuroSetup(object):
         self.chips = {}
         self.chipslots = {}
         self.slots = {}
-        self.load_setuptype(self.setuptype, prefix=self.prefix, validate = self.validate)
-        self.load(self.setupfile, prefix=self.prefix, offline = self.offline, validate = self.validate)
+        self.load_setuptype(self.setuptype, validate = self.validate)
+        self.load(self.setupfile, offline = self.offline, validate = self.validate)
         self.aerDummyIn, self.aerDummyOut = self.aerDummy()
         self.update()
 

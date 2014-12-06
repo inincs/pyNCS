@@ -89,3 +89,5 @@ class DocInherit(object):
         return func
 
 doc_inherit = DocInherit
+
+

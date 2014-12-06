@@ -12,7 +12,7 @@ pyNCS Package
 :mod:`ComAPI` Module
 --------------------
 
-.. automodule:: pyNCS.ComAPI
+.. automodule:: pyNCS.api.ComAPI
     :members:
     :undoc-members:
     :show-inheritance:
@@ -20,7 +20,7 @@ pyNCS Package
 :mod:`ConfAPI` Module
 ---------------------
 
-.. automodule:: pyNCS.ConfAPI
+.. automodule:: pyNCS.api.ConfAPI
     :members:
     :undoc-members:
     :show-inheritance:
@@ -94,6 +94,5 @@ Subpackages
 
 .. toctree::
 
-    pyNCS.AerViewer
     pyNCS.pyST
 

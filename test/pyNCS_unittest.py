@@ -12,15 +12,7 @@ import pyNCS.pyST as pyST
 import numpy as np
 import unittest, warnings, optparse, os, time, sys
 
-try:
-    SETUPSDIR = os.environ['NCS_SETUPFILES']
-except KeyError:
-    SETUPSDIR = 'setupfiles/'
 
-try:
-    CHIPSDIR = os.environ['NCS_CHIPFILES']
-except KeyError:
-    CHIPSDIR = 'chipfiles/'
 
 def create_default_population(setup,chipname='seq',N=10,*args,**kwargs):
     '''
@@ -46,7 +38,7 @@ class TestSequenceFunctions(unittest.TestCase):
 
     def setUp(self):
         import expSetup
-        self.nsetup = expSetup.build_setup(setups_dir = SETUPSDIR, chips_dir = CHIPSDIR)
+        self.nsetup = expSetup.build_setup()
 
     def testBuildLinearPopulation(self):
         N=10

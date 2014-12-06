@@ -24,11 +24,10 @@ def set_default_biases(nsetup=None, biases_dir='biases/'):
             warnings.warn("Could not find file {0}".format(filename))
             pass
 
-def build_setup(setupfile = 'test.xml', setups_dir = 'setupfiles/', chips_dir = 'chipfiles/'):
+def build_setup(setupfile = 'test.xml'):
     nsetup = NeuroSetup(
-            setups_dir+'test_setuptype.xml',
-            setups_dir+setupfile,
-            prefix = chips_dir,
+            'setupfiles/test_setuptype.xml',
+            'setupfiles/'+setupfile,
             offline=False)
     set_default_biases(nsetup=nsetup, biases_dir='biases/')
     return nsetup

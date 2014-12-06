@@ -91,7 +91,7 @@ def load_compatibility(filename):
     Same as experimentTools.load(), but works around recent module renaming problems
     Code from http://wiki.python.org/moin/UsingPickle/RenamingModules
     """
-    
+    import pickle as pickle #Does not work with dill
     renametable = {
         'pyST': 'pyNCS.pyST',
         'pyST.spikes': 'pyNCS.pyST.spikes',
@@ -119,7 +119,7 @@ def load_compatibility(filename):
     
     return loads(filename)
 
-def load(filename=None, compatibility=True):
+def load(filename=None, compatibility=False):
     """
     Unpickles file named 'filename' from the results directory. If no 'filename' is given, then 'globaldata.pickle' is loaded
     """

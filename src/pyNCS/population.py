@@ -265,50 +265,8 @@ class Population(object):
         NOTE: The returned array preserves ordering of neurons (np.repeat)
         """
 
-        ## Freshly generate addresses of synapses
-        #somaddr = addresses
-        #nd = len(addresses.dtype)
-        #synaddr = []
-
-        #for s in synapses:
-        #    # Synapses can be multi-dimensional
-        #    syn_block = self.neuronblock.synapses[s]
-
-        #    # The following codes insures that the addresses are built it the
-        #    # correct order
-        #    ch = self.synapses[s].channel
-        #    ch_ad = self.synapses[s].ch_addr[ch]
-        #    snr = []
-        #    # assumes human readable addresses are of the form neuron -
-        #    # synapse. (could be anything)
-        #    for field in ch_ad.addrConf:
-        #        if field['type'] == -1:
-        #            if field['id'] in syn_block.dims:
-        #                snr.append(syn_block.dims[field['id']])
-        #            else:
-        #                snr.append([field['default_value']])
-        #    print snr
-        #    #The following three lines are a little intricate.
-        #    #It first builds a grid of possible synapses (see _buildGrid)
-        #    # Then combines it (column_stack) with all possible soma addresses
-        #    # (which is already a grid)
-        #    # Repeat and Tile make sure that the dimenstionalities are
-        #    # consistent
-        #    #and that all possible addresses are considered
-
-        #    syngrid = _buildGrid(snr)
-        #    pa = self.soma.addr
-        #    somasyngrid = np.column_stack(
-        #            [np.repeat(pa, len(syngrid), axis=0),
-        #             np.tile(syngrid.T, len(pa)).T])
-        #    synaddr.append(somasyngrid)
-
-        #saddrout = np.array(_flatten(synaddr)).reshape((-1, nd + len(snr)))
-
-        #return _sort_by_logical(saddrout)
         somaaddr = addresses
-        dtp = AddrGroup._get_dtype(AddrGroup('',''), self.setup,
-                                   self.soma.chipid, 'in')
+        dtp = AddrGroup._get_dtype(AddrGroup('',''), self.setup, self.soma.chipid, 'in')
         syn_dim_names = None
         synaddrs_all = None
         for s in synapses:

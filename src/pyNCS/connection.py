@@ -12,6 +12,7 @@ import pylab
 
 from .mapping import Mapping, PMapping
 
+
 class Connection(object):
     """
     A class representing the connections between populations.
