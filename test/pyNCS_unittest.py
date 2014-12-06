@@ -61,9 +61,47 @@ class TestSequenceFunctions(unittest.TestCase):
         self.nsetup.chips['ifslwta'].set_parameter('nsynstdw0',.7)       
         out = self.nsetup.run(input_stim)
         r= stmon1.sl.mean_rates()        
-        print r
         self.assertTrue(np.all(r== np.sort(r)))
-        
+
+    def testSequencers(self):
+        N=3
+        s=create_default_population(self.nsetup,'seq',N)
+        t=create_default_population(self.nsetup,'ifslwta', N)
+        c=pyNCS.PConnection(s,t,'excitatory0')
+
+        sequencer = pyNCS.monitors.Monitors()
+        mon_in, = sequencer.create(s)
+        mon_in.create_spiketrains('poisson', rate = np.linspace(0,1000,N), duration = 1000)
+               
+        stmon1=pyNCS.monitors.SpikeMonitor(t.soma)        
+        self.nsetup.monitors.import_monitors([stmon1])
+
+        self.nsetup.prepare()
+        self.nsetup.chips['ifslwta'].set_parameter('nsynstdw0',.7)       
+
+        out = self.nsetup.run(sequencer)
+        r= stmon1.sl.mean_rates()        
+        self.assertTrue(np.all(r == np.sort(r)))
+
+    def testSequencers_nsetup(self):
+        N=3
+        s=create_default_population(self.nsetup,'seq',N)
+        t=create_default_population(self.nsetup,'ifslwta', N)
+        c=pyNCS.PConnection(s,t,'excitatory0')
+
+        sequencers = self.nsetup.sequencers
+        mon_in, = sequencers.create(s)
+        mon_in.create_spiketrains('poisson', rate = np.linspace(0,1000,N), duration = 1000)
+               
+        stmon1=pyNCS.monitors.SpikeMonitor(t.soma)        
+        self.nsetup.monitors.import_monitors([stmon1])
+
+        self.nsetup.prepare()
+        self.nsetup.chips['ifslwta'].set_parameter('nsynstdw0',.7)       
+
+        out = self.nsetup.run()
+        r= stmon1.sl.mean_rates()        
+        self.assertTrue(np.all(r == np.sort(r)))
                 
     def testMonitors_from_SpikeList(self):
         from pyNCS import monitors

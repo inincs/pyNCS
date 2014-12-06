@@ -7,12 +7,12 @@
 # Author: Emre Neftci
 #
 # Creation Date : 05-06-2013
-# Last Modified : Sun 23 Mar 2014 12:15:44 PM PDT
+# Last Modified : Sat 06 Dec 2014 09:24:07 AM PST
 #
 # Copyright : (c) 
 # Licence : GPLv2
 #----------------------------------------------------------------------------- 
-
+from pyNCS.neurosetup import get_data
 from pyNCS.api.ComAPI import *
 from pyNCS.api.ConfAPI import *
 import pyNCS.pyST as pyST
@@ -213,25 +213,17 @@ class Configurator(ConfiguratorBase):
         Parse xml file or element tree to generate the object
         '''
         super(Configurator,self).__parseNHML__(doc)
-        
         global global_sympy_params
         from paramTranslation import params
-        try:
-            test_path = os.environ['PYNCS_TEST_PATH']
-        except KeyError:
-            test_path = './'
-        global_sympy_params = self.sympy_params = params(self, test_path + 'chipfiles/ifslwta_paramtrans.xml')
+        filename = get_data('chipfiles/ifslwta_paramtrans.xml')
+        global_sympy_params = self.sympy_params = params(self, filename)
         
     def _readCSV(self, CSVfile):        
         super(Configurator,self)._readCSV(CSVfile)
-        
         global global_sympy_params
         from paramTranslation import params
-        try:
-            test_path = os.environ['PYNCS_TEST_PATH']
-        except KeyError:
-            test_path = './'
-        global_sympy_params = self.sympy_params = params(self, test_path + 'chipfiles/ifslwta_paramtrans.xml')
+        filename = get_data('chipfiles/ifslwta_paramtrans.xml')
+        global_sympy_params = self.sympy_params = params(self, filename)
     
 class Mappings(MappingsBase):
     def add_mappings(self, mappings):

@@ -59,28 +59,22 @@ def xml_parse_parameter(node):
 
 
 def parse_and_validate(filename, dtd, validate = True):
+    #handle internet urls appropriately
     if 'http://' in filename:
         doc = etree.parse(urlopen(filename))
     else:
         doc = etree.parse(filename)
     
     if validate:
-        try:
-            parser = etree.DTD(urlopen(dtd, timeout=URL_TIMEOUT))
-            parser.validate(doc)
-            if len(parser.error_log.filter_from_errors()) > 0:
-                for e in parser.error_log.filter_from_errors():
-                    print(e)
-                raise Exception('setupfile XML is not well formed, corrent the errors given above first')
-            elif len(parser.error_log) > 0:
-                for e in parser.error_log.filter_from_errors():
-                    print(e)
-        except URLError as e:
-            warnings.warn('Could not access online setup.dtd (timeout {0}s), not validating'.format(URL_TIMEOUT))
-        except HTTPError as e:
-            warnings.warn('Could not access online setup.dtd (timeout {0}s), not validating'.format(URL_TIMEOUT))
-        except Exception:
-            warnings.warn('Unknown exception occured while validating setupfile (probably timed out)')
+        parser = etree.DTD(open(dtd))
+        parser.validate(doc)
+        if len(parser.error_log.filter_from_errors()) > 0:
+            for e in parser.error_log.filter_from_errors():
+                print(e)
+            raise Exception('setupfile XML is not well formed, corrent the errors given above first')
+        elif len(parser.error_log) > 0:
+            for e in parser.error_log.filter_from_errors():
+                print(e)
 
     return doc
 
@@ -158,6 +152,7 @@ class NeuroSetup(object):
         self.update()
         self.apply()
         self.monitors = Monitors()
+        self.sequencers = Monitors()
 
         if self.offline:
             warnings.warn('Running in Offline mode')
@@ -394,7 +389,7 @@ class NeuroSetup(object):
 
     def apply(self):
         ''' sets default monitor/sequencer to this setup '''
-        #?? self.update()
+       #?? self.update()
         pyST.setDefaultMonChannelAddress(self.mon)
         pyST.setDefaultSeqChannelAddress(self.seq)
 
@@ -439,6 +434,8 @@ class NeuroSetup(object):
         return self.setuptype, self.setupfile
 
     def _pre_process(self, stim):
+        if stim == None:
+            stim = self.sequencers
         evs_in = self.mon.exportAER(stim, isi=True)
         evs = self.mapper.filter_events(evs_in)
         return evs.get_adtmev()
@@ -468,6 +465,8 @@ class NeuroSetup(object):
         self.prepare()
         if not self.offline:
             return self.stimulate(*args, **kwargs)
+        else:
+            return np.zeros([0,2],dtype='uint32')
 
     def stimulate_raw(self, raw_stim, **kwargs):
         '''
@@ -478,7 +477,7 @@ class NeuroSetup(object):
         '''
         return self.communicator.run(raw_stim, **kwargs)
 
-    def stimulate(self, stim={}, **kwargs):
+    def stimulate(self, stim=None, **kwargs):
         '''
         Run without preparing.
         Pre-processes, runs communicator, and post-processes.
