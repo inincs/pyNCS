@@ -293,11 +293,10 @@ class AddrGroup(AddrGroupBase):
         Returns the data type of AddrGroup.addr variable, ie. the
         format of human readable addresses.
         '''
-        channel = setup.chipslots[chipid]
         if grouptype == 'in':
-            flds = setup.seq[channel].addrDict
+            flds = setup.get_chip_aerin(chipid).addrDict
         elif grouptype == 'out':
-            flds = setup.mon[channel].addrDict
+            flds = setup.get_chip_aerout(chipid).addrDict
         else:
             raise ValueError('Grouptype should be None, "in" or "out", not {0}'.
                 format(grouptype))
