@@ -6,7 +6,7 @@
 # Copyright : University of Zurich, Giacomo Indiveri, Emre Neftci, Sadique Sheik, Fabio Stefanini
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
-import pyAex
+#import pyAex
 import pyNCS
 import pyNCS.pyST as pyST
 import numpy as np
@@ -116,7 +116,7 @@ class TestSequenceFunctions(unittest.TestCase):
     def testPMapping(self):
         N=30
         p=0.5
-        pyAex.MAPVERS=3
+        #pyAex.MAPVERS=3
         s=create_default_population(self.nsetup, 'seq', N)
         t=create_default_population(self.nsetup, 'ifslwta', N)
         t2=create_default_population(self.nsetup, 'ifslwta', 124-N, offset=N)
@@ -142,7 +142,7 @@ class TestSequenceFunctions(unittest.TestCase):
     def testPConnection(self):
         N=30
         p=0.5
-        pyAex.MAPVERS=3
+        #pyAex.MAPVERS=3
         s=create_default_population(self.nsetup, 'seq', N)        
         t=create_default_population(self.nsetup, 'ifslwta', N)
         t2=create_default_population(self.nsetup, 'ifslwta', 124-N, offset=N)
@@ -167,7 +167,7 @@ class TestSequenceFunctions(unittest.TestCase):
     def testPMappingLarge(self):
         N=124
         p=0.5
-        pyAex.MAPVERS=3
+        #pyAex.MAPVERS=3
         s=create_default_population(self.nsetup, 'seq', N)
         t=create_default_population(self.nsetup, 'ifslwta', N)
         m=pyNCS.PMapping('')
