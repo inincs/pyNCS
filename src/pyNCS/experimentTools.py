@@ -26,8 +26,6 @@ import numpy as np
 from shutil import rmtree
 
 ### The globals class
-
-
 class datacontainer:
     def __init__(self):
         self.directory = './'

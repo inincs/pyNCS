@@ -1,6 +1,6 @@
 import pyNCS.pyST as pyST
 import time,sys,random
-import pyAex, pyNCS
+import pyNCS
 import numpy as np
 import pylab
 from pyNCS.neurosetup import NeuroSetup
