@@ -18,7 +18,7 @@ import warnings
 try:
     import dill as pickle
 except ImportError:
-    warn.warn('Cannot import dill, falling back to pickle. Several pyNCS objects cannot be pickled')
+    warnings.warn('Cannot import dill, falling back to pickle. Several pyNCS objects cannot be pickled')
     import pickle 
 
 import pylab
