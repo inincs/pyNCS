@@ -438,23 +438,63 @@ class Population(object):
 #            
 #
 
+    
+    def populate_by_idlist(self, setup, chipid, neurontype, id_list=[]):
+        """
+        Assigns the population a set of human readable addresses explicityly
+        delared by the user.
+        Arguments are:
+            - setup: a NeuroSetup
+            - chipid: id of the chip as expressed in setup.xml
+            - neurontype: id of neurons as expressed in chipfile.xml (e.g.
+            'excitatory')
+            - id_list: the list of ids for neurons to allocate (human readable addresses).  
+
+        *Example*: populate 3 neurons on a 3d grid x,y,z with addresses
+        [1,0,3], [1,2,3] and [2,2,2]
+
+        .. code-block:python
+
+        >> populate_by_idlist(setup, chipid, neurontype, 
+                              id_list = [[1,0,3],[1,2,3],[2,2,2]])
+        """
+        self.__populate_init__(setup, chipid, neurontype)
+        try:
+            self.soma.populate_line(
+                setup, chipid, grouptype='out', addresses=id_list)
+        except Exception as e:
+            print("Chip {0} does not contain one or more of the specified addresses.".format(chipid))
+            raise e
+        self.__populate_synapses__()
+
+    
     def populate_by_id(self, setup, chipid, neurontype, id_list=[], axes=[]):
         """
-        Takes the given addresses (as list) from the neuronblock available
-        addresses. It takes the first n addresses if offset is not set.
+        Look documentation for populate_by_filter
+        Function depricated, use populate_by_idlist or populate_by_idfilter in
+        future.
+        """
+        self.populate_by_id_filter(self, setup, chipid, neurontype,
+                                   id_filter=id_list, axes=axes)
+        
+
+def populate_by_id_filter(self, setup, chipid, neurontype, id_filter=[], axes=[]):
+        """
+        Filters addresses from the available neuronblock addresses. 
         Arguments are:
             - setup: a NeuroSetup
             - chipid: id of the chip as expressed in setup.xml
             - neurontype: id of neurons as expressed in chipfile.xml (e.g.
             'excitatory')
             - axes: list of axes by which to filter the addresses
-            - id_list: the list of ids for neurons to allocate (human readable addresses).  
+            - id_filter: the list of ids (per dimension) for neurons to allocate (human readable addresses).  
 
         *Example*: populate all neurons on a 3d grid x,y,z such that 24<= x < 26, y=5:
 
         .. code-block:python
 
-        >> populate_by_id(setup, chipid, neurontype, id_list = [[24,25], [5]], axes = [0,1]
+        >> populate_by_id_filter(setup, chipid, neurontype, id_filter =
+        [[24,25], [5]], axes = [0,1])
 
         where x is defined to be on axis = 0, and y to be on axis = 1
         """
@@ -464,17 +504,12 @@ class Population(object):
         if not hasattr(axes, '__iter__'):
             axes = [axes]
         
-        for i, l in enumerate(id_list):
+        # Ensuring all elements in the filter list are lists
+        for i, l in enumerate(id_filter):
             if not hasattr(l, '__iter__'):
-                id_list[i] = [l]
+                id_filter[i] = [l]
 
-#        #filter addresses
-#        addresses = []
-#        for t in self.neuronblock.soma.addresses:
-#            if all([int(t[a]) in id_list[i] for i, a in enumerate(axes)]):
-#                addresses.append(t)
-
-        #filter addresses faster than commented code above, but uses slightly more memory
+        #filter addresses fast , but uses slightly more memory
         mask = np.zeros_like(self.neuronblock.soma.addresses, dtype='bool')
         for i, a in enumerate(axes):
             mask[:,a]=np.in1d(self.neuronblock.soma.addresses[:,a], id_list[i])
