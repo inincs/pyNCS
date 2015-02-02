@@ -152,14 +152,14 @@ class Population(object):
         self.soma = AddrGroup('Empty group')
         self.synapses = dict()
 
-    def __populateByExplicitAddr__(self, chipid, addr):
-        """
-        This function is useful if you know the addresses of neurons and
-        synapses. Needs consistence between chipid and addr.
-        WARNING: you are supposed to use higher level functions, so use this at
-        your own risk!
-        """
-        raise NotImplementedError
+#    def __populateByExplicitAddr__(self, chipid, addr):
+#        """
+#        This function is useful if you know the addresses of neurons and
+#        synapses. Needs consistence between chipid and addr.
+#        WARNING: you are supposed to use higher level functions, so use this at
+#        your own risk!
+#        """
+#        raise NotImplementedError
 
     def isinit(self):
         """
