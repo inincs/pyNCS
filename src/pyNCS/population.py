@@ -439,7 +439,7 @@ class Population(object):
 #
 
     
-    def populate_by_idlist(self, setup, chipid, neurontype, id_list=[]):
+    def populate_by_addr_list(self, setup, chipid, neurontype, id_list=[]):
         """
         Assigns the population a set of human readable addresses explicityly
         delared by the user.
@@ -471,14 +471,13 @@ class Population(object):
     def populate_by_id(self, setup, chipid, neurontype, id_list=[], axes=[]):
         """
         Look documentation for populate_by_filter
-        Function depricated, use populate_by_idlist or populate_by_idfilter in
+        Function depricated, use populate_by_addr_list or populate_by_idfilter in
         future.
         """
-        self.populate_by_id_filter(self, setup, chipid, neurontype,
+        self.populate_by_id_filter(setup, chipid, neurontype,
                                    id_filter=id_list, axes=axes)
         
-
-def populate_by_id_filter(self, setup, chipid, neurontype, id_filter=[], axes=[]):
+    def populate_by_id_filter(self, setup, chipid, neurontype, id_filter=[], axes=[]):
         """
         Filters addresses from the available neuronblock addresses. 
         Arguments are:
@@ -512,7 +511,7 @@ def populate_by_id_filter(self, setup, chipid, neurontype, id_filter=[], axes=[]
         #filter addresses fast , but uses slightly more memory
         mask = np.zeros_like(self.neuronblock.soma.addresses, dtype='bool')
         for i, a in enumerate(axes):
-            mask[:,a]=np.in1d(self.neuronblock.soma.addresses[:,a], id_list[i])
+            mask[:,a]=np.in1d(self.neuronblock.soma.addresses[:,a], id_filter[i])
         addresses = self.neuronblock.soma.addresses[np.prod(mask, axis=1, dtype='bool')]
         try:
             self.soma.populate_line(
