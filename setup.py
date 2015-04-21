@@ -4,7 +4,7 @@ import os
 
 setup(name='pyNCS',
 	version='14.01beta',
-	description='inincs/pyNCS headless',
+	description='Python Neurormophic Chips and Systems',
 	author='Sadique Sheik, Emre Neftci, Fabio Stefanini, Giacomo Indiveri',
 	author_email='sadique@ini.phys.ethz.ch, emre@ini.phys.ethz.ch, giacomo@ini.phys.ethz.ch, fabios@ini.phys.ethz.ch',
 	url='https://github.com/inincs/pyNCS',
