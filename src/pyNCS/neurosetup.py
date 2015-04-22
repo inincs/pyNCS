@@ -235,7 +235,7 @@ class NeuroSetup(object):
                 try:
                     self.com_api = self._import_module(str(ncom.attrib['module']))
                 except ImportError as e:
-                    warnings.warn(e.message)
+                    warnings.warn('Communicator module:' + e.message)
                     self.com_api = ComAPI
                     self.com_kwargs = {}
             self.communicator = self.com_api.Communicator(**self.com_kwargs)
@@ -266,7 +266,7 @@ class NeuroSetup(object):
             try:
                 conf_api = self._import_module(module)
             except ImportError as e:
-                warnings.warn(e.message)
+                warnings.warn('Configurator module' + e.message)
                 conf_api = ConfAPI
                 conf_kwargs = {}
             chip = NeuroChip(chipfile, id=chipid, offline=offline,
@@ -290,7 +290,7 @@ class NeuroSetup(object):
             try:
                 self.map_api = self._import_module(str(nmapper.attrib['module']))
             except ImportError as e:
-                warnings.warn(e.message)
+                warnings.warn('Mapper module:' + e.message)
                 self.map_api = ConfAPI
                 self.map_kwargs = {}
             self.mapper = self.map_api.Mappings(**self.map_kwargs)
