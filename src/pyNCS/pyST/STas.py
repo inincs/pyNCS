@@ -1197,7 +1197,6 @@ def addrPhysicalConstruct(stas, addr):
     #Initialize physical address vector (integer)
     addr = stas.addr_encoder.encode(addr)
 
-    #Bow before my crappy black magic...
     addrPhysical = [[]] * len(stas.field)
     for fieldIndex, field in enumerate(stas.iter_fields()):
         addrPhysical[fieldIndex] = field.construct(addr[fieldIndex])

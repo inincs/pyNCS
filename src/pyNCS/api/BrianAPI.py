@@ -7,7 +7,7 @@
 # Author: Emre Neftci
 #
 # Creation Date : 05-06-2013
-# Last Modified : Sat 06 Dec 2014 09:24:07 AM PST
+# Last Modified : Thu 26 Mar 2015 12:21:07 PM PDT
 #
 # Copyright : (c) 
 # Licence : GPLv2
@@ -92,7 +92,7 @@ class Communicator(BatchCommunicatorBase):
     def run(self, stimulus=None, duration=None, context_manager=None):
         stimulus_abs = pyST.events(stimulus, atype='p', isISI=True)
         stimulus_abs.set_abs_tm()
-        self.crap = evs_in = stimulus_abs.get_adtmev().astype('float')
+        self.evn_sin = evs_in = stimulus_abs.get_adtmev().astype('float')
         evs_in[:,1]*=1e-6 #brian takes seconds
         if duration == None and len(stimulus_abs)>0:
             duration = np.max(evs_in[:,1])
@@ -102,6 +102,7 @@ class Communicator(BatchCommunicatorBase):
         else:
             duration = float(duration)/1e3
         net, M_EIP, MV_EIP = self._prepare_brian_net(evs_in)
+        self.outs = [net, M_EIP, MV_EIP]
         net.reinit(states=False)
         print('running virtual IFLSWTA for {0}s'.format(duration))  
         net.run(duration)
