@@ -71,7 +71,7 @@ def parse_and_validate(filename, dtd, validate = True):
         if len(parser.error_log.filter_from_errors()) > 0:
             for e in parser.error_log.filter_from_errors():
                 print(e)
-            raise Exception('setupfile XML is not well formed, corrent the errors given above first')
+            raise Exception('setupfile XML is not well formed, correct the errors given above first')
         elif len(parser.error_log) > 0:
             for e in parser.error_log.filter_from_errors():
                 print(e)
