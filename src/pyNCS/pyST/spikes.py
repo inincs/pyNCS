@@ -1194,12 +1194,12 @@ class SpikeList(object):
                 [10,11,12,13,14]
         """
         id_list = numpy.sort(self.id_list())
-        N = len(id_list)
-
-        for idx in xrange(1, len(id_list) + 1):
-            id = id_list[N - idx]
+        newspiketrains = {}
+        for id in id_list:
             spk = self.spiketrains.pop(id)
-            self.spiketrains[id + offset] = spk
+            newspiketrains[id+offset] = spk
+        self.spiketrains = newspiketrains
+
 
     def first_spike_time(self):
         """
