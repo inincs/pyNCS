@@ -841,7 +841,7 @@ class channelAddressing:
                         addr[t] - (channels_in_addr[t] << self.nBitsTotal))
         return channelEventsList
 
-    def addrPhysicalLogical(self, addr, checkLevel=1):
+    def addrPhysicalLogical(self, addr):
         """
         Extracts Physical addresses to logical addresses (directly)
 
@@ -860,7 +860,7 @@ class channelAddressing:
             t = (channels_in_addr == channelIdx)
             channelEventsList[channelIdx] =\
             self[channelIdx].addrPhysicalLogical(addr[t] -
-                (channels_in_addr[t] << self.nBitsTotal), checkLevel=checkLevel)
+                (channels_in_addr[t] << self.nBitsTotal))
         return channelEventsList
 
     def importAER(self, input=None, sep='\t', dt=1e-6, format='a', isi=False, *args, **kwargs):
@@ -1246,7 +1246,7 @@ def addrPhysicalExtract(stas, addrPhys):
     return addrPhysicalExtractDecode(stas, addrPhys)
 
 
-def addrPhysicalLogical(stas, addrPhys, checkLevel=1):
+def addrPhysicalLogical(stas, addrPhys):
     """
     Direct translation from Physical Addresses to Logical addresses using a hash table
     """
@@ -1273,41 +1273,14 @@ def addrPhysicalLogical(stas, addrPhys, checkLevel=1):
     return fastAddr.transpose()
 
 
-#def addrLogicalPhysical(stas, addrLogical, checkLevel=1):
-#    """
-#    Direct translation from Logical Addresses to Physical addresses using a hash table
-#    """
-#    if checkLevel is 1:
-#        failedIndex = np.setdiff1d(
-#            addrLogical, stas.addrExtractPhysicalFast.keys())
-#        #Don't even bother calling decode if everyone is in
-#        if len(failedIndex) > 0:
-#            try:
-#                addrLogicalPhysicalDecode(
-#                    stas, failedIndex)  # Failed? decode the address
-#            except AssertionError as e:
-#                print('Error in addrLogicalPhysicalDecode.')
-#                print('No. of addresses in the packet : {0}'.
-#                    format(len(addrLogical)))
-#                raise e
-#
-#    # NOTE: If you get a ValueError, you probably have checkLevel=0 and forgot
-#    # to build the hash tables using addrBuildHashTable
-#    fastAddr = np.array(
-#        map(stas.addrExtractPhysicalFast.get, addrLogical), 'uint32')
-#
-#    # Loop should run over addresses only once if all addresse are in dict.
-#    # Small overhead
-#    return fastAddr.transpose()
-
-def addrLogicalPhysical(stas, addrLogical, checkLevel=1):
+def addrLogicalPhysical(stas, addrLogical, *args, **kwargs):
     """
     Direct translation from Logical Addresses to Physical addresses using a hash table
     """
     #Don't even bother calling decode if everyone is in
     try:
-        return addrLogicalPhysicalDecode(
-            stas, addrLogical)  # Failed? decode the address
+        # Failed? decode the address
+        return addrLogicalPhysicalDecode(stas, addrLogical)  
     except AssertionError as e:
         print('Error in addrLogicalPhysicalDecode.')
         print('No. of addresses in the packet : {0}'.
@@ -1362,7 +1335,7 @@ def addrBuildHashTable(stas):
     grid = _buildGrid(addrLens)
 
     stas.allpos = stas.addrLogicalConstruct(grid.transpose())
-    addrLogicalPhysicalDecode(stas, stas.allpos)
+    addr_phys = addrLogicalPhysicalDecode(stas, stas.allpos)
     addrPhysicalLogicalDecode(stas, addr_phys)
 
 

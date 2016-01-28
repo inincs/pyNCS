@@ -1,0 +1,47 @@
+<?xml version="1.0" ?>
+<chip chipclass="if2dwta" chipfile="src/pyTune/plugins/ncs/chipfiles/if2dwta.xml"  >
+    <neuron id='excitatory'>
+        <soma id='general'>
+            <!--<dim id='y' range='range(32)'/>-->
+            <dim id='y' range='[i for i in range(4, 32) if (i % 4) == 0 or (i % 4 - 1) == 0]'/>
+            <!--
+            Inhibitory synapses are buggy on the 2d chip. If you want to use
+            inhibitory synapses, you can't use all the 64 rows but the half of
+            it. Correct synapses are 0, 1, 4, 5, 8, 9, 12, 13, ...  If you
+            don't use inhibitory synapses in your experiment you can change the
+            'Y' range to 'range(64)':
+                <dim id='Y' range='range(64)'/>
+            -->
+            <dim id='x' range='range(64)'/>
+            <parameter id='leak' biasname='nlk' range='' />
+            <parameter id='injection' biasname='inj' range='' />
+            <parameter id='refractory' biasname='nrf' range='' />
+            <parameter id='threshold' biasname='nsf' range='' />
+            <parameter id='adaptation' biasname='nadap' range='' />
+            <parameter id='adaptation_recovery' biasname='nlkadap' range='' />
+        </soma>
+        <synapse id='inhibitory' type='inhibitory'>
+            <dim id='s' range='[0]'/>
+            <parameter id='tau' biasname='nsynaerinhtau' range='' />
+            <parameter id='weight' biasname='psynaerinhw' range='' />
+            <parameter id='threshold' biasname='psynaerinhth' range='' />
+            <parameter id='pulse_width' biasname='nsynaerinhplswdt' range='' />
+        </synapse>
+        <synapse id='excitatory0' type='excitatory'>
+            <dim id='s' range='[1]'/>
+            <parameter id='tau' biasname='psynaerexctau0' range='' />
+            <parameter id='weight' biasname='psynaerexcw0' range='' />
+            <parameter id='threshold' biasname='nsynaerexcth0' range='' />
+            <parameter id='pulse_width' biasname='nsynaerexcplswdt' range='' />
+        </synapse>
+        <synapse id='excitatory1' type='excitatory'>
+            <dim id='s' range='[2]'/>
+            <parameter id='tau' biasname='psynaerexctau1' range='' />
+            <parameter id='weight' biasname='psynaerexcw1' range='' />
+            <parameter id='threshold' biasname='nsynaerexcth1' range='' />
+            <parameter id='pulse_width' biasname='nsynaerexcplswdt' range='' />
+        </synapse>
+        <!-- TODO: local connections -->
+        <!-- TODO: parameters for learning synapses -->
+    </neuron>
+</chip>
