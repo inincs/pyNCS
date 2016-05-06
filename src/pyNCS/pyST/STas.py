@@ -1817,7 +1817,10 @@ class addrSpec:
                 for chld in elm:
                     if chld.tag == 'range':
                         # Range
-                        dim['range'] = eval(chld.text)
+                        if chld.text:
+                            dim['range'] = eval(chld.text)
+                        else:
+                            dim['range'] = None
                     elif chld.tag == 'description':
                         # Description
                         dim['description'] = chld.text
@@ -1954,7 +1957,7 @@ def _stas_parse_addrstr(addrStr):
     nBitsTotal = 0
     for k, v in addrSpec.items():
         nBitsTotal += len(v)
-        if k == 'I':
+        if k == 'I': #I is the ignore bit
             addrSpec.pop(k)
             nBits.pop(k)
         else:

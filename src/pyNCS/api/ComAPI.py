@@ -44,8 +44,6 @@ class BatchCommunicatorBase(ResourceManagerBase,RecordableCommunicatorBase):
         return EMPTY_RAW
 
 
-
-
 class ContinuousCommunicatorBase(BatchCommunicatorBase):
 
     def __init__(self, *args, **kwargs):

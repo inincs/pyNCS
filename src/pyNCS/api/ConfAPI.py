@@ -35,26 +35,7 @@ class ConfiguratorBase(ResourceManagerBase):
         Inherits ResourceManagerBase
         '''
         self.parameters = {}
-        self._neurosetup = None
-        self._neurosetup_registered = False
         ResourceManagerBase.__init__(self)
-
-    @property
-    def neurosetup(self):
-        if not self._neurosetup_registered:
-            warnings.warn('NeuroSetup has not been registered')
-            return None
-        else:
-            return self._neurosetup
-
-    def register_neurosetup(self, neurosetup):
-        '''
-        Provides a link to the Neurosetup. This is useful for complex parameter
-        configuration protocols requiring the sequencing and monitoring of
-        address-events
-        '''
-        self._neurosetup_registered = True
-        self._neurosetup = neurosetup
 
     def _readCSV(self, CSVfile):
         '''

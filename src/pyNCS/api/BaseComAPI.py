@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------------
 
 #Path for recording experimental data
-import numpy, getpass
+import numpy, getpass, warnings
 EMPTY_RAW = numpy.zeros([0,2], dtype='uint32')
 USER = getpass.getuser()
 
@@ -18,6 +18,8 @@ class ResourceManagerBase(object):
     The init function takes no arguments by default
     '''
     def __init__(self):
+        self._neurosetup = None
+        self._neurosetup_registered = False
         self._isopen = False
 
     def open(self):
@@ -39,6 +41,23 @@ class ResourceManagerBase(object):
     def __del__(self):
         if self.isopen:
             self.close()
+
+    @property
+    def neurosetup(self):
+        if not self._neurosetup_registered:
+            warnings.warn('NeuroSetup has not been registered')
+            return None
+        else:
+            return self._neurosetup
+
+    def register_neurosetup(self, neurosetup):
+        '''
+        Provides a link to the Neurosetup. This is useful for complex parameter
+        configuration protocols requiring the sequencing and monitoring of
+        address-events
+        '''
+        self._neurosetup_registered = True
+        self._neurosetup = neurosetup
 
 class RecordableCommunicatorBase(object):
     REC_PATH = '/tmp/exp_rec_' + USER

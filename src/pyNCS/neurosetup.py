@@ -239,6 +239,7 @@ class NeuroSetup(object):
                     self.com_api = ComAPI
                     self.com_kwargs = {}
             self.communicator = self.com_api.Communicator(**self.com_kwargs)
+            self.communicator.register_neurosetup(self)
         
         # Load virtual chips
         for nchip in nsetup.iterfind('virtualchip'):
@@ -304,7 +305,7 @@ class NeuroSetup(object):
         if not hasattr(self, 'mapper'):
             from .api.ConfAPI import Mappings
             self.mapper = Mappings()
-
+        self.mapper.register_neurosetup(self)
 
     def _import_module(self, module):
         try:

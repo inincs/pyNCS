@@ -16,7 +16,6 @@ from contextlib import contextmanager
 from lxml import etree
 import warnings
 
-
 class Parameter:
     def __init__(self, parameters, configurator):
         '''
@@ -68,8 +67,3 @@ class Parameter:
     
     v = property(getValue, setValue)
 
-#    def __repr__(self):
-#        return str(self.getValue())
-#
-#    def __str__(self):
-#        return str(self.getValue())
