@@ -610,7 +610,7 @@ class SpikeTrain(object):
         bins = self.time_axis(time_bin)
         hist, edges = numpy.histogram(self.spike_times, bins)
         if normalized and isinstance(time_bin, int):  # what about normalization if time_bin is a sequence?
-            hist *= 1000.0 / time_bin
+            hist = hist*1000.0 / time_bin
         return hist
 
     def relative_times(self):
