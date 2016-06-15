@@ -1002,8 +1002,8 @@ class SpikeList(object):
         if id in self.id_list():
             raise Exception("id %d already present in SpikeList. Use __setitem__ (spk[id]=...) instead()" % id)
         else:
-            self.spiketrains[id] = spktrain.time_slice(self.
-                t_start, self.t_stop)
+            self.spiketrains[id] = spktrain #spktrain.time_slice(self.
+                #t_start, self.t_stop)
 
     def time_parameters(self):
         """
