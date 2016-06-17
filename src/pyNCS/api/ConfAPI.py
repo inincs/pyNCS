@@ -208,7 +208,7 @@ class ConfiguratorBase(ResourceManagerBase):
                 if s.find(' ')!=-1:
                     sp = s.split(' ')
                 elif s.find('\t')!=-1:
-                    sp = s.split(' ')
+                    sp = s.split('\t')
                 else:
                     raise Exception('Unknown delimiter. Reads spaces or tabs.')
 
