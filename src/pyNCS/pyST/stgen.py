@@ -265,7 +265,7 @@ class StGen:
 
         return spikes
 
-    def poisson_generator(self, rate, t_start=0.0, t_stop=1000.0, array=False, debug=False):
+    def poisson_generator(self, rate, t_start=0.0, t_stop=1000.0, array=False, debug=False, refractory=0):
         """
         Returns a SpikeTrain whose spikes are a realization of a Poisson process
         with the given rate (Hz) and stopping time t_stop (milliseconds).
@@ -298,6 +298,7 @@ class StGen:
 
         if number > 0:
             isi = self.rng.exponential(1.0 / rate, number) * 1000.0
+
             if number > 1:
                 spikes = numpy.add.accumulate(isi)
             else:
@@ -331,6 +332,9 @@ class StGen:
 
         if not array:
             spikes = SpikeTrain(spikes, t_start=t_start, t_stop=t_stop)
+
+        if refractory >0:
+            spikes = spikes[spikes>refractory]
 
         if debug:
             return spikes, extra_spikes

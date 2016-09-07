@@ -151,6 +151,7 @@ class NeuroSetup(object):
         self.aerDummyIn, self.aerDummyOut = self.aerDummy()
         self.update()
         self.apply()
+        self.reset()
         self.monitors = Monitors()
         self.sequencers = Monitors()
 
@@ -279,7 +280,6 @@ class NeuroSetup(object):
             self.chaddrspecs.chip_aerin[chipid]=chip.aerIn
             self.chaddrspecs.chip_aerout[chipid]=chip.aerOut
             chip.configurator.register_neurosetup(self)
-            chip.configurator.reset()
 
         #Load Mapper
         # load a virtual mapping table by defauld
@@ -393,6 +393,10 @@ class NeuroSetup(object):
        #?? self.update()
         pyST.setDefaultMonChannelAddress(self.mon)
         pyST.setDefaultSeqChannelAddress(self.seq)
+
+    def reset(self):
+        for chip in self.chips.values():
+            chip.configurator.reset()
 
     def prepare(self):
         self.mapping.prepare()
