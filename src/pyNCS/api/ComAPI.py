@@ -61,7 +61,7 @@ class ContinuousCommunicatorBase(BatchCommunicatorBase):
         >>> c.close()
         '''
 
-#        Inputs:
+#       Inputs:
 # *host:* the hostname of the computer where the hardware is attached (default:
 # localhost).
         BatchCommunicatorBase.__init__(self)

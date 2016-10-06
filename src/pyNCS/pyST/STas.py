@@ -161,7 +161,7 @@ class events(object):
 
         if isinstance(ev, events):
             self.__data = ev.__data.copy()
-        elif ev != None:
+        elif ev is not None:
             ev = np.array(ev)
             if ev.shape[1] == self.NF:
                 self.set_data(ev[:, 0], ev[:, 1])
@@ -453,7 +453,7 @@ class channelEvents(dict):
         if isinstance(channel_events, dict):
             for k, v in channel_events.iteritems():
                 self.add_ch(k, events(v, self.atype))
-        elif channel_events != None:
+        elif channel_events is not None:
             raise TypeError("channel_events must be a dictionary, None or a channelEvents. Alternatively, use an events object and extract from channelAddressing")
 
     @property
@@ -775,7 +775,7 @@ class channelAddressing:
 
         #Construct channel by channel if not empty
         for channelIdx in range(len(addr)):
-            if addr[channelIdx] != None:
+            if addr[channelIdx] is not None:
                 mainAddr[channelIdx] = np.array(self[channelIdx]
                     .addrLogicalConstruct(addr[channelIdx]), 'float')
 
@@ -792,7 +792,7 @@ class channelAddressing:
 
         #Construct channel by channel if not empty
         for channelIdx in xrange(self.nChannels):
-            if addr[channelIdx] != None:
+            if addr[channelIdx] is not None:
                 addr[channelIdx] = np.array(addr[channelIdx], 'float')
                 mainAddr[channelIdx] = self[
                     channelIdx].addrLogicalExtract(addr[channelIdx])
@@ -809,7 +809,7 @@ class channelAddressing:
         addr = self.isChannelAddrList(addr)
         mainAddr = np.zeros([0], dtype='uint32')
         for channelIdx in xrange(self.nChannels):
-            if addr[channelIdx] != None:
+            if addr[channelIdx] is not None:
                 mainAddr = np.concatenate((
                         mainAddr,
                         self[channelIdx].addrPhysicalConstruct(

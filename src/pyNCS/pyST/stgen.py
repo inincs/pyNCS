@@ -292,7 +292,7 @@ class StGen:
 
         # less wasteful than double length method above
         n = (t_stop - t_start) / 1000.0 * rate
-        number = numpy.ceil(n + 3 * numpy.sqrt(n))
+        number = int(numpy.ceil(n + 3 * numpy.sqrt(n)))
         if number < 100:
             number = min(5 + numpy.ceil(2 * n), 100)
 
