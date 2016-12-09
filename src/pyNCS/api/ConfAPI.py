@@ -10,8 +10,10 @@
 #Biases and mapper
 #Api for modules having pyAMDA-like functionality
 #Api for modules having pyAEX-like functionality
-from BaseConfAPI import *
-from ComAPI import ResourceManagerBase
+
+from __future__ import absolute_import
+from .BaseConfAPI import *
+from .ComAPI import ResourceManagerBase
 
 class ConfiguratorBase(ResourceManagerBase):
     def __init__(self):
@@ -23,7 +25,7 @@ class ConfiguratorBase(ResourceManagerBase):
         - get_parameter (required)
         - add_parameter (required)
         - get_parameter_names (required)
-        - reset (required)
+        - reset (optional)
         - set_parameters (optional)
         - get_parameters (optional)
         - context_get_param (optional)
@@ -33,26 +35,7 @@ class ConfiguratorBase(ResourceManagerBase):
         Inherits ResourceManagerBase
         '''
         self.parameters = {}
-        self._neurosetup = None
-        self._neurosetup_registered = False
         ResourceManagerBase.__init__(self)
-
-    @property
-    def neurosetup(self):
-        if not self._neurosetup_registered:
-            warnings.warn('NeuroSetup has not been registered')
-            return None
-        else:
-            return self._neurosetup
-
-    def register_neurosetup(self, neurosetup):
-        '''
-        Provides a link to the Neurosetup. This is useful for complex parameter
-        configuration protocols requiring the sequencing and monitoring of
-        address-events
-        '''
-        self._neurosetup_registered = True
-        self._neurosetup = neurosetup
 
     def _readCSV(self, CSVfile):
         '''
@@ -104,9 +87,12 @@ class ConfiguratorBase(ResourceManagerBase):
         if isinstance(doc, str):
             # parse the file
             doc = etree.parse(doc).getroot()
+            if not doc.tag == 'parameters':
+                doc = doc.find('parameters')
         else:
             # assuming doc is an lxml Element object.
             assert doc.tag == 'parameters'
+
         for param in doc:
             self.add_parameter(param)
 
@@ -200,11 +186,42 @@ class ConfiguratorBase(ResourceManagerBase):
         d = self.get_parameters()
         with open(filename, 'w') as f:
             f.write("\n".join(["%s\t%.17e" % (k, v) for k, v in d.items()]))
-        print 'Parameters have been saved to the file %s' % filename
+        print('Parameters have been saved to the file {0}'.format(filename))
+        return None
+
+    def load_parameters(self, filename, *kwargs):
+        #CONVENIENCE FUNCTION. IMPLEMENTATION IS NOT REQUIRED
+        '''
+        Saves parameters to a file
+        '''
+        name_value_pairs = {}
+        with open(filename, 'r') as f:
+            while True:
+                s = f.readline()
+                if len(s) == 0:
+                    break
+                else:
+                    s = s.strip()
+
+                if s[0] == '%' or s[0] == '#':
+                    continue
+                if s.find(' ')!=-1:
+                    sp = s.split(' ')
+                elif s.find('\t')!=-1:
+                    sp = s.split('\t')
+                else:
+                    raise Exception('Unknown delimiter. Reads spaces or tabs.')
+
+                name_value_pairs[sp[0]] = sp[1]
+        self.set_parameters(name_value_pairs)
+
+
+
+
         return None
 
     def reset(self):
-        #IMPLEMENT
+        #CONVENIENCE FUNCTION. IMPLEMENTATION IS NOT REQUIRED
         '''
         Resets all the parameters to default values
         '''
@@ -220,7 +237,7 @@ class ConfiguratorBase(ResourceManagerBase):
         #This implementation raises an informative exception
         try:
             yield
-        except KeyError, e:
+        except KeyError as e:
             raise KeyError('There is no parameter {0} in the configurator'.
                 format(e.message))
 
@@ -281,6 +298,13 @@ class MappingsBase(ResourceManagerBase):
         Clears the mapping table. No inputs
         '''
         raise NotImplementedError('del_mappings has not been implemented')
+
+    def filter_events(self, events):
+        #CONVIENCE FUNCTION, IMPLEMENTATION NOT REQUIRED 
+        '''
+        Before Neurosetup sends the physical events are setup, they are first passed through this function. Useful if there are no virtual neurons.
+        '''
+        return events
 
 # Default blank initializations
 # Override these classes in custom API as required

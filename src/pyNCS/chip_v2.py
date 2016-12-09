@@ -6,13 +6,13 @@
 # Copyright : University of Zurich, Giacomo Indiveri, Emre Neftci, Sadique Sheik, Fabio Stefanini
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
-from __future__ import with_statement
+from __future__ import with_statement, absolute_import
 from xml.dom import minidom as md
-import pyST
-from pyST.STas import addrSpec
-from pyST.STas import _buildGrid
+from . import pyST
+from .pyST.STas import addrSpec
+from .pyST.STas import _buildGrid
 import warnings
-from pyNCS.api.ConfAPI import Configurator
+from .api.ConfAPI import Configurator
 from contextlib import contextmanager
 from lxml import etree
 from re import search as res
@@ -148,7 +148,7 @@ class NeuronBlock():
                 self.synapses[group_id] = group
                 self.synapses[group_id].addresses = self.expand_dims(group_id)
         else:
-            print "This is not a neuron!"
+            print("This is not a neuron!")
 
     def __getNHML__(self):
         '''
@@ -242,7 +242,7 @@ class Chip:
             try:
                 self.configurator = conf_api.Configurator(**conf_kwargs)
                 self.virtual = False
-            except Exception, e:
+            except Exception as e:
                 self.virtual = True
                 #Chip should be non-virtual, warn user
                 warnings.warn(
@@ -289,7 +289,7 @@ class Chip:
         try:
             for d in self.aerOut.addrConf:
                 self.dims.append(len(d['range']))
-        except AttributeError, e:
+        except AttributeError as e:
             warnings.warn('Dimensions could not be inferred')
             warnings.warn('Error is :' + str(e))
         ##The following finds chipclass only
@@ -316,14 +316,14 @@ class Chip:
             aerInDoc = self.aerIn.__getNHML__()
             aerInDoc.attrib['type'] = 'aerIn'
             doc.append(aerInDoc)
-        except AttributeError, e:
+        except AttributeError as e:
             warnings.warn("Cannot retreive aerIn data")
         try:
             # aerOut
             aerOutDoc = self.aerOut.__getNHML__()
             aerOutDoc.attrib['type'] = 'aerOut'
             doc.append(aerOutDoc)
-        except AttributeError, e:
+        except AttributeError as e:
             warnings.warn("Cannot retreive aerOut in data")
         # Parameters
         doc.append(self.configurator.__getNHML__())
@@ -351,7 +351,7 @@ class Chip:
         try:
             for d in self.aerOut.addrConf:
                 self.dims.append(len(d['range']))
-        except AttributeError, e:
+        except AttributeError as e:
             warnings.warn('Dimensions could not be inferred')
             warnings.warn('Error is :' + str(e))
 
@@ -445,7 +445,7 @@ class Chip:
                     x = line.strip().split(sep)
                     b[x[0]] = float(x[1])
         self.set_parameters(b)
-        print 'Parameters loaded and set'
+        print('Parameters loaded and set')
         return None
 
     def save_parameters(self, filename, *kwargs):
@@ -527,7 +527,7 @@ class NeuroChip(Chip):
         try:
             for d in self.aerOut.addrConf:
                 self.dims.append(len(d['range']))
-        except AttributeError, e:
+        except AttributeError as e:
             warnings.warn('Dimensions could not be inferred')
             warnings.warn('Error is :' + str(e))
 

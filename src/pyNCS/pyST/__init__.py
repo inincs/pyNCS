@@ -6,13 +6,14 @@
 # Copyright : University of Zurich, Giacomo Indiveri, Emre Neftci, Sadique Sheik, Fabio Stefanini
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
-from STas import events, channelEvents, RawOutput, channelAddressing, addrSpec
-from STas import setDefaultMonChannelAddress, setDefaultSeqChannelAddress,\
+from __future__ import absolute_import
+from .STas import events, channelEvents, RawOutput, channelAddressing, addrSpec
+from .STas import setDefaultMonChannelAddress, setDefaultSeqChannelAddress,\
                  getDefaultMonChannelAddress, getDefaultSeqChannelAddress
-from STsl import STCreate
-from spikes import SpikeList, SpikeTrain, merge, merge_spikelists, \
+from .STsl import STCreate
+from .spikes import SpikeList, SpikeTrain, merge, merge_spikelists, \
                    merge_sequencers
-import pyST_globals
+from . import pyST_globals
 import numpy as np
 
 

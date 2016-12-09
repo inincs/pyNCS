@@ -14,14 +14,18 @@ import glob
 import time
 import os
 import fnmatch
-import pickle
+import warnings
+try:
+    import dill as pickle
+except ImportError:
+    warnings.warn('Cannot import dill, falling back to pickle. Several pyNCS objects cannot be pickled')
+    import pickle 
+
 import pylab
 import numpy as np
 from shutil import rmtree
 
 ### The globals class
-
-
 class datacontainer:
     def __init__(self):
         self.directory = './'
@@ -85,8 +89,7 @@ def load_compatibility(filename):
     Same as experimentTools.load(), but works around recent module renaming problems
     Code from http://wiki.python.org/moin/UsingPickle/RenamingModules
     """
-    import pickle
-    
+    import pickle as pickle #Does not work with dill
     renametable = {
         'pyST': 'pyNCS.pyST',
         'pyST.spikes': 'pyNCS.pyST.spikes',
@@ -114,7 +117,7 @@ def load_compatibility(filename):
     
     return loads(filename)
 
-def load(filename=None, compatibility=True):
+def load(filename=None, compatibility=False):
     """
     Unpickles file named 'filename' from the results directory. If no 'filename' is given, then 'globaldata.pickle' is loaded
     """
@@ -193,7 +196,7 @@ def mksavedir(pre='Results/', exp_dir=None):
     elif isinstance(exp_dir, str):
         direct = pre + exp_dir
         if os.path.exists(direct):
-            print "Warning: overwriting directory %s" % direct
+            print("Warning: overwriting directory {0}".format(direct))
             rmtree(direct)
 
     else:
@@ -207,7 +210,7 @@ def mksavedir(pre='Results/', exp_dir=None):
         globaldata.directory + time.strftime("%H:%M:%S", time.localtime()), 'w')
     fh.close()
 
-    print "Created experiment directory %s" % globaldata.directory
+    print("Created experiment directory {0}".format(globaldata.directory))
     return globaldata.directory
 
 
@@ -254,7 +257,7 @@ def savefigs(filename='fig', extension = 'png', close=True, *args, **kwargs):
     import matplotlib,pylab
     figures = [manager.canvas.figure
          for manager in matplotlib._pylab_helpers.Gcf.get_all_fig_managers()]
-    print 'Saving {0} figures'.format(len(figures))
+    print('Saving {0} figures'.format(len(figures)))
     for i, f in enumerate(figures):
         savefig('fig'+str(i)+'.'+extension, *args, **kwargs)
         if close: pylab.close()

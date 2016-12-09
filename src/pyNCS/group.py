@@ -6,9 +6,10 @@
 # Copyright : University of Zurich, Giacomo Indiveri, Emre Neftci, Sadique Sheik, Fabio Stefanini
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
+from __future__ import absolute_import
 import itertools
 from warnings import warn
-from pyST import *
+from .pyST import *
 
 class AddrGroupBase(object):
     def __init__(self, name, description=None):
@@ -36,13 +37,12 @@ class AddrGroupBase(object):
         g = AddrGroup(self.name, self.description)
         g._channel = self._channel
         g.chipid = self.chipid
-        g.addr = self.addr
+        g.addr = self.addr.copy()
         g.setup = self.setup
-#        g.chadspec = self.chadspec
-        g._laddr = self._laddr
-        g._paddr = self._paddr
+        g.addrspec = self.addrspec
         g.grouptype = self.grouptype
         g.dtype = self.dtype
+        g.repopulate()
         return g
 
     @property
@@ -245,11 +245,12 @@ class AddrGroup(AddrGroupBase):
 
 
 
-    def repopulate(self, setup):
+    def repopulate(self, setup = None):
         """
         Repopulates laddr and paddr with respect to addr
         """
-        self.setup = setup
+        if setup is not None:
+            self.setup = setup.chaddrspecs
         if self.grouptype is '':
             raise Exception("Group has never been populated before.")
         self._channel = None
@@ -272,7 +273,15 @@ class AddrGroup(AddrGroupBase):
 
         self.chipid = chipid
         self.grouptype = grouptype
-        self.setup = setup
+        self.setup = setup.chaddrspecs
+
+        if self.grouptype is 'in':
+            self.addrspec = setup.seq[self.channel]
+        elif self.grouptype is 'out':
+            self.addrspec = setup.mon[self.channel]
+        else:
+            self.addrspec = None
+
         self.dtype = self._get_dtype(setup, chipid, grouptype)
         self.addr = np.array([], dtype=self.dtype)
         self._paddr = None  # np.array([],dtype='uint32')
@@ -284,11 +293,10 @@ class AddrGroup(AddrGroupBase):
         Returns the data type of AddrGroup.addr variable, ie. the
         format of human readable addresses.
         '''
-        chp = setup.chips[chipid]
         if grouptype == 'in':
-            flds = chp.aerIn.addrDict
+            flds = setup.get_chip_aerin(chipid).addrDict
         elif grouptype == 'out':
-            flds = chp.aerOut.addrDict
+            flds = setup.get_chip_aerout(chipid).addrDict
         else:
             raise ValueError('Grouptype should be None, "in" or "out", not {0}'.
                 format(grouptype))
@@ -339,11 +347,11 @@ class AddrGroup(AddrGroupBase):
         '''
         try:
             assert( len(p1)==len(p2) )
-        except AssertionError, e:
+        except AssertionError as e:
             raise Exception("Dimensions of vertices do not match")
         try:
             assert( ((np.array(p2) - np.array(p1)) <= 0).sum() == 0 )
-        except AssertionError, e:
+        except AssertionError as e:
             warn('Zero volume for given vertices')
         
         edges = []
@@ -396,22 +404,6 @@ class AddrGroup(AddrGroupBase):
 #        addresses = np.concatenate([addresses, addresses_ret])
 #
 #        self.__populate__(setup, chipid, grouptype, addresses)
-#
-#    def __unfold_dims__(self, vect):
-#        if True:  # Fabio??
-#            if not False:
-#                if False:  # Emre: just to be sure
-#                    pass
-#                else:
-#                    print "Not yet implemented."
-#                    pass
-#        if len(vect) == 0:
-#            return np.array([])
-#        result = []
-#        for dim in vect:
-#            r_low = self.__unfold_dims__(vect[1:])
-#        return np.column_stack([[np.repeat(i, len(r_low)) for i in dim], r_low.repeat(len(dim))])
-
 
 
     def spiketrains(self, spikes=[], t_start=0, t_stop=None, dims=None):
@@ -467,7 +459,7 @@ class AddrGroup(AddrGroupBase):
             raise RuntimeError('Rate vector must be of the same length as the number of neurons in population: {0}'.format(len(self.addr)))
 
         if self.is_empty():
-            print "AddrGroup is empty!"
+            print("AddrGroup is empty!")
             return stStim
 
         for i, id in enumerate(self.laddr):
@@ -508,7 +500,7 @@ class AddrGroup(AddrGroupBase):
             raise RuntimeError('Rate vector must be of the same length as the number of neurons in population: {0}'.format(len(self.addr)))
 
         if self.is_empty():
-            print "AddrGroup is empty!"
+            print("AddrGroup is empty!")
             return stStim
 
         for i, id in enumerate(self.laddr):
@@ -537,7 +529,7 @@ class AddrGroup(AddrGroupBase):
             raise RuntimeError('Rate vector must be of the same length as the number of neurons in population: {0}'.format(len(self.addr)))
 
         if self.is_empty():
-            print "AddrGroup is empty!"
+            print("AddrGroup is empty!")
             return stStim
 
         for i, id in enumerate(self.laddr):
@@ -548,8 +540,6 @@ class AddrGroup(AddrGroupBase):
             channel = self.channel
 
         return {channel: stStim}
-
-    # TODO: add descriptions
 
     def spiketrains_inh_poisson(self, rate, t, channel=None, **kwargs):
         """
@@ -585,7 +575,7 @@ class AddrGroup(AddrGroupBase):
             t), "time vector must be compatible with time axis of rate"
 
         if self.is_empty():
-            print "AddrGroup is empty!"
+            print("AddrGroup is empty!")
             return stStim
         for i, id in enumerate(self.laddr):
             stStim[id] = STCreate.inh_poisson_generator(rate[i],
@@ -631,7 +621,7 @@ class AddrGroup(AddrGroupBase):
 
     def getPaddr(self):
         '''
-        Regenerates Physical addresses from the address list.
+        Generates Physical addresses from the address list. To regenerate use self.repopulate
         '''
         if self._paddr != None:
             return self._paddr

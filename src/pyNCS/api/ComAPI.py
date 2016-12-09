@@ -8,7 +8,8 @@
 #-----------------------------------------------------------------------------
 
 #Path for recording experimental data
-from BaseComAPI import *
+from __future__ import absolute_import
+from .BaseComAPI import *
 
 class BatchCommunicatorBase(ResourceManagerBase,RecordableCommunicatorBase):
     def __init__(self):
@@ -43,8 +44,6 @@ class BatchCommunicatorBase(ResourceManagerBase,RecordableCommunicatorBase):
         return EMPTY_RAW
 
 
-
-
 class ContinuousCommunicatorBase(BatchCommunicatorBase):
 
     def __init__(self, *args, **kwargs):
@@ -62,7 +61,7 @@ class ContinuousCommunicatorBase(BatchCommunicatorBase):
         >>> c.close()
         '''
 
-#        Inputs:
+#       Inputs:
 # *host:* the hostname of the computer where the hardware is attached (default:
 # localhost).
         BatchCommunicatorBase.__init__(self)

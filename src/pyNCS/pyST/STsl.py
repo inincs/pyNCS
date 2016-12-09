@@ -6,14 +6,14 @@
 # Copyright : University of Zurich, Giacomo Indiveri, Emre Neftci, Sadique Sheik, Fabio Stefanini
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
+from __future__ import absolute_import
 import os
 import numpy as np
 import pylab
 import matplotlib
-import pyST_globals
-import STas
-import stgen
-from spikes import SpikeList, SpikeTrain, load, merge, merge_spikelists
+from . import pyST_globals
+from . import stgen
+from .spikes import SpikeList, SpikeTrain, load, merge, merge_spikelists
 
 #Globals
 addrIndex = 0
@@ -197,7 +197,7 @@ def composite_plot_movie(SL, time_bin=10, t_start=None, t_stop=None, output="ani
         files.append(fname)
         t_start += time_bin
         count += 1
-        print 'Generated frame %d' % count
+        print('Generated frame {0}'.format(count))
     command = "mencoder 'mf://_tmp_*.png' -mf type=png:fps=%d -ovc lavc -lavcopts vcodec=wmv2 -oac copy -o %s" % (fps, output)
     os.system(command)
     for fname in files:

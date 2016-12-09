@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------------
 
 #Path for recording experimental data
-import numpy, getpass
+import numpy, getpass, warnings
 EMPTY_RAW = numpy.zeros([0,2], dtype='uint32')
 USER = getpass.getuser()
 
@@ -18,6 +18,8 @@ class ResourceManagerBase(object):
     The init function takes no arguments by default
     '''
     def __init__(self):
+        self._neurosetup = None
+        self._neurosetup_registered = False
         self._isopen = False
 
     def open(self):
@@ -40,6 +42,23 @@ class ResourceManagerBase(object):
         if self.isopen:
             self.close()
 
+    @property
+    def neurosetup(self):
+        if not self._neurosetup_registered:
+            warnings.warn('NeuroSetup has not been registered')
+            return None
+        else:
+            return self._neurosetup
+
+    def register_neurosetup(self, neurosetup):
+        '''
+        Provides a link to the Neurosetup. This is useful for complex parameter
+        configuration protocols requiring the sequencing and monitoring of
+        address-events
+        '''
+        self._neurosetup_registered = True
+        self._neurosetup = neurosetup
+
 class RecordableCommunicatorBase(object):
     REC_PATH = '/tmp/exp_rec_' + USER
     REC_FN_SEQ = 'seq'
@@ -50,7 +69,7 @@ class RecordableCommunicatorBase(object):
     def __init__(self):
         self._rec_fns = []
         self._run_id = 0
-        self.reset()
+        self.__reset()
         self.del_all()
 
     def get_exp_rec(self):
@@ -64,7 +83,7 @@ class RecordableCommunicatorBase(object):
         #CONVIENIENCE FUNCTION, IMPLEMENTATION NOT REQURIED
         import copy
         rec_fns = copy.copy(self._rec_fns)
-        self.reset()
+        self.__reset()
         return rec_fns
 
     def run_rec(self, stimulus = None, *args, **kwargs):
@@ -88,20 +107,19 @@ class RecordableCommunicatorBase(object):
         #CONVIENIENCE FUNCTION, IMPLEMENTATION NOT REQUIRED
         stim_fn, mon_fn = self.__gen_rec_fns()
         #Save stim before in case something goes wrong        
-        self.__save_rec_file(stimulus, stim_fn, header = self.REC_HEADER_SEQ)
+        self.__save_rec_file(stimulus, stim_fn)
         mon_evs = self.run(stimulus = stimulus, *args, **kwargs)
-        self.__save_rec_file(mon_evs, mon_fn, header = self.REC_HEADER_MON)
+        self.__save_rec_file(mon_evs, mon_fn)
 
         return mon_evs
 
-    def __save_rec_file(self, ev_array, filename, *args, **kwargs):
+    def __save_rec_file(self, ev_array, filename):
         '''
-        Save data using np.savetxt, and adds filename in self._record_fns
+        Save data using np.save, and adds filename in self._record_fns
         '''
-        if int(numpy.__version__.split('.')[0])==1 and int(numpy.__version__.split('.')[1])<=6:
-            kwargs.pop('header')
-        self._rec_fns.append(filename)
-        numpy.savetxt(filename, ev_array, delimiter = ' ', newline = '\n', fmt = ['%u', '%u'], *args, **kwargs)
+        self._rec_fns.append(filename+'.npy')
+        numpy.save(filename, ev_array)
+
         self._run_id += 1
 
     def __gen_rec_fns(self):
@@ -114,15 +132,19 @@ class RecordableCommunicatorBase(object):
         import time
         N = self._run_id
         current_time_str = time.strftime("__" + "%d-%m-%Y-%H:%M:%S", time.localtime())
-        filename = self.REC_PATH + '_{2}_{0}__run{1}.dat'
+        filename = self.REC_PATH + '_{2}_{0}__run{1}'
         stim_fn = filename.format(current_time_str, N, self.REC_FN_SEQ)
         mon_fn = filename.format(current_time_str, N, self.REC_FN_MON )
         return stim_fn, mon_fn
 
-    def reset(self):
+    def __reset(self):
         self._run_id = 0
         self._rec_fns = []
         return None
+
+    def reset(self):
+        #CONVIENIENCE FUNCTION, IMPLEMENTATION NOT REQURIED
+        pass
     
     def del_all(self):
         import glob, os

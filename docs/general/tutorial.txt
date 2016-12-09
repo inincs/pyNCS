@@ -249,7 +249,7 @@ You can also use SpikeMonitors to vizualize inputs::
 
 
 Beyond this tutorial
--------------------
+--------------------
 
 Congratulations, you have completed the first NCS tutorial and began your neuromorphic hardware career.
 If you want to see furhter examples, download the zenzero_unittest folder from the svn repository https://svn.ini.uzh.ch/repos/ncs/ini/code/python/ncs_unittests/zenzero_unittest, and take a look at the folders in the test directory. Each test can be run independently by typing::

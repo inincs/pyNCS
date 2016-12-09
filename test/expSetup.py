@@ -1,6 +1,6 @@
 import pyNCS.pyST as pyST
 import time,sys,random
-import pyAex, pyNCS
+import pyNCS
 import numpy as np
 import pylab
 from pyNCS.neurosetup import NeuroSetup
@@ -24,11 +24,10 @@ def set_default_biases(nsetup=None, biases_dir='biases/'):
             warnings.warn("Could not find file {0}".format(filename))
             pass
 
-def build_setup(setups_dir = 'setupfiles/', chips_dir = 'chipfiles/'):
+def build_setup(setupfile = 'test.xml'):
     nsetup = NeuroSetup(
-            setups_dir+'test_setuptype.xml',
-            setups_dir+'test.xml',
-            prefix = chips_dir,
+            'setupfiles/test_setuptype.xml',
+            'setupfiles/'+setupfile,
             offline=False)
     set_default_biases(nsetup=nsetup, biases_dir='biases/')
     return nsetup

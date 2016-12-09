@@ -85,15 +85,17 @@ class SpikeTrain(object):
 
     @spike_times.setter
     def spike_times(self, value):
-        value = numpy.array(value, numpy.float32)
-        self._spike_times = value
+        self._spike_times = numpy.sort(value).astype(numpy.float)
 
     #######################################################################
     ## Constructor and key methods to manipulate the SpikeTrain objects  ##
     #######################################################################
-    def __init__(self, spike_times, t_start=None, t_stop=None):
+    def __init__(self, spike_times, t_start=None, t_stop=None, presorted=False):
         """
         Constructor of the SpikeTrain object
+        *options*:
+        preextracted: set True for faster construction of the SpikeTrain object if the spike times are already constrained to t_start and t_stop.
+        presorted: set True for faster construction of the SpikeTrain object if the spike times are already sorted
 
         See also
             SpikeTrain
@@ -101,24 +103,39 @@ class SpikeTrain(object):
 
         self.t_start = t_start
         self.t_stop = t_stop
-        self._spike_times = numpy.array(spike_times, numpy.float32)
+        if not hasattr(spike_times, 'size'): #Assume it is a numpy array
+            self._spike_times = numpy.array(spike_times,numpy.float)
+        else:
+            self._spike_times = spike_times.astype(numpy.float)
+
+
+        # We sort the spike_times if necessary. Is slower, but necessary for a lot of methods...
+        if not presorted:
+            self._spike_times = numpy.sort(self.spike_times, kind="quicksort")
+        else:
+            self._spike_times = spike_times
+
 
         # If t_start is not None, we resize the spike_train keeping only
         # the spikes with t >= t_start
         if self.t_start is not None:
-            self._spike_times = numpy.extract(
-                (self._spike_times >= self.t_start), self._spike_times)
-
+            idx_t_start = numpy.searchsorted(self._spike_times>=self.t_start, True, side='left')
+        else:
+            idx_t_start = 0
+    
         # If t_stop is not None, we resize the spike_train keeping only
         # the spikes with t <= t_stop
         if self.t_stop is not None:
-            self._spike_times = numpy.extract(
-                (self._spike_times <= self.t_stop), self._spike_times)
+            idx_t_stop = numpy.searchsorted(self._spike_times < self.t_stop, True, side='right')
+        else:
+            idx_t_stop = len(self._spike_times)
+        
+        if idx_t_start>idx_t_stop: 
+            print('No event between t_start and t_stop')
 
-        # We sort the spike_times. May be slower, but is necessary by the way
-        # for quite a
-        # lot of methods...
-        self._spike_times = numpy.sort(self.spike_times, kind="quicksort")
+        self._spike_times = self._spike_times[idx_t_start:idx_t_stop]
+
+
         # Here we deal with the t_start and t_stop values if the SpikeTrain
         # is empty, with only one element or several elements, if we
         # need to guess t_start and t_stop
@@ -139,26 +156,31 @@ class SpikeTrain(object):
                 self.t_stop = self._spike_times[0] + 0.1
         elif size > 1:
             if self.t_start is None:
-                self.t_start = numpy.min(self._spike_times)
-            if numpy.any(self._spike_times < self.t_start):
-                raise ValueError("Spike times must not be less than t_start")
+                self.t_start = self._spike_times[0]
             if self.t_stop is None:
-                self.t_stop = numpy.max(self._spike_times)
-            if numpy.any(self._spike_times > self.t_stop):
-                raise ValueError("Spike times must not be greater than t_stop")
+                self.t_stop = self._spike_times[-1]
+            if self._spike_times[-1] > self.t_stop:
+                logging.debug("Spike times are greater than t_stop, clipping")
+                self._spike_times = self._spike_times[self._spike_times<t_stop]
+            if self._spike_times[0] < self.t_start:
+                logging.debug("Spike times are smaller than t_stop, clipping")
+                self._spike_times = self._spike_times[self._spike_times>=t_start]
 
         if self.t_start > self.t_stop:
             raise Exception("Incompatible time interval : t_start = %s, t_stop = %s" %
                  (self.t_start, self.t_stop))
-        if self.t_start == self.t_stop:
+
+        elif self.t_start == self.t_stop:
             logging.debug(
                 "Warning, t_stop == t_start, setting t_stop = t_start+1ms")
             self.t_stop = self.t_start + 1.
 
         if self.t_start < 0:
             raise ValueError("t_start must not be negative")
-        if numpy.any(self._spike_times < 0):
-            raise ValueError("Spike times must not be negative")
+        if len(self._spike_times)>0:
+            if self._spike_times[0] < 0:
+                raise ValueError("Spike times must not be negative")
+
 
     def __str__(self):
         return str(self.spike_times)
@@ -338,7 +360,7 @@ class SpikeTrain(object):
                 t_stop = self.t_stop
             else:
                 t_stop = min(self.t_stop, t_stop)
-            print t_start, t_stop
+            print(t_start, t_stop)
             isi = self.time_slice(t_start, t_stop).isi()
         if len(isi):
             mean_rate = 1000./numpy.mean(isi)
@@ -569,21 +591,18 @@ class SpikeTrain(object):
 
     def time_histogram(self, time_bin=10, normalized=True):
         """
-        Bin the spikes with the specified bin width. The first and last bins
-        are calculated from `self.t_start` and `self.t_stop`.
+        Bin the spikes with the specified bin width. The first and last bins are calculated from `self.t_start` and `self.t_stop`.
 
         Inputs:
-            time_bin   - the bin width for gathering spikes_times
-            normalized - if True, the bin values are scaled to represent firing rates
-                         in spikes/second, otherwise otherwise it's the number of spikes
-                         per bin.
+        time_bin   - the bin width for gathering spikes_times
+        normalized - if True, the bin values are scaled to represent firing rates in spikes/second, otherwise otherwise it's the number of spikes per bin.
 
         Examples:
-            >> st=SpikeTrain(range(0,100,5),0.1,0,100)
-            >> st.time_histogram(10)
-                [200, 200, 200, 200, 200, 200, 200, 200, 200, 200]
-            >> st.time_histogram(10, normalized=False)
-                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+        >> st=SpikeTrain(range(0,100,5),0.1,0,100)
+        >> st.time_histogram(10)
+            [200, 200, 200, 200, 200, 200, 200, 200, 200, 200]
+        >> st.time_histogram(10, normalized=False)
+            [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
 
         See also
             time_axis
@@ -591,7 +610,7 @@ class SpikeTrain(object):
         bins = self.time_axis(time_bin)
         hist, edges = numpy.histogram(self.spike_times, bins)
         if normalized and isinstance(time_bin, int):  # what about normalization if time_bin is a sequence?
-            hist *= 1000.0 / time_bin
+            hist = hist*1000.0 / time_bin
         return hist
 
     def relative_times(self):
@@ -689,7 +708,7 @@ class emptySpikeTrain(SpikeTrain):
 
     @property
     def spike_times(self):
-        return numpy.array([], dtype=numpy.float32)
+        return numpy.array([], dtype=numpy.float)
 
     @spike_times.setter
     def spike_times(self, value):
@@ -796,29 +815,31 @@ class SpikeList(object):
         self.dimensions = dims
         self.spiketrains = {}
         id_list = numpy.sort(id_list)
+        id_set = set(id_list) #For fast membership testing
 
         # Implementaion base on pure Numpy arrays, that seems to be faster for
         # large spike files. Still not very efficient in memory, because we are
         # not
         ## using a generator to build the SpikeList...
 
-        if not hasattr(spikes, 'size'):  # is an array:
-            spikes = numpy.array(spikes, numpy.float32)
+        if not hasattr(spikes, 'size'):  # is not an array:
+            spikes = numpy.array(spikes, 'float')
         N = len(spikes)
 
         if N > 0:
-            idx = numpy.argsort(spikes[:, 0])
-            spikes = spikes[idx]
+            #sorting for fast array->dictionary
+            spikes = spikes[numpy.argsort(spikes[:, 0],)]
+
             logging.debug("sorted spikes[:10,:] = %s" % str(spikes[:10, :]))
 
             break_points = numpy.where(numpy.diff(spikes[:, 0]) > 0)[0] + 1
             break_points = numpy.concatenate(([0], break_points))
             break_points = numpy.concatenate((break_points, [N]))
+
             for idx in xrange(len(break_points) - 1):
                 id = spikes[break_points[idx], 0]
-                if id in id_list:
-                    self.spiketrains[id] = SpikeTrain(spikes[break_points[idx]
-                        :break_points[idx + 1], 1], self.t_start, self.t_stop)
+                if id in id_set:
+                    self.spiketrains[id] = SpikeTrain(spikes[break_points[idx]:break_points[idx + 1], 1], self.t_start, self.t_stop, presorted = False)
 
         self.complete(id_list)
 
@@ -850,8 +871,7 @@ class SpikeList(object):
     def __del__(self):
         pass
 
-    def filter_duplicates(self):
-        time_window = 0.01  # in ms
+    def filter_duplicates(self, time_window = .01):
         for st in self:
             isi = st.isi()
             if not isinstance(st, emptySpikeTrain):
@@ -888,7 +908,7 @@ class SpikeList(object):
         if len(self) > 0:
           #  if self.t_start is None:
             start_times = numpy.array([self.spiketrains[idx].
-                t_start for idx in self.id_list()], numpy.float32)
+                t_start for idx in self.id_list()], numpy.float)
             self.t_start = numpy.min(start_times)
             logging.debug("Warning, t_start is infered from the data : %f" %
                 self.t_start)
@@ -896,7 +916,7 @@ class SpikeList(object):
                 self.spiketrains[id].t_start = self.t_start
           #  if self.t_stop is None:
             stop_times = numpy.array([self.spiketrains[idx].
-                t_stop for idx in self.id_list()], numpy.float32)
+                t_stop for idx in self.id_list()], numpy.float)
             self.t_stop = numpy.max(stop_times)
             logging.debug(
                 "Warning, t_stop  is infered from the data : %f" % self.t_stop)
@@ -1174,12 +1194,12 @@ class SpikeList(object):
                 [10,11,12,13,14]
         """
         id_list = numpy.sort(self.id_list())
-        N = len(id_list)
-
-        for idx in xrange(1, len(id_list) + 1):
-            id = id_list[N - idx]
+        newspiketrains = {}
+        for id in id_list:
             spk = self.spiketrains.pop(id)
-            self.spiketrains[id + offset] = spk
+            newspiketrains[id+offset] = spk
+        self.spiketrains = newspiketrains
+
 
     def first_spike_time(self):
         """
@@ -1470,7 +1490,7 @@ class SpikeList(object):
         N = len(self)
         M = len(nbins)
         M -= 1
-        spike_hist = numpy.zeros((N, M), numpy.float32)
+        spike_hist = numpy.zeros((N, M), numpy.float)
         subplot = get_display(display)
         for idx, id in enumerate(self.id_list()):
             s = self.spiketrains[id].time_histogram(time_bin, normalized)
@@ -1725,7 +1745,7 @@ class SpikeList(object):
                 max_id = numpy.max(idlist)
             else:
                 max_id = min_id = 0
-                print 'Empty Spiketrain'
+                print('Empty Spiketrain')
             length = t_stop - t_start
             set_axis_limits(subplot, t_start - 0.05 *
                 length, t_stop + 0.05 * length, min_id - 2, max_id + 2)
@@ -1757,10 +1777,8 @@ class SpikeList(object):
         is_times = re.compile("times")
         is_ids = re.compile("ids")
         if len(self) > 0:
-            times = numpy.concatenate([st.format(
-                relative, quantized) for st in self.spiketrains.itervalues()])
-            ids = numpy.concatenate([id * numpy.ones(len(st.
-                spike_times), int) for id, st in self.spiketrains.iteritems()])
+            times = numpy.concatenate([st.format(relative, quantized) for st in self.spiketrains.itervalues()])
+            ids = numpy.concatenate([id * numpy.ones(len(st.spike_times), int) for id, st in self.spiketrains.iteritems()])
         else:
             times = []
             ids = []
@@ -1797,9 +1815,13 @@ class SpikeList(object):
         See also:
             convert()
         """
-        data = numpy.array(self.convert("[times, ids]"), numpy.float32)
-        data = numpy.transpose(data)
-        return data
+        if len(self) > 0:
+            times = numpy.concatenate([st.spike_times for st in self.spiketrains.itervalues()])
+            ids = numpy.concatenate([id * numpy.ones(len(st.spike_times), int) for id, st in self.spiketrains.iteritems()])
+        else:
+            times = []
+            ids = []
+        return numpy.column_stack([times,ids])
 
     def composite_plot(self, id_list=None, t_start=None, t_stop=None, t_start_rate=None, t_stop_rate=None, display=True, kwargs={}, kwargs_bar={}):
         """
@@ -1933,3 +1955,32 @@ def merge_sequencers(*l_seq):
     for k, lseq in new_seq.iteritems():
         merged_seq[k] = merge_spikelists(*lseq)
     return merged_seq
+
+def qmerge(l):
+    '''
+    Helper function to merge spiketrain lists in divide-and-conquer
+    style. Takes list of spiketrains, returns pair-wise merged list.
+    '''
+    if len(l) == 1:
+        return l
+    elif len(l) == 2:
+        return [merge_sequencers(l[0],l[1])]
+    else:
+        a = qmerge(l[:len(l)/2])
+        b = qmerge(l[len(l)/2:])
+        a.extend(b)
+        return a
+
+
+def merge_spiketrain_list(L):
+    '''
+    Takes list of spiketrains and merges them into a single spiketrain. 
+    Returns a spiketrain.
+
+    Should only perform a logarithmic number of merges (in terms of list-length)
+    '''
+    x = qmerge(L)
+    while len(x) > 1:
+        x = qmerge(x)
+    return x[0]
+

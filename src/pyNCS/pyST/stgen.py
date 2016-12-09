@@ -1,9 +1,8 @@
 #-----------------------------------------------------------------------------
 # Purpose:
 #
-# Author: Emre Neftci
+# Adapted from NeuroTools
 #
-# Copyright : University of Zurich, Giacomo Indiveri, Emre Neftci, Sadique Sheik, Fabio Stefanini
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
 """
@@ -27,9 +26,9 @@ shotnoise_fromspikes - Convolves the provided spike train with shot decaying exp
 
 gamma_hazard - Compute the hazard function for a gamma process with parameters a,b.
 """
+from __future__ import absolute_import
 
-
-from spikes import SpikeTrain
+from .spikes import SpikeTrain
 from numpy import array, log
 import numpy
 
@@ -258,13 +257,15 @@ class StGen:
 
         if jitter:
             spikes += numpy.random.rand() * 1000. / rate
+            #Remove any spikes that extend beyond t_stop
+            spikes = spikes[spikes<t_stop]
 
         if not array:
             spikes = SpikeTrain(spikes, t_start=t_start, t_stop=t_stop)
 
         return spikes
 
-    def poisson_generator(self, rate, t_start=0.0, t_stop=1000.0, array=False, debug=False):
+    def poisson_generator(self, rate, t_start=0.0, t_stop=1000.0, array=False, debug=False, refractory=0):
         """
         Returns a SpikeTrain whose spikes are a realization of a Poisson process
         with the given rate (Hz) and stopping time t_stop (milliseconds).
@@ -291,12 +292,13 @@ class StGen:
 
         # less wasteful than double length method above
         n = (t_stop - t_start) / 1000.0 * rate
-        number = numpy.ceil(n + 3 * numpy.sqrt(n))
+        number = int(numpy.ceil(n + 3 * numpy.sqrt(n)))
         if number < 100:
             number = min(5 + numpy.ceil(2 * n), 100)
 
         if number > 0:
             isi = self.rng.exponential(1.0 / rate, number) * 1000.0
+
             if number > 1:
                 spikes = numpy.add.accumulate(isi)
             else:
@@ -321,14 +323,18 @@ class StGen:
             spikes = numpy.concatenate((spikes, extra_spikes))
 
             if debug:
-                print "ISI buf overrun handled. len(spikes)=%d, len(extra_spikes)=%d" % (
-                    len(spikes), len(extra_spikes))
+                print("ISI buf overrun handled." +
+                      "len(spikes)={0}, len(extra_spikes)={1}".format(
+                          len(spikes), len(extra_spikes)))
 
         else:
             spikes = numpy.resize(spikes, (i,))
 
         if not array:
             spikes = SpikeTrain(spikes, t_start=t_start, t_stop=t_stop)
+
+        if refractory >0:
+            spikes = spikes[spikes>refractory]
 
         if debug:
             return spikes, extra_spikes
@@ -807,7 +813,7 @@ class StGen:
             y[i] = y[i - 1] + fac * (y0 - y[i - 1]) + noise * gauss[i - 1]
 
         if time_it:
-            print time.time() - 1
+            print(time.time()-1)
 
         if array:
             return (y, t)
@@ -860,7 +866,7 @@ class StGen:
             y[i] = y[idx] * mfac + gauss[idx]
 
         if time_it:
-            print time.time() - t1
+            print(time.time()-t1)
 
         if array:
             return (y, t)
@@ -928,7 +934,7 @@ class StGen:
                      type_converters=scipy.weave.converters.blitz)
 
         if time_it:
-            print 'Elapsed ', time.time() - t1, ' seconds.'
+            print('Elapsed ', time.time() - t1, ' seconds.')
 
         if array:
             return (y, t)

@@ -1,2 +1,3 @@
-import BrianAPI
-import ComAPI,ConfAPI
+#import BrianAPI
+from __future__ import absolute_import
+from . import ComAPI,ConfAPI

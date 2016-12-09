@@ -1,0 +1,25 @@
+<!ELEMENT setup (chip+,virtualchip*,defaultchip,communicator,mapper*)>
+<!ELEMENT chip (configurator)>
+<!ELEMENT virtualchip EMPTY>
+<!ELEMENT defaultchip EMPTY>
+<!ELEMENT mapper (parameter*)>
+<!ELEMENT communicator (parameter*)>
+<!ELEMENT configurator (parameter*)>
+<!ELEMENT slot EMPTY>
+<!ELEMENT parameter (#PCDATA)>
+
+<!ATTLIST chip chipfile CDATA #REQUIRED>
+<!ATTLIST chip id CDATA #REQUIRED>
+<!ATTLIST chip slot CDATA #REQUIRED>
+<!ATTLIST virtualchip slot CDATA #REQUIRED>
+<!ATTLIST virtualchip chipfile CDATA #REQUIRED>
+<!ATTLIST virtualchip id CDATA #REQUIRED>
+<!ATTLIST defaultchip chipfile CDATA #REQUIRED>
+<!ATTLIST defaultchip id CDATA #FIXED "default">
+
+
+<!ATTLIST setup version CDATA #FIXED "1.0">
+<!ATTLIST configurator module CDATA #REQUIRED>
+<!ATTLIST communicator module CDATA #REQUIRED>
+<!ATTLIST mapper module CDATA #REQUIRED>
+<!ATTLIST parameter name CDATA #REQUIRED>

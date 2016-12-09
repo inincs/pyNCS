@@ -7,15 +7,15 @@
 # Author: Emre Neftci
 #
 # Creation Date : 05-06-2013
-# Last Modified : Wed 05 Jun 2013 06:47:18 PM PDT
+# Last Modified : Thu 26 Mar 2015 12:21:07 PM PDT
 #
 # Copyright : (c) 
 # Licence : GPLv2
 #----------------------------------------------------------------------------- 
-
+from pyNCS.neurosetup import get_data
 from pyNCS.api.ComAPI import *
 from pyNCS.api.ConfAPI import *
-import pyNCS.pyST
+import pyNCS.pyST as pyST
 import IFSLWTA_brian_model as ibm
 import numpy as np
 from brian.directcontrol import PoissonGroup
@@ -90,22 +90,25 @@ def decode_addr(addr):
 
 class Communicator(BatchCommunicatorBase):
     def run(self, stimulus=None, duration=None, context_manager=None):
-        stimulus = pyST.events(stimulus, atype='p')
-        stimulus_abs = stimulus.get_tmadev().astype('float')
-        stimulus_abs[:,1] = np.cumsum(stimulus_abs[:,1])/1e6
-        if duration == None and len(stimulus)>0:
-            duration = np.max(stimulus_abs[:,1])*1e3
-        if duration == None:
+        stimulus_abs = pyST.events(stimulus, atype='p', isISI=True)
+        stimulus_abs.set_abs_tm()
+        self.evn_sin = evs_in = stimulus_abs.get_adtmev().astype('float')
+        evs_in[:,1]*=1e-6 #brian takes seconds
+        if duration == None and len(stimulus_abs)>0:
+            duration = np.max(evs_in[:,1])
+            print duration
+        elif duration == None:
             duration = 1.
         else:
             duration = float(duration)/1e3
-        net, M_EIP, MV_EIP = self._prepare_brian_net(stimulus_abs)
+        net, M_EIP, MV_EIP = self._prepare_brian_net(evs_in)
+        self.outs = [net, M_EIP, MV_EIP]
         net.reinit(states=False)
-        print 'running virtual IFLSWTA for {0}s'.format(duration)  
+        print('running virtual IFLSWTA for {0}s'.format(duration))  
         net.run(duration)
         sp = np.array(M_EIP.spikes).reshape(-1,2)
-        sp[:,0]+=(2<<13) #slot 2 in text.xml TODO
-        sp[:,1]*=1e6 #slot 2 in text.xml TODO
+        sp[:,0]+=(2**16) #slot 2 in text.xml. THIS IS A POSSIBLE SOURCE OF TEST ERROR
+        sp[:,1]*=1e6 
         return sp
         
     
@@ -119,8 +122,6 @@ class Communicator(BatchCommunicatorBase):
         if len(stimulus)>0: 
             N = max(stimulus[:,0])+1
             In1=SpikeGeneratorGroup(N,stimulus[stimulus[:,0] <N])
-            stimulus[:,1]=stimulus[:,1]
-            stimulus=stimulus[stimulus[:,1].argsort()]
             self.S.append(In1)
         #Create connections, if any
         if len(global_mappings_list)>0:                 
@@ -213,25 +214,17 @@ class Configurator(ConfiguratorBase):
         Parse xml file or element tree to generate the object
         '''
         super(Configurator,self).__parseNHML__(doc)
-        
         global global_sympy_params
         from paramTranslation import params
-        try:
-            test_path = os.environ['PYNCS_TEST_PATH']
-        except KeyError:
-            test_path = './'
-        global_sympy_params = self.sympy_params = params(self, test_path + 'chipfiles/ifslwta_paramtrans.xml')
+        filename = get_data('chipfiles/ifslwta_paramtrans.xml')
+        global_sympy_params = self.sympy_params = params(self, filename)
         
     def _readCSV(self, CSVfile):        
         super(Configurator,self)._readCSV(CSVfile)
-        
         global global_sympy_params
         from paramTranslation import params
-        try:
-            test_path = os.environ['PYNCS_TEST_PATH']
-        except KeyError:
-            test_path = './'
-        global_sympy_params = self.sympy_params = params(self, test_path + 'chipfiles/ifslwta_paramtrans.xml')
+        filename = get_data('chipfiles/ifslwta_paramtrans.xml')
+        global_sympy_params = self.sympy_params = params(self, filename)
     
 class Mappings(MappingsBase):
     def add_mappings(self, mappings):

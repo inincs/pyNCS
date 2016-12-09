@@ -6,21 +6,13 @@
 # Copyright : University of Zurich, Giacomo Indiveri, Emre Neftci, Sadique Sheik, Fabio Stefanini
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
-import pyAex
+#import pyAex
 import pyNCS
 import pyNCS.pyST as pyST
 import numpy as np
 import unittest, warnings, optparse, os, time, sys
 
-try:
-    SETUPSDIR = os.environ['NCS_SETUPFILES']
-except KeyError:
-    SETUPSDIR = 'setupfiles/'
 
-try:
-    CHIPSDIR = os.environ['NCS_CHIPFILES']
-except KeyError:
-    CHIPSDIR = 'chipfiles/'
 
 def create_default_population(setup,chipname='seq',N=10,*args,**kwargs):
     '''
@@ -46,7 +38,7 @@ class TestSequenceFunctions(unittest.TestCase):
 
     def setUp(self):
         import expSetup
-        self.nsetup = expSetup.build_setup(setups_dir = SETUPSDIR, chips_dir = CHIPSDIR)
+        self.nsetup = expSetup.build_setup()
 
     def testBuildLinearPopulation(self):
         N=10
@@ -64,14 +56,52 @@ class TestSequenceFunctions(unittest.TestCase):
                
         stmon1=pyNCS.monitors.SpikeMonitor(t.soma)        
         self.nsetup.monitors.import_monitors([stmon1])
-        input_stim=s.soma.spiketrains_poisson(rate = np.linspace(0,1000,N), duration=200)  
+        input_stim=s.soma.spiketrains_poisson(rate = np.linspace(10,100,N), duration=500)  
         self.nsetup.prepare()
-        self.nsetup.chips['ifslwta'].set_parameter('nsynstdw0',.7)       
+        self.nsetup.chips['ifslwta'].set_parameter('nsynstdw0',.6)       
         out = self.nsetup.run(input_stim)
         r= stmon1.sl.mean_rates()        
-        print r
-        self.assertTrue(np.all(r== np.sort(r)))
-        
+        self.assertTrue(np.all(r>0))
+
+    def testSequencers(self):
+        N=3
+        s=create_default_population(self.nsetup,'seq',N)
+        t=create_default_population(self.nsetup,'ifslwta', N)
+        c=pyNCS.PConnection(s,t,'excitatory0')
+
+        sequencer = pyNCS.monitors.Monitors()
+        mon_in, = sequencer.create(s)
+        mon_in.create_spiketrains('poisson', rate = np.linspace(100,2000,N), duration = 1000)
+               
+        stmon1=pyNCS.monitors.SpikeMonitor(t.soma)        
+        self.nsetup.monitors.import_monitors([stmon1])
+
+        self.nsetup.prepare()
+        self.nsetup.chips['ifslwta'].set_parameter('nsynstdw0',.7)       
+
+        out = self.nsetup.run(sequencer)
+        r= stmon1.sl.mean_rates()        
+        self.assertTrue(np.all(r > 0))
+
+    def testSequencers_nsetup(self):
+        N=3
+        s=create_default_population(self.nsetup,'seq',N)
+        t=create_default_population(self.nsetup,'ifslwta', N)
+        c=pyNCS.PConnection(s,t,'excitatory0')
+
+        sequencers = self.nsetup.sequencers
+        mon_in, = sequencers.create(s)
+        mon_in.create_spiketrains('poisson', rate = np.linspace(100,2000,N), duration = 1000)
+               
+        stmon1=pyNCS.monitors.SpikeMonitor(t.soma)        
+        self.nsetup.monitors.import_monitors([stmon1])
+
+        self.nsetup.prepare()
+        self.nsetup.chips['ifslwta'].set_parameter('nsynstdw0',.7)       
+
+        out = self.nsetup.run()
+        r= stmon1.sl.mean_rates()        
+        self.assertTrue(np.all(r > 0))
                 
     def testMonitors_from_SpikeList(self):
         from pyNCS import monitors
@@ -86,15 +116,15 @@ class TestSequenceFunctions(unittest.TestCase):
     def testPMapping(self):
         N=30
         p=0.5
-        pyAex.MAPVERS=3
+        #pyAex.MAPVERS=3
         s=create_default_population(self.nsetup, 'seq', N)
         t=create_default_population(self.nsetup, 'ifslwta', N)
         t2=create_default_population(self.nsetup, 'ifslwta', 124-N, offset=N)
         mon = self.nsetup.monitors.import_monitors_otf(t)[0]
         mon_zero = self.nsetup.monitors.import_monitors_otf(t2)[0]
         m=pyNCS.PMapping('')
-        m.__connect_random_all2all__(s.soma,t.synapses['excitatory0'],p=p)
-        m.__connect_one2one__(s.soma,t.synapses['excitatory0'])
+        m.connect(s.soma,t.synapses['excitatory0'], fashion='random_all2all', fashion_kwargs={'p':p})
+        m.connect(s.soma,t.synapses['excitatory0'], fashion='one2one',fashion_kwargs={'p':p}, expand = True)
         P = int(p*127)
         for i in s.soma.paddr:
             for j in t.synapses['excitatory0'].paddr:
@@ -112,7 +142,7 @@ class TestSequenceFunctions(unittest.TestCase):
     def testPConnection(self):
         N=30
         p=0.5
-        pyAex.MAPVERS=3
+        #pyAex.MAPVERS=3
         s=create_default_population(self.nsetup, 'seq', N)        
         t=create_default_population(self.nsetup, 'ifslwta', N)
         t2=create_default_population(self.nsetup, 'ifslwta', 124-N, offset=N)
@@ -137,7 +167,7 @@ class TestSequenceFunctions(unittest.TestCase):
     def testPMappingLarge(self):
         N=124
         p=0.5
-        pyAex.MAPVERS=3
+        #pyAex.MAPVERS=3
         s=create_default_population(self.nsetup, 'seq', N)
         t=create_default_population(self.nsetup, 'ifslwta', N)
         m=pyNCS.PMapping('')
@@ -145,7 +175,7 @@ class TestSequenceFunctions(unittest.TestCase):
         m.mapping.extend(np.random.randint(0,50000,size=(500000,2)))       
         for j in xrange(len(s)):   
             print j      
-            m.connect(s.soma[j], t.synapses['inhibitory'][(j*2):((j+1)*2)], fashion = 'by_binary_matrix', fashion_kwargs={'connect_inst': M[[j],:]})        
+            m.connect(s.soma[j], t.synapses['inhibitory'][(j*2):((j+1)*2)], fashion = 'by_boolean_matrix', fashion_kwargs={'connection': M[[j],:]})        
         
 
     def testSeqPopulationFunctions(self):
@@ -173,7 +203,7 @@ class TestSequenceFunctions(unittest.TestCase):
             self.assertTrue(a in pop.soma.paddr)
 
     def testComAPI_RecordableCommunicatorBase(self):
-        import pyNCS.ComAPI, os
+        import pyNCS.api.ComAPI, os
         rec_com = pyNCS.ComAPI.RecordableCommunicatorBase()
         rec_com.run_rec(np.ones([0,2]))
         self.assertTrue(len(rec_com._rec_fns)==2)

@@ -4,10 +4,10 @@
         <configurator module="pyNCS.api.ConfAPI"/>
     </chip>
     <chip chipfile="ifslwta.csv" id="ifslwta" slot="2">
-        <configurator module="pyNCS.api.BrianAPI"/>
+        <configurator module="pyNCS.api.ConfAPI"/>
     </chip>
-    <virtualchip chipfile="linear.csv" id="seq" slot="0" />
+    <virtualchip chipfile="biglinear.csv" id="seq" slot="0" />
     <defaultchip chipfile="linear.csv" id="default"/>
-    <communicator module="pyNCS.api.BrianAPI" />    
-    <mapper module='pyNCS.api.BrianAPI'/>
+    <communicator module="pyNCS.api.loopbackAPI" />    
+    <mapper module='pyNCS.api.ConfAPI'/>
 </setup>

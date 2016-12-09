@@ -1,5 +1,5 @@
 from pyNCS.pyST import *
-from pyNCS.pyST.STas import load_stas_from_csv, addrLogicalExtract, addrLogicalConstruct, addrPhysicalConstruct, addrPhysicalExtract
+from pyNCS.pyST.STas import load_stas_from_csv, addrLogicalExtract, addrLogicalConstruct, addrPhysicalConstruct, addrPhysicalExtract, addrBuildHashTable
 import unittest
 import numpy as np
 import copy
@@ -329,7 +329,7 @@ class TestSequenceFunctions(unittest.TestCase):
         raw_out = self.STcsSeq.rawoutput_from_chevents(ch_events, normalize=False)
         raw_out.decode_all_channels()
 
-        #Check that running this function two times doesn't harm
+        #Check that running this function two times does no harm
         raw_out.decode_all_channels()
         
         tout= np.array(raw_out[0].raw_data())
@@ -340,8 +340,10 @@ class TestSequenceFunctions(unittest.TestCase):
 
         for i,x in enumerate(tin): 
             self.assertAlmostEqual( x, tout[i], delta=1e-3)
+
         #Check that empty spikelists have complete id_lists
-        self.assertEqual(len(raw_out[1].mean_rates()), 128*32)
+        ## Feature removed in February 2014
+        #self.assertEqual(len(raw_out[1].mean_rates()), 128*32)
             
     def testSpikeTrain__time_offset(self):        
         sl = STCreate.poisson_generator(rate=100)
@@ -370,16 +372,16 @@ class TestSequenceFunctions(unittest.TestCase):
                 self.assertAlmostEquals(a[c], sl2.raw_data()[i][c], 3)
 
 
-#    def testHashTable(self):
-#        addrHR=[range(64)]
-#        addrBuildHashTable(self.STcsMon[1])
-#        addrPhys=self.STcsMon.addrPhysicalConstruct({1:addrHR})
-#        addrLog=self.STcsMon.addrLogicalConstruct({1:addrHR})[1]
-#        addrLog_nocheck=self.STcsMon.addrPhysicalLogical(addrPhys,checkLevel=0)[1]
-#        addrHR_nocheck=self.STcsMon.addrPhysicalExtract(addrPhys,checkLevel=0)
-#        for i in addrLog:
-#            self.assert_( i in addrLog_nocheck)
-#
+    def testHashTable(self):
+        addrHR=[range(64)]
+        addrBuildHashTable(self.STcsMon[1])
+        addrPhys=self.STcsMon.addrPhysicalConstruct({1:addrHR})
+        addrLog=self.STcsMon.addrLogicalConstruct({1:addrHR})[1]
+        addrLog_nocheck=self.STcsMon.addrPhysicalLogical(addrPhys)[1]
+        addrHR_nocheck=self.STcsMon.addrPhysicalExtract(addrPhys)
+        for i in addrLog:
+            self.assert_( i in addrLog_nocheck)
+
     
 
 

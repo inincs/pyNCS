@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <setuptype version="0.1">
-	<channelAddressing bits="[14, 15, 16]" name="default" type="monitor"/>
-	<channelAddressing bits="[14, 15, 16]" name="default" type="sequencer"/>
+	<channelAddressing bits="[16,17,18]" name="default" type="monitor"/>
+	<channelAddressing bits="[16,17,18]" name="default" type="sequencer"/>
 	<slot id="0">
 		<aerMon in="[4]" out="[0]" />
 		<aerSeq in="[4]" out="[0]" />
