@@ -75,7 +75,7 @@ def loadPlotParameters(size=0.5, fontsize=18.0):
           'text.fontsize': fontsize,
           'xtick.labelsize': fontsize,
           'ytick.labelsize': fontsize,
-          'legend.pad': 0.1,    # empty space around the legend box
+          #'legend.pad': 0.1,    # empty space around the legend box
           'legend.fontsize': fontsize,
           'lines.markersize': 5,
           'lines.linewidth': 1,
