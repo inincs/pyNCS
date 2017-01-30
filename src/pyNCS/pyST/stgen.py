@@ -333,9 +333,6 @@ class StGen:
         if not array:
             spikes = SpikeTrain(spikes, t_start=t_start, t_stop=t_stop)
 
-        if refractory >0:
-            spikes = spikes[spikes>refractory]
-
         if debug:
             return spikes, extra_spikes
         else:
