@@ -422,6 +422,13 @@ class events(object):
         self.set_abs_tm()
         self.__data.sort(order=['ad', 'tm'])
 
+    def sort_tm(self):
+        '''
+        Sort events by timestamps and addresses (in this order).
+        '''
+        self.set_abs_tm()
+        self.__data.sort(order=['tm', 'ad'])
+
     def demultiplex(self):
         '''
         Generates a dictionary with addesses as keys and a list of timestamps as values.
@@ -444,9 +451,11 @@ class events(object):
 
 class channelEvents(dict):
     '''
-    TODO
+    inputs:
+    *channel_events*: dictionary or channelEvents.
+    *atype*: Address type 'physical' or 'logical'
     '''
-    def __init__(self, channel_events=None, atype='Physical'):
+    def __init__(self, channel_events=None, atype='physical'):
         assert isinstance(atype, str)
         self.__atype = atype.lower()[0]
 
