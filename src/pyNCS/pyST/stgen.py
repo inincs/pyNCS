@@ -294,7 +294,7 @@ class StGen:
         n = (t_stop - t_start) / 1000.0 * rate
         number = int(numpy.ceil(n + 3 * numpy.sqrt(n)))
         if number < 100:
-            number = min(5 + numpy.ceil(2 * n), 100)
+            number = min(5 + int(numpy.ceil(2 * n)), 100)
 
         if number > 0:
             isi = self.rng.exponential(1.0 / rate, number) * 1000.0
