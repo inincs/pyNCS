@@ -1465,8 +1465,12 @@ def isValidAddress(stas, addrList):
 
 
 # NOTE: Scipy weave isn't ported to python 3
-from scipy import weave
-from scipy.weave import converters
+try:
+    from scipy import weave
+    from scipy.weave import converters
+except:
+    import weave
+    from weave import converters
 # ...
 
 

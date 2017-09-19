@@ -898,7 +898,10 @@ class StGen:
         See also:
             OU_generator
         """
-        import scipy.weave
+        try:
+            import scipy.weave as weave
+        except:
+            import weave
 
         import time
 
@@ -927,8 +930,8 @@ class StGen:
         }
         """
 
-        scipy.weave.inline(code, ['y', 'gauss', 'fac'],
-                     type_converters=scipy.weave.converters.blitz)
+        weave.inline(code, ['y', 'gauss', 'fac'],
+                     type_converters=weave.converters.blitz)
 
         if time_it:
             print('Elapsed ', time.time() - t1, ' seconds.')
