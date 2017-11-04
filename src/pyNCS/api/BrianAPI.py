@@ -96,7 +96,7 @@ class Communicator(BatchCommunicatorBase):
         evs_in[:,1]*=1e-6 #brian takes seconds
         if duration == None and len(stimulus_abs)>0:
             duration = np.max(evs_in[:,1])
-            print duration
+            print(duration)
         elif duration == None:
             duration = 1.
         else:
