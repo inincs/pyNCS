@@ -97,7 +97,7 @@ def create_netobjs(stim, params):
     ConnIE   =Connection(IP1,EP1,'Iloci');ConnIE.connect(IP1,EP1, W = w_synloc_IE*np.random.normal(1,sigma_mismatch,[len(IP1),len(EP1)]))
     
     M_EIP =SpikeMonitor(EIP)    
-    MV_EIP= StateMonitor(EIP,'V',record=range(0,N),timestep=int(1*ms/defaultclock.dt))
+    MV_EIP= StateMonitor(EIP,'V',record=list(range(0,N)),timestep=int(1*ms/defaultclock.dt))
 
     @network_operation
     def update_mpot():
@@ -123,7 +123,7 @@ if __name__ == '__main__':
     from pylab import *
     from brian.plotting import raster_plot
     ion()
-    from paramTranslation import params, loadBiases
+    from .paramTranslation import params, loadBiases
     from expSetup import *
     configurator = pyNCS.ConfAPI.Configurator()
     configurator._readCSV('chipfiles/ifslwta.csv')
@@ -137,7 +137,7 @@ if __name__ == '__main__':
     p.translate('psynlocinhth',.3)
     stim = np.transpose([np.random.randint(0,128,32000), np.cumsum(np.random.random(32000)/16)])
     netobjs,  M_EIP, MV_EIP  = create_netobjs(stim,p.cur)
-    net = Network(netobjs.values())
+    net = Network(list(netobjs.values()))
     net.run(1)
     raster_plot(*[M_EIP])
     

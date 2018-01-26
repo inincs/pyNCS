@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------------
 
 #Path for recording experimental data
-from ComAPI import *
+from .ComAPI import *
 import collections 
 
 class BatchCommunicator(BatchCommunicatorBase):

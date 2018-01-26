@@ -196,7 +196,7 @@ def mksavedir(pre='Results/', exp_dir=None):
     elif isinstance(exp_dir, str):
         direct = pre + exp_dir
         if os.path.exists(direct):
-            print("Warning: overwriting directory {0}".format(direct))
+            print(("Warning: overwriting directory {0}".format(direct)))
             rmtree(direct)
 
     else:
@@ -210,7 +210,7 @@ def mksavedir(pre='Results/', exp_dir=None):
         globaldata.directory + time.strftime("%H:%M:%S", time.localtime()), 'w')
     fh.close()
 
-    print("Created experiment directory {0}".format(globaldata.directory))
+    print(("Created experiment directory {0}".format(globaldata.directory)))
     return globaldata.directory
 
 
@@ -257,7 +257,7 @@ def savefigs(filename='fig', extension = 'png', close=True, *args, **kwargs):
     import matplotlib,pylab
     figures = [manager.canvas.figure
          for manager in matplotlib._pylab_helpers.Gcf.get_all_fig_managers()]
-    print('Saving {0} figures'.format(len(figures)))
+    print(('Saving {0} figures'.format(len(figures))))
     for i, f in enumerate(figures):
         savefig('fig'+str(i)+'.'+extension, *args, **kwargs)
         if close: pylab.close()

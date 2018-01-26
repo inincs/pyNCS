@@ -48,7 +48,7 @@ class TestSequenceFunctions(unittest.TestCase):
         self.tmp_files=[]
 
 
-        addrHR_out=[range(10),2]
+        addrHR_out=[list(range(10)),2]
         addr_out=self.STcsMon.addrLogicalConstruct({5:addrHR_out})[5]
         stout=SpikeList(spikes=[],id_list=addr_out)
         time=np.arange(0,50)
@@ -57,7 +57,7 @@ class TestSequenceFunctions(unittest.TestCase):
             st_out.append((i,STCreate.inh_poisson_generator(t=time,rate=200*np.sin(time*0.01),t_stop=time[-1])))
             stout[i]=st_out[-1][1]
 
-        addrHR=[range(10),5,1]
+        addrHR=[list(range(10)),5,1]
         addr=self.STcsMon.addrLogicalConstruct({0:addrHR})[0]
         stin=SpikeList(spikes=[],id_list=addr)
         st=[]
@@ -83,23 +83,23 @@ class TestSequenceFunctions(unittest.TestCase):
                 self.stasStim_ifslwta,addrPhysicalConstruct(\
                 self.stasStim_ifslwta,addrLogicalExtract(\
                 self.stasStim_ifslwta,addrLogicalConstruct(\
-                self.stasStim_ifslwta,[range(5),[15]]\
+                self.stasStim_ifslwta,[list(range(5)),[15]]\
                 ))))
-        self.assertTrue(np.all(a==np.array([range(5),[15]*5])))
+        self.assertTrue(np.all(a==np.array([list(range(5)),[15]*5])))
 
     def testIsValidAddress(self):
         #Channel 0
-        addrHR=[range(10),5,1]
-        addrHR_full=[range(10),[5]*10,[1]*10]
+        addrHR=[list(range(10)),5,1]
+        addrHR_full=[list(range(10)),[5]*10,[1]*10]
         addr=self.STcsMon.addrLogicalConstruct({0:addrHR})[0]        
         self.assertTrue(np.all(addrHR_full==self.STcsMon.addrLogicalExtract({0:addr})[0]))
 
         #Check that exception is raised when non iterable is given
-        self.failUnlessRaises(AssertionError, self.STcsMon.addrLogicalConstruct,{0:1})
-        self.failUnlessRaises(AssertionError, self.STcsMon.addrLogicalConstruct,{0:[range(10),5]})
+        self.assertRaises(AssertionError, self.STcsMon.addrLogicalConstruct,{0:1})
+        self.assertRaises(AssertionError, self.STcsMon.addrLogicalConstruct,{0:[list(range(10)),5]})
 
     def testSTCS(self):
-        addrHR=[range(10),5,1]
+        addrHR=[list(range(10)),5,1]
         addr=addrLogicalConstruct(self.STcsMon[0],addrHR)
         addr_out=\
                 self.STcsMon.addrLogicalConstruct(\
@@ -112,7 +112,7 @@ class TestSequenceFunctions(unittest.TestCase):
 
     def testSTCSChannel3(self):
         #Test 2D chip stim
-        addrHR=[range(30,60),2,2]
+        addrHR=[list(range(30,60)),2,2]
         addr=addrLogicalConstruct(self.STcsSeq[3],addrHR)
         addr_out=\
                 self.STcsSeq.addrLogicalConstruct(\
@@ -124,7 +124,7 @@ class TestSequenceFunctions(unittest.TestCase):
         self.assertTrue(np.all(addr==addr_out))
 
         #Test 2D chip mon
-        addrHR=[range(30,60),2]
+        addrHR=[list(range(30,60)),2]
         addr=addrLogicalConstruct(self.STcsMon[3],addrHR)
         addr_out=\
                 self.STcsMon.addrLogicalConstruct(\
@@ -181,7 +181,7 @@ class TestSequenceFunctions(unittest.TestCase):
 
     def testSTCSChannel2(self):
         #Test 2D chip stim
-        addrHR=[range(10,20),2,1]
+        addrHR=[list(range(10,20)),2,1]
         addr=addrLogicalConstruct(self.STcsSeq[2],addrHR)
         addr_out=\
                 self.STcsSeq.addrLogicalConstruct(\
@@ -194,7 +194,7 @@ class TestSequenceFunctions(unittest.TestCase):
 
     def testStasSAC(self):
         #Test 2D chip stim
-        addrHR=[range(10,20),range(10,15),0]
+        addrHR=[list(range(10,20)),list(range(10,15)),0]
         addr=addrLogicalConstruct(self.stasStim_sac,addrHR)
         addr_out=\
                 self.stasStim_sac.addrLogicalConstruct(\
@@ -206,7 +206,7 @@ class TestSequenceFunctions(unittest.TestCase):
         self.assertTrue(np.all(addr==addr_out))
 
     def testExportImportAER_file(self):
-        addrHR=[range(10),5,1]
+        addrHR=[list(range(10)),5,1]
         addr=self.STcsMon.addrLogicalConstruct({0:addrHR})[0]
         stin=SpikeList(spikes=[],id_list=addr)
         time=np.arange(0,100)
@@ -217,12 +217,12 @@ class TestSequenceFunctions(unittest.TestCase):
 
         #Check that SpikeList conserves addresses
         for element in stin.id_list():
-            self.assert_(element in addr)
+            self.assertTrue(element in addr)
         #Check that Import Export Conserves events
         for event in st:                
                 events=np.column_stack([event[1].spike_times,np.ones_like(event[1].spike_times)*event[0]])
                 for i in events:
-                    self.assert_( i in stin.raw_data())
+                    self.assertTrue( i in stin.raw_data())
         
         events=self.STcsSeq.exportAER({0:stin})
         #Test here: isi, spike conservation
@@ -233,26 +233,26 @@ class TestSequenceFunctions(unittest.TestCase):
 
         #Check that Import Export Conserves addresses
         for element in stevents_out[0].select_ids("cell.mean_rate()>0"):
-            self.assert_(element in addr)
+            self.assertTrue(element in addr)
         
         #Check that Import Export Conserves Events
         for event in st:                
                 events=np.column_stack([event[1].spike_times,np.ones_like(event[1].spike_times)*event[0]])
                 for i in events:
-                    self.assert_( i in stevents_out[0].raw_data())
+                    self.assertTrue( i in stevents_out[0].raw_data())
 
     def testImportExportEventConservation(self):
         #Create Spike Trains
         events=self.STcsSeq.exportAER(self.ch_events,isi=True)
         events_imported=self.STcsSeq.importAER(events,isi=True)
         #
-        self.assert_(self.ch_events[0].raw_data().shape[0]==events_imported[0].get_nev())
-        self.assert_(self.ch_events[1].raw_data().shape[0]==events_imported[1].get_nev())
+        self.assertTrue(self.ch_events[0].raw_data().shape[0]==events_imported[0].get_nev())
+        self.assertTrue(self.ch_events[1].raw_data().shape[0]==events_imported[1].get_nev())
 
     def testExportOneEvent(self):
         ch_events=SpikeList([(1,817.)],[1])
         events=self.STcsSeq.exportAER(ch_events,isi=True)
-        self.assert_(events.get_nev()==1)
+        self.assertTrue(events.get_nev()==1)
 
     def testEmptyGenerateST(self):
         ch_events=channelEvents(atype='l')
@@ -264,14 +264,14 @@ class TestSequenceFunctions(unittest.TestCase):
         events_imported=self.STcsSeq.importAER(events,isi=True,format='a')
 
         stnorm=self.STcsSeq.normalizeAER(events_imported)
-        self.assert_(self.ch_events[1].raw_data().shape[0]==stnorm[1].get_nev())
+        self.assertTrue(self.ch_events[1].raw_data().shape[0]==stnorm[1].get_nev())
 
         events=self.STcsSeq.exportAER(self.ch_events,format='t',isi=False)
         events_imported=self.STcsSeq.importAER(events,isi=False,format='t')
 #        events_imported[1][:,-1]=+100
         #
         stnorm=self.STcsSeq.normalizeAER(events_imported)
-        self.assert_(self.ch_events[1].raw_data().shape[0]==stnorm[1].get_nev())
+        self.assertTrue(self.ch_events[1].raw_data().shape[0]==stnorm[1].get_nev())
 
     def testNormalizeAER(self):
 
@@ -279,14 +279,14 @@ class TestSequenceFunctions(unittest.TestCase):
         events_imported=self.STcsSeq.importAER(events,isi=True)
 
         stnorm=self.STcsSeq.normalizeAER(events_imported)
-        for i in stnorm.iterkeys():
-            self.assert_(stnorm[i].get_nev()==events_imported[i].get_nev())
+        for i in stnorm.keys():
+            self.assertTrue(stnorm[i].get_nev()==events_imported[i].get_nev())
 
         st=self.STcsSeq.generateST(events_imported,normalize=True)
-        self.assert_(np.any([st[0].t_start==0,st[1].t_start==0]))
+        self.assertTrue(np.any([st[0].t_start==0,st[1].t_start==0]))
 
     def testNoEventsExport(self):
-        addrHR=[range(10),5,1]
+        addrHR=[list(range(10)),5,1]
         addr=self.STcsMon.addrLogicalConstruct({0:addrHR})[0]
         stin=SpikeList(spikes=[],id_list=addr)
         time=np.arange(0,100)
@@ -294,25 +294,25 @@ class TestSequenceFunctions(unittest.TestCase):
         self.assertEqual(events.get_nev(),0)
 
     def testPhysicalLogical(self):
-        addrHR=[range(10),5,1]
+        addrHR=[list(range(10)),5,1]
         addr=self.STcsMon[0].addrPhysicalConstruct(addrHR)
         addrLog=self.STcsMon[0].addrLogicalConstruct(addrHR)
         addrLog_fast=self.STcsMon[0].addrPhysicalLogical(addr)
         for i in addrLog:
-            self.assert_( i in addrLog_fast)
+            self.assertTrue( i in addrLog_fast)
 
 
     def testPhysicalLogicalSTcsMon(self):    
-        addrHR=[range(10),5,1]
+        addrHR=[list(range(10)),5,1]
         addr=self.STcsMon.addrPhysicalConstruct({0:addrHR})
         addrLog=self.STcsMon.addrLogicalConstruct({0:addrHR})[0]
         addrLog_fast=self.STcsMon.addrPhysicalLogical(addr)[0]
         for i in addrLog:
-            self.assert_( i in addrLog_fast)
+            self.assertTrue( i in addrLog_fast)
 
     def testRawOutputDecode(self):
         #Export an AER stream
-        addrHR=[range(10),5,1]
+        addrHR=[list(range(10)),5,1]
         addr=self.STcsMon.addrLogicalConstruct({0:addrHR})[0]
         stin=SpikeList(spikes=[],id_list=addr)
         time=np.arange(0,100)
@@ -352,10 +352,10 @@ class TestSequenceFunctions(unittest.TestCase):
         self.assertTrue(np.all(sl.spike_times == sl2.spike_times))
         sl.time_offset(100)
         for i,a in enumerate(sl.spike_times):
-            self.assertAlmostEquals(a-100, sl2.spike_times[i], 3)
+            self.assertAlmostEqual(a-100, sl2.spike_times[i], 3)
             
     def testSpikeList__time_offset(self):
-        addrHR=[range(10),5,1]
+        addrHR=[list(range(10)),5,1]
         addr=self.STcsMon.addrLogicalConstruct({0:addrHR})[0]
         sl=SpikeList(spikes=[],id_list=addr)
         for i in addr:            
@@ -364,23 +364,23 @@ class TestSequenceFunctions(unittest.TestCase):
         sl.time_offset()
         for i,a in enumerate(sl.raw_data()):
             for c in range(2): 
-                self.assertAlmostEquals(a[c], sl2.raw_data()[i][c], 3)
+                self.assertAlmostEqual(a[c], sl2.raw_data()[i][c], 3)
         sl.time_offset(100)
         for i,a in enumerate(sl.raw_data()):
             a[0]-=100
             for c in range(2): 
-                self.assertAlmostEquals(a[c], sl2.raw_data()[i][c], 3)
+                self.assertAlmostEqual(a[c], sl2.raw_data()[i][c], 3)
 
 
     def testHashTable(self):
-        addrHR=[range(64)]
+        addrHR=[list(range(64))]
         addrBuildHashTable(self.STcsMon[1])
         addrPhys=self.STcsMon.addrPhysicalConstruct({1:addrHR})
         addrLog=self.STcsMon.addrLogicalConstruct({1:addrHR})[1]
         addrLog_nocheck=self.STcsMon.addrPhysicalLogical(addrPhys)[1]
         addrHR_nocheck=self.STcsMon.addrPhysicalExtract(addrPhys)
         for i in addrLog:
-            self.assert_( i in addrLog_nocheck)
+            self.assertTrue( i in addrLog_nocheck)
 
     
 

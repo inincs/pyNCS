@@ -37,8 +37,8 @@ source_suffix = '.txt'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Python NCS tools'
-copyright = u'2012, University of Zurich, Emre Neftci, Sadique Sheik, Fabio Stefanini, Giacomo Indiveri'
+project = 'Python NCS tools'
+copyright = '2012, University of Zurich, Emre Neftci, Sadique Sheik, Fabio Stefanini, Giacomo Indiveri'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -172,8 +172,8 @@ htmlhelp_basename = 'PythonSpikeToolboxdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'PythonSpikeToolbox.tex', u'Python Spike Toolbox Documentation',
-   u'Emre Neftci', 'manual'),
+  ('index', 'PythonSpikeToolbox.tex', 'Python Spike Toolbox Documentation',
+   'Emre Neftci', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

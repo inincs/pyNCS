@@ -6,7 +6,7 @@
 # Copyright : University of Zurich, Giacomo Indiveri, Emre Neftci, Sadique Sheik, Fabio Stefanini
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
-from __future__ import absolute_import
+
 import os
 import numpy as np
 import pylab
@@ -197,7 +197,7 @@ def composite_plot_movie(SL, time_bin=10, t_start=None, t_stop=None, output="ani
         files.append(fname)
         t_start += time_bin
         count += 1
-        print('Generated frame {0}'.format(count))
+        print(('Generated frame {0}'.format(count)))
     command = "mencoder 'mf://_tmp_*.png' -mf type=png:fps=%d -ovc lavc -lavcopts vcodec=wmv2 -oac copy -o %s" % (fps, output)
     os.system(command)
     for fname in files:
@@ -214,15 +214,15 @@ def mapSpikeListAddresses(SL, mapping=None):
     mapped_SL = SpikeList([], [])
     addr_SL = SL.id_list()
     if mapping == None:
-        mapping = dict(zip(np.sort(SL.id_list()), range(len(SL.id_list()))))
-    for k, v in mapping.iteritems():
+        mapping = dict(list(zip(np.sort(SL.id_list()), list(range(len(SL.id_list()))))))
+    for k, v in mapping.items():
         if k in addr_SL:
             try:
                 mapped_SL[v] = SL[k]
             except KeyError:
                 pass
 
-    all_others = np.setdiff1d(SL.id_list(), mapping.keys())
+    all_others = np.setdiff1d(SL.id_list(), list(mapping.keys()))
     for k in all_others:
         mapped_SL[k] = SL[k]
 

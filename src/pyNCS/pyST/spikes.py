@@ -360,7 +360,7 @@ class SpikeTrain(object):
                 t_stop = self.t_stop
             else:
                 t_stop = min(self.t_stop, t_stop)
-            print(t_start, t_stop)
+            print((t_start, t_stop))
             isi = self.time_slice(t_start, t_stop).isi()
         if len(isi):
             mean_rate = 1000./numpy.mean(isi)
@@ -648,8 +648,8 @@ class SpikeTrain(object):
         scr[0, :] = numpy.arange(0, nspk_2 + 1)
 
         if nspk_1 > 0 and nspk_2 > 0:
-            for i in xrange(1, nspk_1 + 1):
-                for j in xrange(1, nspk_2 + 1):
+            for i in range(1, nspk_1 + 1):
+                for j in range(1, nspk_2 + 1):
                     scr[i, j] = min(scr[i - 1, j] + 1, scr[i, j - 1] + 1)
                     scr[i, j] = min(scr[i, j], scr[i - 1, j - 1] + cost *
                         abs(self.spike_times[i - 1] - spktrain.spike_times[j - 1]))
@@ -836,7 +836,7 @@ class SpikeList(object):
             break_points = numpy.concatenate(([0], break_points))
             break_points = numpy.concatenate((break_points, [N]))
 
-            for idx in xrange(len(break_points) - 1):
+            for idx in range(len(break_points) - 1):
                 id = spikes[break_points[idx], 0]
                 if id in id_set:
                     self.spiketrains[id] = SpikeTrain(spikes[break_points[idx]:break_points[idx + 1], 1], self.t_start, self.t_stop, presorted = False)
@@ -888,7 +888,7 @@ class SpikeList(object):
                 [0,1,2,3,....,9999]
         """
         #return numpy.array(self.spiketrains.keys(), int)
-        return numpy.array(numpy.sort(self.spiketrains.keys()))
+        return numpy.array(numpy.sort(list(self.spiketrains.keys())))
 
     def copy(self):
         """
@@ -912,7 +912,7 @@ class SpikeList(object):
             self.t_start = numpy.min(start_times)
             logging.debug("Warning, t_start is infered from the data : %f" %
                 self.t_start)
-            for id in self.spiketrains.keys():
+            for id in list(self.spiketrains.keys()):
                 self.spiketrains[id].t_start = self.t_start
           #  if self.t_stop is None:
             stop_times = numpy.array([self.spiketrains[idx].
@@ -920,7 +920,7 @@ class SpikeList(object):
             self.t_stop = numpy.max(stop_times)
             logging.debug(
                 "Warning, t_stop  is infered from the data : %f" % self.t_stop)
-            for id in self.spiketrains.keys():
+            for id in list(self.spiketrains.keys()):
                 self.spiketrains[id].t_stop = self.t_stop
         else:
             raise Exception("No SpikeTrains")
@@ -955,7 +955,7 @@ class SpikeList(object):
             self.t_stop = spktrain.t_stop
 
     def __iter__(self):
-        return self.spiketrains.itervalues()
+        return iter(self.spiketrains.values())
 
     def __len__(self):
         return len(self.spiketrains)
@@ -1064,7 +1064,7 @@ class SpikeList(object):
         See also:
             concatenate, append, __setitem__
         """
-        for id, spiketrain in spikelist.spiketrains.items():
+        for id, spiketrain in list(spikelist.spiketrains.items()):
             if id in self.id_list():
                                 # Does not take relative argument, Check
                                 # SpikeList.merge?
@@ -1094,7 +1094,7 @@ class SpikeList(object):
 
         if len(missing_ids) > 0:
             empty_ST = emptySpikeTrain()
-            missing_sts = zip(missing_ids, [empty_ST] * len(missing_ids))
+            missing_sts = list(zip(missing_ids, [empty_ST] * len(missing_ids)))
             self.spiketrains.update(missing_sts)
 
     def id_slice(self, id_list):
@@ -1360,7 +1360,7 @@ class SpikeList(object):
         ids = self.id_list()
         N = len(ids)
         cvs_isi = numpy.empty(N)
-        for idx in xrange(N):
+        for idx in range(N):
             cvs_isi[idx] = self.spiketrains[ids[idx]].cv_isi()
 
         if float_only:
@@ -1727,7 +1727,7 @@ class SpikeList(object):
             idx = numpy.where(
                 (spike_times >= t_start) & (spike_times <= t_stop))[0]
             if len(spike_times) > 0:
-                if kwargs.has_key('linestyle') or kwargs.has_key('ls'):
+                if 'linestyle' in kwargs or 'ls' in kwargs:
                     pass
                 else:
                     kwargs['ls'] = ''
@@ -1777,8 +1777,8 @@ class SpikeList(object):
         is_times = re.compile("times")
         is_ids = re.compile("ids")
         if len(self) > 0:
-            times = numpy.concatenate([st.format(relative, quantized) for st in self.spiketrains.itervalues()])
-            ids = numpy.concatenate([id * numpy.ones(len(st.spike_times), int) for id, st in self.spiketrains.iteritems()])
+            times = numpy.concatenate([st.format(relative, quantized) for st in self.spiketrains.values()])
+            ids = numpy.concatenate([id * numpy.ones(len(st.spike_times), int) for id, st in self.spiketrains.items()])
         else:
             times = []
             ids = []
@@ -1816,8 +1816,8 @@ class SpikeList(object):
             convert()
         """
         if len(self) > 0:
-            times = numpy.concatenate([st.spike_times for st in self.spiketrains.itervalues()])
-            ids = numpy.concatenate([id * numpy.ones(len(st.spike_times), int) for id, st in self.spiketrains.iteritems()])
+            times = numpy.concatenate([st.spike_times for st in self.spiketrains.values()])
+            ids = numpy.concatenate([id * numpy.ones(len(st.spike_times), int) for id, st in self.spiketrains.items()])
         else:
             times = []
             ids = []
@@ -1950,9 +1950,9 @@ def merge_sequencers(*l_seq):
     new_seq = defaultdict(list)
     merged_seq = dict()
     for seq in l_seq:
-        for k, s in seq.iteritems():
+        for k, s in seq.items():
             new_seq[k].append(s)
-    for k, lseq in new_seq.iteritems():
+    for k, lseq in new_seq.items():
         merged_seq[k] = merge_spikelists(*lseq)
     return merged_seq
 

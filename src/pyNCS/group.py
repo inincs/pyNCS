@@ -6,7 +6,7 @@
 # Copyright : University of Zurich, Giacomo Indiveri, Emre Neftci, Sadique Sheik, Fabio Stefanini
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
-from __future__ import absolute_import
+
 import itertools
 from warnings import warn
 from .pyST import *
@@ -131,7 +131,7 @@ class AddrGroupBase(object):
         if order is None:
             idx = np.argsort(self.addr)
         else:
-            idx = np.lexsort(map(self.addr.__getitem__, order))
+            idx = np.lexsort(list(map(self.addr.__getitem__, order)))
         # Just to ensure the addresses are generated.
         self.laddr; self.paddr
         # Sort the addresses accordingly.
@@ -301,7 +301,7 @@ class AddrGroup(AddrGroupBase):
             raise ValueError('Grouptype should be None, "in" or "out", not {0}'.
                 format(grouptype))
         dtp = [None for i in range(len(flds))]
-        for k,v in flds.iteritems():
+        for k,v in flds.items():
             dtp[v] = (k, 'uint32')
         return np.dtype(dtp)
 
@@ -356,7 +356,7 @@ class AddrGroup(AddrGroupBase):
         
         edges = []
         for i in range(len(p1)):
-            edges.append(range(p1[i], p2[i]))
+            edges.append(list(range(p1[i], p2[i])))
         addresses = itertools.product(*edges)
         self.__populate__(setup, chipid, grouptype, list(addresses))
 

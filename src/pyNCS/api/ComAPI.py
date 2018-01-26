@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------------
 
 #Path for recording experimental data
-from __future__ import absolute_import
+
 from .BaseComAPI import *
 
 class BatchCommunicatorBase(ResourceManagerBase,RecordableCommunicatorBase):

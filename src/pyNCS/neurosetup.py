@@ -6,10 +6,11 @@
 # Copyright : University of Zurich, Giacomo Indiveri, Emre Neftci, Sadique Sheik, Fabio Stefanini
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
-from __future__ import with_statement, absolute_import
+
 from xml.dom import minidom as md
 try:
-    from urllib2 import urlopen, URLError, HTTPError
+    from urllib.request import urlopen
+    from urllib.error import URLError, HTTPError
 except:
     from urllib.request import urlopen, URLError, HTTPError
     
@@ -295,7 +296,7 @@ class NeuroSetup(object):
                 self.map_api = ConfAPI
                 self.map_kwargs = {}
             self.mapper = self.map_api.Mappings(**self.map_kwargs)
-            if self.map_kwargs.has_key('version'):
+            if 'version' in self.map_kwargs:
                 if float(self.map_kwargs['version']) == 3.0:
                     self.mapping = PMapping('mapping')
                 else:
@@ -334,7 +335,7 @@ class NeuroSetup(object):
         seqList = [self.aerDummyIn for i in range(2 ** len(self.seqBits))]
         monList = [self.aerDummyOut for i in range(2 ** len(self.monBits))]
 
-        for id, nslot in self.chipslots.iteritems():
+        for id, nslot in self.chipslots.items():
             for ii in self.aerSlot[nslot]['monIn']:
                 try:
                     if self.chips[id].aerIn is not None:
@@ -395,7 +396,7 @@ class NeuroSetup(object):
         pyST.setDefaultSeqChannelAddress(self.seq)
 
     def reset(self):
-        for chip in self.chips.values():
+        for chip in list(self.chips.values()):
             chip.configurator.reset()
 
     def prepare(self):

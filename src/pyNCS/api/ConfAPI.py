@@ -11,7 +11,7 @@
 #Api for modules having pyAMDA-like functionality
 #Api for modules having pyAEX-like functionality
 
-from __future__ import absolute_import
+
 from .BaseConfAPI import *
 from .ComAPI import ResourceManagerBase
 
@@ -76,7 +76,7 @@ class ConfiguratorBase(ResourceManagerBase):
 
     def __getNHML__(self):
         doc = etree.Element('parameters')
-        for p in self.parameters.values():
+        for p in list(self.parameters.values()):
             doc.append(p.__getNHML__())
         return doc
 
@@ -153,9 +153,9 @@ class ConfiguratorBase(ResourceManagerBase):
         Input:
         *param_dict*: dictionary of parameter names (str) - value (float) pairs.
         '''
-        for name, value in param_dict.iteritems():
+        for name, value in param_dict.items():
             self.set_parameter(name, value)
-        self.get_parameters(param_dict.keys())
+        self.get_parameters(list(param_dict.keys()))
         return None
 
     def update_parameter(self, param_name, param_value):
@@ -176,7 +176,7 @@ class ConfiguratorBase(ResourceManagerBase):
         '''
         Returns names of all the parameters
         '''
-        return self.parameters.keys()
+        return list(self.parameters.keys())
 
     def save_parameters(self, filename, *kwargs):
         #CONVENIENCE FUNCTION. IMPLEMENTATION IS NOT REQUIRED
@@ -185,8 +185,8 @@ class ConfiguratorBase(ResourceManagerBase):
         '''
         d = self.get_parameters()
         with open(filename, 'w') as f:
-            f.write("\n".join(["%s\t%.17e" % (k, v) for k, v in d.items()]))
-        print('Parameters have been saved to the file {0}'.format(filename))
+            f.write("\n".join(["%s\t%.17e" % (k, v) for k, v in list(d.items())]))
+        print(('Parameters have been saved to the file {0}'.format(filename)))
         return None
 
     def load_parameters(self, filename, *kwargs):

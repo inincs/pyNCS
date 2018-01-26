@@ -26,7 +26,7 @@ shotnoise_fromspikes - Convolves the provided spike train with shot decaying exp
 
 gamma_hazard - Compute the hazard function for a gamma process with parameters a,b.
 """
-from __future__ import absolute_import
+
 
 from .spikes import SpikeTrain
 from numpy import array, log
@@ -323,9 +323,9 @@ class StGen:
             spikes = numpy.concatenate((spikes, extra_spikes))
 
             if debug:
-                print("ISI buf overrun handled." +
+                print(("ISI buf overrun handled." +
                       "len(spikes)={0}, len(extra_spikes)={1}".format(
-                          len(spikes), len(extra_spikes)))
+                          len(spikes), len(extra_spikes))))
 
         else:
             spikes = numpy.resize(spikes, (i,))
@@ -494,7 +494,7 @@ class StGen:
         return SpikeTrain(spike_train, t_start=t[0], t_stop=t_stop)
 
     # use slow python implementation for the time being
-    # TODO: provide optimized C/weave implementation if possible
+    # TODO: provide optimized Cython implementation if possible
     def inh_gamma_generator(self, a, b, t, t_stop, array=False):
         """
         Returns a SpikeList whose spikes are a realization of an inhomogeneous gamma process
@@ -643,7 +643,7 @@ class StGen:
         return SpikeTrain(spike_train, t_start=t[0], t_stop=t_stop)
 
     # use slow python implementation for the time being
-    # TODO: provide optimized C/weave implementation if possible
+    # TODO: provide optimized Cython implementation if possible
     inh_adaptingmarkov_generator = _inh_adaptingmarkov_generator_python
 
     def _inh_2Dadaptingmarkov_generator_python(self, a, bq, tau_s, tau_r, qrqs, t, t_stop, array=False):
@@ -766,7 +766,7 @@ class StGen:
         return SpikeTrain(spike_train, t_start=t[0], t_stop=t_stop)
 
     # use slow python implementation for the time being
-    # TODO: provide optimized C/weave implementation if possible
+    # TODO: provide optimized Cython implementation if possible
     inh_2Dadaptingmarkov_generator = _inh_2Dadaptingmarkov_generator_python
 
     def _OU_generator_python(self, dt, tau, sigma, y0, t_start=0.0, t_stop=1000.0, array=True, time_it=False):
@@ -806,11 +806,11 @@ class StGen:
         noise = numpy.sqrt(2 * fac) * sigma
 
         # python loop... bad+slow!
-        for i in xrange(1, N):
+        for i in range(1, N):
             y[i] = y[i - 1] + fac * (y0 - y[i - 1]) + noise * gauss[i - 1]
 
         if time_it:
-            print(time.time()-1)
+            print((time.time()-1))
 
         if array:
             return (y, t)
@@ -818,7 +818,7 @@ class StGen:
             raise NotImplementedError()
 
     # use slow python implementation for the time being
-    # TODO: provide optimized C/weave implementation if possible
+    # TODO: provide optimized Cython implementation if possible
 
     def _OU_generator_python2(self, dt, tau, sigma, y0, t_start=0.0, t_stop=1000.0, array=False, time_it=False):
         """
@@ -858,12 +858,12 @@ class StGen:
         mfac = 1 - fac
 
         # python loop... bad+slow!
-        for i in xrange(1, N):
+        for i in range(1, N):
             idx = i - 1
             y[i] = y[idx] * mfac + gauss[idx]
 
         if time_it:
-            print(time.time()-t1)
+            print((time.time()-t1))
 
         if array:
             return (y, t)
@@ -871,14 +871,87 @@ class StGen:
             raise NotImplementedError()
 
     # use slow python implementation for the time being
-    # TODO: provide optimized C/weave implementation if possible
+    # TODO: provide optimized Cython implementation if possible
+# 
+#     def OU_generator_weave1(self, dt, tau, sigma, y0, t_start=0.0, t_stop=1000.0, time_it=False):
+#         """
+#         Generates an Orstein Ulbeck process using the forward euler method. The function returns
+#         an AnalogSignal object.
+# 
+#         OU_generator_weave1, as opposed to OU_generator, uses scipy.weave
+#         and is thus much faster.
+# 
+#         Inputs:
+#             dt      - the time resolution in milliseconds of th signal
+#             tau     - the correlation time in milliseconds
+#             sigma   - std dev of the process
+#             y0      - initial value of the process, at t_start
+#             t_start - start time in milliseconds
+#             t_stop  - end time in milliseconds
+#             array   - if True, the functions returns the tuple (y,t)
+#                       where y and t are the OU signal and the time bins, respectively,
+#                       and are both numpy arrays.
+# 
+#         Examples:
+#             >> stgen.OU_generator_weave1(0.1, 2, 3, 0, 0, 10000)
+# 
+#         See also:
+#             OU_generator
+#         """
+#         try:
+#             import scipy.weave as weave
+#         except:
+#             import weave
+# 
+#         import time
+# 
+#         if time_it:
+#             t1 = time.time()
+# 
+#         t = numpy.arange(t_start, t_stop, dt)
+#         N = len(t)
+#         y = numpy.zeros(N, float)
+#         y[0] = y0
+#         fac = dt / tau
+#         gauss = fac * y0 + numpy.sqrt(
+#             2 * fac) * sigma * self.rng.standard_normal(N - 1)
+# 
+#         # python loop... bad+slow!
+#         #for i in xrange(1,len(t)):
+#         # y[i] = y[i-1]+dt/tau*(y0-y[i-1])+numpy.sqrt(2*dt/tau)*sigma*numpy.ran
+#         # dom.normal()
+#         # use weave instead
+#         code = """
+# 
+#         double f = 1.0-fac;
+# 
+#         for(int i=1;i<Ny[0];i++) {
+#           y(i) = y(i-1)*f + gauss(i-1);
+#         }
+#         """
+# 
+#         weave.inline(code, ['y', 'gauss', 'fac'],
+#                      type_converters=weave.converters.blitz)
+# 
+#         if time_it:
+#             print('Elapsed ', time.time() - t1, ' seconds.')
+# 
+#         if array:
+#             return (y, t)
+#         else:
+#             raise NotImplementedError()
+# 
+#     OU_generator = _OU_generator_python2
+# 
+#     # TODO: optimized inhomogeneous OU generator
 
-    def OU_generator_weave1(self, dt, tau, sigma, y0, t_start=0.0, t_stop=1000.0, time_it=False):
+
+    def OU_generator_accel(self, dt, tau, sigma, y0, t_start=0.0, t_stop=1000.0, time_it=False):
         """
         Generates an Orstein Ulbeck process using the forward euler method. The function returns
         an AnalogSignal object.
 
-        OU_generator_weave1, as opposed to OU_generator, uses scipy.weave
+        OU_generator_accel, as opposed to OU_generator, uses cython
         and is thus much faster.
 
         Inputs:
@@ -893,15 +966,11 @@ class StGen:
                       and are both numpy arrays.
 
         Examples:
-            >> stgen.OU_generator_weave1(0.1, 2, 3, 0, 0, 10000)
+            >> stgen.OU_generator_accel(0.1, 2, 3, 0, 0, 10000)
 
         See also:
             OU_generator
         """
-        try:
-            import scipy.weave as weave
-        except:
-            import weave
 
         import time
 
@@ -920,21 +989,12 @@ class StGen:
         #for i in xrange(1,len(t)):
         # y[i] = y[i-1]+dt/tau*(y0-y[i-1])+numpy.sqrt(2*dt/tau)*sigma*numpy.ran
         # dom.normal()
-        # use weave instead
-        code = """
-
-        double f = 1.0-fac;
-
-        for(int i=1;i<Ny[0];i++) {
-          y(i) = y(i-1)*f + gauss(i-1);
-        }
-        """
-
-        weave.inline(code, ['y', 'gauss', 'fac'],
-                     type_converters=weave.converters.blitz)
+        # use cython instead)
+        
+        stgenHelpers.OU_generator_helper(y, gauss, fac, N)
 
         if time_it:
-            print('Elapsed ', time.time() - t1, ' seconds.')
+            print(('Elapsed ', time.time() - t1, ' seconds.'))
 
         if array:
             return (y, t)
@@ -970,7 +1030,7 @@ def _gen_g_add(spikes, tau, q, t, eps=1.0e-8):
     idx2 = numpy.clip(idx + vs_idx, 0, len(gd_s))
     idx3 = idx2 - idx
 
-    for i in xrange(len(idx)):
+    for i in range(len(idx)):
 
         gd_s[idx[i]:idx2[i]] += kern[0:idx3[i]]
 

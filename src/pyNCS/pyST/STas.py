@@ -10,7 +10,7 @@
 ######################################################################
 # Emre Neftci Author <emre.neftci@ini.phys.ethz.ch>
 #######################################################################
-from __future__ import absolute_import
+
 import numpy as np
 import os
 import copy
@@ -57,16 +57,16 @@ class RawOutput(object):
 
         #Containers
         self.decoded_data = {}
-        self.channels = self.raw_data.keys()
+        self.channels = list(self.raw_data.keys())
         self.t_start = t_start
         self.t_stop = t_stop
         self.print_num_events()
 
     def print_num_events(self):
         lev = []
-        for k, v in self.raw_data.iteritems():
+        for k, v in self.raw_data.items():
             lev.append('Ch{0}: {1} evs '.format(k, len(v)))
-        print(''.join(lev))
+        print((''.join(lev)))
 
     def __getitem__(self, key):
         key = int(key)
@@ -91,18 +91,18 @@ class RawOutput(object):
             ad_data = self.decoder_dict[key](self.raw_data[key].get_ad())
             tm_data = self.raw_data[key].get_tm().astype('float') / 1000
             if PERFORMANCE_DEBUG:
-                print('Decoding events took {0} seconds'.format(time.time()-t0))
+                print(('Decoding events took {0} seconds'.format(time.time()-t0)))
 
             if PERFORMANCE_DEBUG: t0=time.time()
             evs = events(atype='l')
             evs.add_adtm(ad_data, tm_data)
             if PERFORMANCE_DEBUG:
-                print('Building events took {0} seconds'.format(time.time()-t0))
+                print(('Building events took {0} seconds'.format(time.time()-t0)))
 
             if PERFORMANCE_DEBUG: t0=time.time()
             st_data = SpikeList( evs.get_adtmev(), np.unique(evs.get_ad()))
             if PERFORMANCE_DEBUG:
-                print('Building SpikeList took {0} seconds'.format(time.time()-t0))
+                print(('Building SpikeList took {0} seconds'.format(time.time()-t0)))
 
             if self.filter_duplicates:
                 st_data.filter_duplicates()
@@ -131,7 +131,7 @@ class RawOutput(object):
             if not key in self.decoder_dict:
                 raise KeyError("There is no function to decode %d" % key)
             if key in self.decoded_data:
-                print("Channel {0} has already been decoded".format(key))
+                print(("Channel {0} has already been decoded".format(key)))
             elif not key in self.raw_data:
                 #print("Channel {0} is not present, assuming no events".format(key
                 self.decoded_data[key] = SpikeList([], [])
@@ -364,14 +364,14 @@ class events(object):
             self.set_abs_tm()
         evs = self.get_adtmev()
         ff = lambda x: x[0] in mapping
-        filt = filter(ff, evs) #keep only addresses that are mapped
+        filt = list(filter(ff, evs)) #keep only addresses that are mapped
         if len(filt) > 0:
             evs_filt = events(filt, self.atype).get_adtmev()
             #Get mapped addresses
             #list(chain(* concatenates lists of lists for low cost (i.e. O(n))
-            m_ad = np.array(list(itertools.chain(*map(mapping.get, evs_filt[:, 0]))), self.dtype['ad'])
+            m_ad = np.array(list(itertools.chain(*list(map(mapping.get, evs_filt[:, 0])))), self.dtype['ad'])
             #Get the respective timestamps
-            m_tm = np.array(list(itertools.chain(*map(lambda x: len(mapping.get(x[0])) * [x[1]], evs_filt))), self.dtype['tm'])
+            m_tm = np.array(list(itertools.chain(*[len(mapping.get(x[0])) * [x[1]] for x in evs_filt])), self.dtype['tm'])
 
             self.set_data(m_ad,m_tm)
         else:
@@ -402,7 +402,7 @@ class events(object):
             evs.__data = self.__data[id_start:id_stop]
             id_start = id_stop
             rest = tm - evs.get_tdur()
-            print(tm, evs.get_tdur())
+            print((tm, evs.get_tdur()))
 
             if not evs.get_nev() > 0:
                 rest = 0
@@ -460,7 +460,7 @@ class channelEvents(dict):
         self.__atype = atype.lower()[0]
 
         if isinstance(channel_events, dict):
-            for k, v in channel_events.iteritems():
+            for k, v in channel_events.items():
                 self.add_ch(k, events(v, self.atype))
         elif channel_events is not None:
             raise TypeError("channel_events must be a dictionary, None or a channelEvents. Alternatively, use an events object and extract from channelAddressing")
@@ -473,7 +473,7 @@ class channelEvents(dict):
         return channelEvents(self, atype=self.atype)
 
     def __add__(self, other):
-        for i in other.keys():
+        for i in list(other.keys()):
             if i in self:
                 self[i] + other[i]
             else:
@@ -523,7 +523,7 @@ class channelEvents(dict):
         """
         if channel_list == None:
             return None
-        all_ch = self.keys()
+        all_ch = list(self.keys())
         for ch in all_ch:
             if ch not in channel_list:
                 self.pop(ch)
@@ -533,13 +533,13 @@ class channelEvents(dict):
 
     def get_last_tm(self):
         t = 0
-        for evs in self.itervalues():
+        for evs in self.values():
             t=max(t,evs.get_tm()[-1])
         return t
 
     def get_first_tm(self):
         t = np.inf
-        for evs in self.itervalues():
+        for evs in self.values():
             t=min(t,evs.get_tm()[0])
         return t
 
@@ -554,7 +554,7 @@ class channelEvents(dict):
 
     def get_nev(self):
         n = 0
-        for v in self.itervalues():
+        for v in self.values():
             n+=len(v)
         return n
 
@@ -660,12 +660,12 @@ class channelAddressing:
         self.nBitsTotal = np.array([0] * len(stasList), 'uint16')
         self.nChannelBits = len(channelBits)
         self.nChannels = 2 ** len(channelBits)
-        self.channels = range(self.nChannels)
+        self.channels = list(range(self.nChannels))
 
         if len(stasList) <= self.nChannels:
-            for i in xrange(len(stasList)):
+            for i in range(len(stasList)):
                 self.nBitsTotal[i] = stasList[i].nBitsTotal
-            for i in xrange(len(stasList), self.nChannels):
+            for i in range(len(stasList), self.nChannels):
                 stasList[i].append(None)
         else:
             raise RuntimeError("len(stasList)>2**nBitChannel !")
@@ -729,7 +729,7 @@ class channelAddressing:
         ch_events = channelEvents(atype='Physical')
         channel = ev.get_ad() >> self.nBitsTotal     # Get channel information.
 
-        for channelIdx in xrange(self.nChannels):
+        for channelIdx in range(self.nChannels):
             t = pylab.find(channelIdx == channel)
                  # Much faster than boolean list or filter
             if len(t) > 0:
@@ -753,12 +753,12 @@ class channelAddressing:
         if isinstance(addr, list):
             assert len(addr) == self.nChannels
         elif isinstance(addr, dict):
-            possible_channels = range(self.nChannels)
-            for i in addr.iterkeys():
+            possible_channels = list(range(self.nChannels))
+            for i in addr.keys():
                 assert i in possible_channels, "The keys of the addr dict mst be valid channel numbers, i.e. between %d and %d" % (0, self.nChannels)
 
-            addr_list = [None for i in xrange(self.nChannels)]
-            for k, a in addr.iteritems():
+            addr_list = [None for i in range(self.nChannels)]
+            for k, a in addr.items():
                 addr_list[k] = a
             addr = addr_list
         else:
@@ -780,7 +780,7 @@ class channelAddressing:
             addrLogicalConstruct, addrLogicalExtract
         """
         addr = self.isChannelAddrList(addr)
-        mainAddr = [None for i in xrange(self.nChannels)]
+        mainAddr = [None for i in range(self.nChannels)]
 
         #Construct channel by channel if not empty
         for channelIdx in range(len(addr)):
@@ -797,10 +797,10 @@ class channelAddressing:
         *addr*: address (in a form isChannelAddrList() can understand), such as ``{0:[1.,2.,3.]}``
         """
         addr = self.isChannelAddrList(addr)
-        mainAddr = [None for i in xrange(self.nChannels)]
+        mainAddr = [None for i in range(self.nChannels)]
 
         #Construct channel by channel if not empty
-        for channelIdx in xrange(self.nChannels):
+        for channelIdx in range(self.nChannels):
             if addr[channelIdx] is not None:
                 addr[channelIdx] = np.array(addr[channelIdx], 'float')
                 mainAddr[channelIdx] = self[
@@ -817,7 +817,7 @@ class channelAddressing:
         """
         addr = self.isChannelAddrList(addr)
         mainAddr = np.zeros([0], dtype='uint32')
-        for channelIdx in xrange(self.nChannels):
+        for channelIdx in range(self.nChannels):
             if addr[channelIdx] is not None:
                 mainAddr = np.concatenate((
                         mainAddr,
@@ -842,7 +842,7 @@ class channelAddressing:
             addr = addr.astype(np.uint32)
 
         channels_in_addr = addr >> self.nBitsTotal
-        channelEventsList = [None for i in xrange(self.nChannels)]
+        channelEventsList = [None for i in range(self.nChannels)]
         for channelIdx in np.unique(channels_in_addr):
             t = (channels_in_addr == channelIdx)
             channelEventsList[channelIdx] =\
@@ -864,7 +864,7 @@ class channelAddressing:
             addr = addr.astype(np.uint32)
 
         channels_in_addr = addr >> self.nBitsTotal
-        channelEventsList = [None for i in xrange(self.nChannels)]
+        channelEventsList = [None for i in range(self.nChannels)]
         for channelIdx in np.unique(channels_in_addr):
             t = (channels_in_addr == channelIdx)
             channelEventsList[channelIdx] =\
@@ -909,7 +909,7 @@ class channelAddressing:
         ch_events = self.extract(input)
         ch_events_log = channelEvents(atype='Logical')
 
-        for ch in ch_events.iterkeys():
+        for ch in ch_events.keys():
             if len(ch_events.get_tm(ch)) > 0:
                 ad = self[ch].addrPhysicalLogical(ch_events.get_ad(ch))
                 ch_events_log.add_adtmch(ch, ad, ch_events.get_tm(ch))
@@ -940,8 +940,8 @@ class channelAddressing:
         """
         assert ch_events.atype == 'l', 'channelEvents must be of type logical'
 
-        STStimOut = dict(zip(range(self.nChannels), [SpikeList([], [])
-             for i in range(self.nChannels)]))
+        STStimOut = dict(list(zip(list(range(self.nChannels)), [SpikeList([], [])
+             for i in range(self.nChannels)])))
         t_start = 0
         t_stop = 0
         if ch_events.get_nev() > 0:
@@ -986,8 +986,8 @@ class channelAddressing:
         if func == None:
             # If no decoding functions are defined then use all of those
             # available in the channel addressing
-            func_data = dict(zip(range(self.nChannels), [self[i]
-                .addrPhysicalLogical for i in range(self.nChannels)]))
+            func_data = dict(list(zip(list(range(self.nChannels)), [self[i]
+                .addrPhysicalLogical for i in range(self.nChannels)])))
         else:
             func_data = func
 
@@ -1044,11 +1044,11 @@ class channelAddressing:
                     raise TypeError(
                         "Elements of spikeLists must be SpikeList objects!")
 
-            spikeLists = dict(zip(range(len(spikeLists)), spikeLists))
+            spikeLists = dict(list(zip(list(range(len(spikeLists))), spikeLists)))
         elif isinstance(spikeLists, SpikeList):
             spikeLists = {0: spikeLists}
         elif isinstance(spikeLists, dict):
-            for i in spikeLists.iterkeys():
+            for i in spikeLists.keys():
                 if not isinstance(spikeLists[i], SpikeList):
                     raise TypeError(
                         "Values of spikeLists must be SpikeList objects!")
@@ -1080,14 +1080,14 @@ class channelAddressing:
                     print("Warning: Empty SpikeList encountered")
         tictoc = time.time() - tic
         if PERFORMANCE_DEBUG:
-            print("Address encoding took {0} seconds".format(tictoc))
+            print(("Address encoding took {0} seconds".format(tictoc)))
 
         #Multiplex
         tic = time.time()
         sortedIdx = np.argsort(ev.get_tm())
         tictoc = time.time() - tic
         if PERFORMANCE_DEBUG:
-            print("Multiplexing took {0} seconds".format(tictoc))
+            print(("Multiplexing took {0} seconds".format(tictoc)))
 
         tic = time.time()
         #Create new sorted events object
@@ -1209,7 +1209,7 @@ def addrPhysicalConstruct(stas, addr):
     addrPhysical = [[]] * len(stas.field)
     for fieldIndex, field in enumerate(stas.iter_fields()):
         addrPhysical[fieldIndex] = field.construct(addr[fieldIndex])
-    addrPhysical = np.sum(zip(*addrPhysical), 1)
+    addrPhysical = np.sum(list(zip(*addrPhysical)), 1)
 
     #Build dictionary for quick reference
     stas.addrPhysicalExtract(addrPhysical)
@@ -1261,21 +1261,21 @@ def addrPhysicalLogical(stas, addrPhys):
     """
     addrPhys=isValidPhysicalAddress(stas, addrPhys)
     #failedIndex=np.where(stas.addrExtractLogicalFast[addrPhys]==-1)[0]
-    failedIndex = np.setdiff1d(addrPhys, stas.addrExtractLogicalFast.keys())
+    failedIndex = np.setdiff1d(addrPhys, list(stas.addrExtractLogicalFast.keys()))
     #Don't even bother calling decode if everyone is in
     if len(failedIndex)>0:
        try:
            addrPhysicalLogicalDecode(stas, failedIndex) #Failed? decode the address
        except AssertionError as e:
            print('Error in addrPhysicalLogicalDecode.')
-           print('No. of addresses in the packet : {0}'.format(len(addrPhys)))
+           print(('No. of addresses in the packet : {0}'.format(len(addrPhys))))
            raise e
 
 
 # NOTE: If you get a ValueError, you probably have checkLevel=0 and forgot to
 # build the hash tables using addrBuildHashTable
     fastAddr = np.array(
-        map(stas.addrExtractLogicalFast.get, addrPhys), 'float')
+        list(map(stas.addrExtractLogicalFast.get, addrPhys)), 'float')
 
     # Loop should run over addresses only once if all addresse are in dict.
     # Small overhead
@@ -1292,8 +1292,8 @@ def addrLogicalPhysical(stas, addrLogical, *args, **kwargs):
         return addrLogicalPhysicalDecode(stas, addrLogical)  
     except AssertionError as e:
         print('Error in addrLogicalPhysicalDecode.')
-        print('No. of addresses in the packet : {0}'.
-            format(len(addrLogical)))
+        print(('No. of addresses in the packet : {0}'.
+            format(len(addrLogical))))
         raise e
 
 
@@ -1305,7 +1305,7 @@ def _buildGrid(inlist):
     for i in range(nD):
         max_list[i] = len(inlist[i])
     strmgrid = 'np.mgrid['
-    for fieldIdx in xrange(nD):
+    for fieldIdx in range(nD):
         strmgrid = strmgrid + '{0}:{1},'.format(
             min_list[fieldIdx], max_list[fieldIdx])
     strmgrid = strmgrid + ']'
@@ -1379,7 +1379,7 @@ def addrPhysicalLogicalDecode(stas, addrPhys):
     addr = addrPhysicalExtractDecode(stas, addrPhys)
     addrLog = addrLogicalConstruct(stas, addr)
     #stas.addrExtractLogicalFast[addrPhys] = addrLog
-    stas.addrExtractLogicalFast.update(zip(addrPhys, addrLog))
+    stas.addrExtractLogicalFast.update(list(zip(addrPhys, addrLog)))
     return addrLog
 
 
@@ -1389,7 +1389,7 @@ def addrLogicalPhysicalDecode(stas, addrLog):
     '''
     addr = addrLogicalExtract(stas, addrLog)
     addrPhys = addrPhysicalConstruct(stas, addr)
-    stas.addrExtractPhysicalFast.update(zip(addrLog, addrPhys))
+    stas.addrExtractPhysicalFast.update(list(zip(addrLog, addrPhys)))
     return addrPhys
 
 
@@ -1420,7 +1420,7 @@ def isValidAddress(stas, addrList):
             dimAddr[hrf_index] = len(addrList[hrf_index])
 
         #Remove all occurences of 1 in dimension list
-        for i in xrange(dimAddr.count(1)):
+        for i in range(dimAddr.count(1)):
             dimAddr.remove(1)
 
 #        if not (len(np.unique(dimAddr)) in [0,1]):
@@ -1428,12 +1428,12 @@ def isValidAddress(stas, addrList):
 
         #Determine the number of entries
         if dimAddr != []:
-            nEntries = np.prod(map(len, addrList))
+            nEntries = np.prod(list(map(len, addrList)))
         else:
             nEntries = 1
 
         #Initialize address list
-        addrListFilled = [[-1] * nEntries for i in xrange(stas.nDims)]
+        addrListFilled = [[-1] * nEntries for i in range(stas.nDims)]
 
         addrListFilled = _buildGrid(addrList).astype('uint32').transpose(
             )  # not good make buildGrid use same type as in the min/max lists
@@ -1452,26 +1452,27 @@ def isValidAddress(stas, addrList):
             try:
                 err_ind = np.where(addrListFilled[hrf_index] == diffs)[0]
             except Exception as e:
-                print(np.where(addrListFilled[hrf_index] == diffs), diffs)
+                print((np.where(addrListFilled[hrf_index] == diffs), diffs))
                 raise AssertionError(None, None)
             wrongaddr = addrListFilled[:, err_ind]
-            print("Address {3} is not in Range list ({0},{1}). Offending addresses on dimension {2}.".format(
+            print(("Address {3} is not in Range list ({0},{1}). Offending addresses on dimension {2}.".format(
                     np.max(hrf['range']),
                     np.max(hrf['range']),
                     hrf_index,
-                    wrongaddr))
+                    wrongaddr)))
             raise AssertionError(wrongaddr, err_ind)
     return nEntries, addrListFilled
 
 
 # NOTE: Scipy weave isn't ported to python 3
-try:
-    from scipy import weave
-    from scipy.weave import converters
-except:
-    import weave
-    from weave import converters
+# try:
+#     from scipy import weave
+#     from scipy.weave import converters
+# except:
+#     import weave
+#     from weave import converters
 # ...
+import pySThelpers
 
 
 def _extract(x, a, r):
@@ -1483,18 +1484,19 @@ def _extract(x, a, r):
     r2 = 2 ** r
     a2 = 2 ** a
     y = np.zeros([N], 'int32')
-
-    code = """
-           for (int i=0; i<N; ++i) {
-               for (int j=0; j<d; ++j) {
-                    y[i]+=((x[i] & (a2[j]))>>a[j])*r2[j];
-               }
-           }
-           """
-    # compiler keyword only needed on windows with MSVC installed
-    ext = weave.inline(code,
-                       ['x', 'N', 'd', 'a', 'a2', 'r2', 'r', 'y'],
-                       compiler='gcc')
+    
+    extract_helper(x, N, d, a, a2, r2, r, y)
+#     code = """
+#            for (int i=0; i<N; ++i) {
+#                for (int j=0; j<d; ++j) {
+#                     y[i]+=((x[i] & (a2[j]))>>a[j])*r2[j];
+#                }
+#            }
+#            """
+#     # compiler keyword only needed on windows with MSVC installed
+#     ext = weave.inline(code,
+#                        ['x', 'N', 'd', 'a', 'a2', 'r2', 'r', 'y'],
+#                        compiler='gcc')
     return y
 
 
@@ -1506,19 +1508,20 @@ def _construct(x, a, r):
     d = int(r.shape[0])
     r2 = 2 ** r
     a2 = 2 ** a
-    y = np.zeros([N], 'int32')
+    y = np.zeros([N], 'int32', mode='c')
 
-    code = """
-           for (int i=0; i<N; ++i) {
-               for (int j=0; j<d; ++j) {
-                    y[i]+=((x[i] & (r2[j]))>>r[j])*a2[j];
-               }
-           }
-           """
-    # compiler keyword only needed on windows with MSVC installed
-    ext = weave.inline(code,
-                       ['x', 'N', 'd', 'a', 'a2', 'r2', 'r', 'y'],
-                       compiler='gcc')
+    construct_helper(x, N, d, a, a2, r2, r, y)
+#     code = """
+#            for (int i=0; i<N; ++i) {
+#                for (int j=0; j<d; ++j) {
+#                     y[i]+=((x[i] & (r2[j]))>>r[j])*a2[j];
+#                }
+#            }
+#            """
+#     # compiler keyword only needed on windows with MSVC installed
+#     ext = weave.inline(code,
+#                        ['x', 'N', 'd', 'a', 'a2', 'r2', 'r', 'y'],
+#                        compiler='gcc')
     return y
 
 
@@ -1547,9 +1550,9 @@ class addressEncoder:
             self.fe_field_dict[id_list[i]] = fe_field[i]
 
     def __getitem__(self, item):
-        if item in self.fc_field_dict.keys():
+        if item in list(self.fc_field_dict.keys()):
             return self.fc_field_dict[item]
-        elif item in self.fe_field_dict.keys():
+        elif item in list(self.fe_field_dict.keys()):
             return self.fe_field_dict[item]
         else:
             raise AttributeError("There is no such field or pin %s" % item)
@@ -1637,7 +1640,7 @@ def repr_addr_spec(addr_spec, nBitsTotal):
     '''
     base_string = '| ' + ''.join(['{'+str(i)+'} ' for i in range(nBitsTotal)[::-1]]) +' |'
     tmp_str = [ 'I ']*nBitsTotal
-    for k,a in addr_spec.addrSpec.iteritems():
+    for k,a in addr_spec.addrSpec.items():
         a_rev = a[::-1] #reverse
         for i in a_rev:
             tmp_str[i] = '{0}{1}'.format(k,str(i))
@@ -1728,7 +1731,7 @@ class addrSpec:
         '''
         Iterates over the indexes of addrConf
         '''
-        for k in xrange(self.nDims):
+        for k in range(self.nDims):
             yield k
 
     def iter_hrfs(self):
@@ -1744,7 +1747,7 @@ class addrSpec:
 
     def iter_fields_by_pin(self, pin_order=None):
         if pin_order == None:
-            pin_order = np.sort(self.nBits.keys())
+            pin_order = np.sort(list(self.nBits.keys()))
         for p in pin_order:
             for field in self.field:
                 if field.pin == p:
@@ -1968,7 +1971,7 @@ def _stas_parse_addrstr(addrStr):
 
         addrSpec[i[0]][int(i[1:])] = addrStrsplit.index(i)
     nBitsTotal = 0
-    for k, v in addrSpec.items():
+    for k, v in list(addrSpec.items()):
         nBitsTotal += len(v)
         if k == 'I': #I is the ignore bit
             addrSpec.pop(k)

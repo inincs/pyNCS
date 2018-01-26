@@ -6,7 +6,7 @@
 # Copyright : University of Zurich, Giacomo Indiveri, Emre Neftci, Sadique Sheik, Fabio Stefanini
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
-from __future__ import absolute_import
+
 from .STas import events, channelEvents, RawOutput, channelAddressing, addrSpec
 from .STas import setDefaultMonChannelAddress, setDefaultSeqChannelAddress,\
                  getDefaultMonChannelAddress, getDefaultSeqChannelAddress

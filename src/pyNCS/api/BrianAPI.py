@@ -16,7 +16,7 @@ from pyNCS.neurosetup import get_data
 from pyNCS.api.ComAPI import *
 from pyNCS.api.ConfAPI import *
 import pyNCS.pyST as pyST
-import IFSLWTA_brian_model as ibm
+from . import IFSLWTA_brian_model as ibm
 import numpy as np
 from brian.directcontrol import PoissonGroup
 import os
@@ -50,7 +50,7 @@ def _decode_mappings_list(mappings_list, synapse_id):
             prob_syn = prob[to[1,:]==synapse_id]
         else:    
             prob = np.ones(ml.shape[0])            
-        return zip(fr_syn,to_syn,prob_syn)
+        return list(zip(fr_syn,to_syn,prob_syn))
 
 def _dlist_to_mappingdict(mapping):
     from collections import defaultdict
@@ -61,7 +61,7 @@ def _dlist_to_mappingdict(mapping):
         def func(srctgt):
             mapping_dict[srctgt[0]].append(srctgt[1])
             mapping_dict_probs[srctgt[0]].append(srctgt[2])
-        map(func, mapping)
+        list(map(func, mapping))
         return mapping_dict, mapping_dict_probs
     else:
         return {},{}
@@ -71,7 +71,7 @@ def _mappingdict_to_matrix(mapping_dict, mapping_dict_probs):
     N_to = max(max(mapping_dict.values()))+1
     M = np.zeros([N_fr, N_to])
     P = np.zeros([N_fr, N_to])
-    for k in mapping_dict.keys():
+    for k in list(mapping_dict.keys()):
         M[k,mapping_dict[k]] = 1
         P[k,mapping_dict[k]] = mapping_dict_probs[k] 
     return M, P
@@ -104,7 +104,7 @@ class Communicator(BatchCommunicatorBase):
         net, M_EIP, MV_EIP = self._prepare_brian_net(evs_in)
         self.outs = [net, M_EIP, MV_EIP]
         net.reinit(states=False)
-        print('running virtual IFLSWTA for {0}s'.format(duration))  
+        print(('running virtual IFLSWTA for {0}s'.format(duration)))  
         net.run(duration)
         sp = np.array(M_EIP.spikes).reshape(-1,2)
         sp[:,0]+=(2**16) #slot 2 in text.xml. THIS IS A POSSIBLE SOURCE OF TEST ERROR
@@ -147,7 +147,7 @@ class Communicator(BatchCommunicatorBase):
                                     
                     self.S.append(S)
             
-        net = Network(netobjs.values()+self.S)
+        net = Network(list(netobjs.values())+self.S)
                         
         return net, M_EIP, MV_EIP  
         
@@ -215,14 +215,14 @@ class Configurator(ConfiguratorBase):
         '''
         super(Configurator,self).__parseNHML__(doc)
         global global_sympy_params
-        from paramTranslation import params
+        from .paramTranslation import params
         filename = get_data('chipfiles/ifslwta_paramtrans.xml')
         global_sympy_params = self.sympy_params = params(self, filename)
         
     def _readCSV(self, CSVfile):        
         super(Configurator,self)._readCSV(CSVfile)
         global global_sympy_params
-        from paramTranslation import params
+        from .paramTranslation import params
         filename = get_data('chipfiles/ifslwta_paramtrans.xml')
         global_sympy_params = self.sympy_params = params(self, filename)
     
