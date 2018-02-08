@@ -7,7 +7,7 @@
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
+
 
 from .chip_v2 import Chip, NeuronBlock, NeuroChip, Block
 from . import experimentTools as et

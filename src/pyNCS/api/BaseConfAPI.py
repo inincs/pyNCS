@@ -35,7 +35,7 @@ class Parameter:
         Returns lxml.etree.Element representatoin of this parameter
         '''
         doc = etree.Element('parameter')
-        for n, v in self.param_data.items():
+        for n, v in list(self.param_data.items()):
             doc.attrib[n] = str(v)
         return doc
 
@@ -50,7 +50,7 @@ class Parameter:
             # assuming doc is an lxml Element object.
             assert doc.tag == 'parameter'
         self.param_data = dict(doc.attrib)
-        for k, v in self.param_data.items():
+        for k, v in list(self.param_data.items()):
             try:
                 v = float(v)
             except:

@@ -6,7 +6,7 @@
 # Copyright : University of Zurich, Giacomo Indiveri, Emre Neftci, Sadique Sheik, Fabio Stefanini
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
-from __future__ import absolute_import
+
 import numpy as np
 import pylab
 

@@ -6,7 +6,7 @@
 # Copyright : University of Zurich, Giacomo Indiveri, Emre Neftci, Sadique Sheik, Fabio Stefanini
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
-from __future__ import absolute_import
+
 import numpy as np
 import copy
 import itertools as it
@@ -36,7 +36,7 @@ def _buildGrid(inlist):
     for i in range(nD):
         max_list[i] = len(inlist[i])
     strmgrid = 'np.mgrid['
-    for fieldIdx in xrange(nD):
+    for fieldIdx in range(nD):
         strmgrid = strmgrid + '{0}:{1},'.format(
             min_list[fieldIdx], max_list[fieldIdx])
     strmgrid = strmgrid + ']'
@@ -93,7 +93,7 @@ class Population(object):
             self.soma.name = self._name + ' ' + 'soma'
 
         if hasattr(self, 'neuronblock'):
-            for s in self.neuronblock.synapses.keys():
+            for s in list(self.neuronblock.synapses.keys()):
                 self.synapses[self.neuronblock.synapses[s].
                     id].name = self._name + ' ' + str(s)
 
@@ -220,7 +220,7 @@ class Population(object):
         # add soma address(es)
         self.soma.add(self.setup, addresses)
         # add synapses
-        for k in self.synapses.keys():
+        for k in list(self.synapses.keys()):
             ch = self.synapses[k].channel
             soma_addr = addresses
             syn_addr = self.__soma2syn__(soma_addr, synapses=[k])
@@ -272,7 +272,7 @@ class Population(object):
         for s in synapses:
             syn_block = self.neuronblock.synapses[s]
             if syn_dim_names == None:
-                syn_dim_names = syn_block.dims.keys()
+                syn_dim_names = list(syn_block.dims.keys())
                 syndtp = np.dtype([(str(k), 'uint32') for k in syn_dim_names])
                 # NOTE: the str type cast is because numpy dtype doesn't support
                 # unicode strings
@@ -328,7 +328,7 @@ class Population(object):
         addresses for the neurons in the population.
         """
         #self.soma.sort() #sadique: is this necessary ??
-        for s in self.neuronblock.synapses.keys():
+        for s in list(self.neuronblock.synapses.keys()):
             syn_id = self.neuronblock.synapses[s].id
             self.synapses[syn_id] = S = AddrGroup(self.
                 neuronblock.synapses[s].id)
@@ -463,7 +463,7 @@ class Population(object):
             self.soma.populate_line(
                 setup, chipid, grouptype='out', addresses=id_list)
         except Exception as e:
-            print("Chip {0} does not contain one or more of the specified addresses.".format(chipid))
+            print(("Chip {0} does not contain one or more of the specified addresses.".format(chipid)))
             raise e
         self.__populate_synapses__()
 
@@ -542,14 +542,14 @@ def _sort_by_logical(S):
     """
     Sort in-place according to the logical addesses order
     """
-    return S[np.lexsort(zip(*S[:, :]))]
+    return S[np.lexsort(list(zip(*S[:, :])))]
 
 
 def _sort_by_antilogical(S):
     """
     Sort in-place according to the logical addesses order
     """
-    return S[np.lexsort(zip(*S[:, ::-1]))]
+    return S[np.lexsort(list(zip(*S[:, ::-1])))]
 
 
 def _flatten(l, ltypes=(list, tuple, np.ndarray)):

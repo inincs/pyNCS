@@ -14,7 +14,7 @@
 #chip=pyNCS.Chip('/home/emre/Neuron/software/pyNCS/src/pyNCS/pads_ifslwta.csv')
 import numpy as np
 from xml.dom import minidom as md
-from urllib2 import urlopen
+from urllib.request import urlopen
 #chip=pyNCS.Chip('/home/emre/Neuron/software/pyNCS/src/pyNCS/pads_ifslwta.csv')
 from numpy import log,exp
 
@@ -41,7 +41,7 @@ class params():
         self.loadXML(xml_filename)    
 
         #Some default parameters
-        for i,k in self.initial_parameters.items():
+        for i,k in list(self.initial_parameters.items()):
             self.cur.update({i:k})
 
         self.cur.update(self.conf.get_parameters())                     
@@ -70,7 +70,7 @@ class params():
         for p in n.getElementsByTagName('parameter'):
             #Considfer defining a function (for esthetic reasons)
             self.constant_parameters[str(p.getAttribute( 'id' ))]=float(eval(p.getAttribute( 'value' )))
-        for i in self.constant_parameters.keys():
+        for i in list(self.constant_parameters.keys()):
             globals()[i]=Symbol(i)
             self.cur[i]=self.constant_parameters[i]
 
@@ -80,7 +80,7 @@ class params():
         for p in n.getElementsByTagName('parameter'):
             #Considfer defining a function (for esthetic reasons)
             self.calib_parameters[str(p.getAttribute( 'id' ))]=float(eval(p.getAttribute( 'value' )))
-        for i in self.calib_parameters.keys():
+        for i in list(self.calib_parameters.keys()):
             globals()[i]=Symbol(i)
             self.cur[i]=self.calib_parameters[i]
 
@@ -90,7 +90,7 @@ class params():
         for p in n.getElementsByTagName('parameter'):
             #Considfer defining a function (for esthetic reasons)
             self.initial_parameters[str(p.getAttribute( 'id' ))]=float(eval(p.getAttribute( 'value' )))
-        for i in self.initial_parameters.keys():
+        for i in list(self.initial_parameters.keys()):
             globals()[i]=Symbol(i)
             self.cur[i]=self.initial_parameters[i]
 
@@ -100,7 +100,7 @@ class params():
         for p in n.getElementsByTagName('name'):
             #Considfer defining a function (for esthetic reasons)
             self.translation_names[str(p.getAttribute( 'standard' ))]=p.getAttribute( 'native' )
-        for i in self.translation_names.keys():
+        for i in list(self.translation_names.keys()):
             globals()[i]=Symbol(i)
             self.cur[i]=self.translation_names[i]
 
@@ -111,14 +111,14 @@ class params():
             #Considfer defining a function (for esthetic reasons)
             self.translation_reverse[str(p.getAttribute( 'standardname' ))]=eval(p.getAttribute( 'body' ))
             
-        for i in self.translation_reverse.keys():            
+        for i in list(self.translation_reverse.keys()):            
             self.cur[i]=self.translation_reverse[i]
 
     def translate(self,varname,val):
         if val<1e-32: val=1e-32
         
         self.cur.update({varname:val})
-        if varname in self.translation_names.values():
+        if varname in list(self.translation_names.values()):
         #Is transformed name: do forward first
             self.update()
     

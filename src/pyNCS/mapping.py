@@ -128,8 +128,8 @@ class Mapping(object):
 
         #__connect__ function return a list of indexes of addresses
         connlist =  getattr(self, '__connect_' + fashion + '__', )(
-                range(len(groupsrc)), 
-                range(len(groupdst)),
+                list(range(len(groupsrc))), 
+                list(range(len(groupdst))),
                                                    **fashion_kwargs)
 
         #... and the following function creates a list of physical addresses
@@ -147,7 +147,7 @@ class Mapping(object):
             self.groupdst = groupdst.__copy__()[np.array(connlist)[:,1]]
 
             if connect_kwargs:
-                for k,v in connect_kwargs.iteritems():
+                for k,v in connect_kwargs.items():
                     field_idx = self.groupdst.addrspec.addrDict[k]
                     #Slow, consider vectorizing
                     if not hasattr(v, '__len__'):
@@ -332,7 +332,7 @@ class Mapping(object):
         from collections import defaultdict
         mapping_dict = defaultdict(list)
         func = lambda srctgt: mapping_dict[srctgt[0]].append(srctgt[1])
-        map(func, self.mapping)
+        list(map(func, self.mapping))
         return mapping_dict
 
 
@@ -378,7 +378,7 @@ class PMapping(Mapping):
             connlist = self.complete(connlist)
 
             if connect_kwargs:
-                for k,v in connect_kwargs.iteritems():
+                for k,v in connect_kwargs.items():
                     field_idx = self.groupdst.addrspec.addrDict[k]
                     #Slow, consider vectorizing
                     if not hasattr(v, '__len__'):

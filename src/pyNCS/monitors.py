@@ -6,7 +6,7 @@
 # Copyright : University of Zurich, Giacomo Indiveri, Emre Neftci, Sadique Sheik, Fabio Stefanini
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
-from __future__ import absolute_import
+
 import numpy as np
 import pylab
 from collections import defaultdict
@@ -275,7 +275,7 @@ class PlotBase(object):
             ll = np.cumsum(ll)
             ll /= ll.max() / len(self)
             for i, mon in enumerate(self):
-                print(ll[i], ll[i+1])
+                print((ll[i], ll[i+1]))
                 yield mon.get_remapped_spikelist(
                         s_start=float(ll[i]),
                         s_stop=float(ll[i+1])),\
@@ -529,8 +529,8 @@ class SpikeMonitor(object):
         """
         Return a spikelist whose addresses are mapped linearly to the interval (s_start, s_stop)
         """
-        mapping = dict(zip(
-            self.addr_group.laddr, self.get_normalized_addr(s_start, s_stop)))
+        mapping = dict(list(zip(
+            self.addr_group.laddr, self.get_normalized_addr(s_start, s_stop))))
         return self.sl.id_list_map(mapping)
 
     def raster_plot(self, plot_kwargs={}, *args, **kwargs):
@@ -559,7 +559,7 @@ class SpikeMonitor(object):
         Optionally, kwargs can be passed: these are added to the plot argumetns, but does not save them.
         """
         plot_kwargs_mon = kwargs.copy()
-        for k, v in self.plot_args.iteritems():
+        for k, v in self.plot_args.items():
             plot_kwargs_mon.setdefault(k, v)
         return plot_kwargs_mon
 
@@ -605,14 +605,14 @@ class monitorSpikeList(SpikeList):
         '''
         mapped_SL = monitorSpikeList(self.channel, spikes=[], id_list=[])
         addr_SL = self.id_list()
-        for k, v in mapping.iteritems():
+        for k, v in mapping.items():
             if k in addr_SL:
                 try:
                     mapped_SL[v] = self[k]
                 except KeyError:
                     pass
 
-        all_others = np.setdiff1d(self.id_list(), mapping.keys())
+        all_others = np.setdiff1d(self.id_list(), list(mapping.keys()))
         for k in all_others:
             mapped_SL[k] = self[k]
 

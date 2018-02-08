@@ -44,9 +44,9 @@ class TestSequenceFunctions(unittest.TestCase):
         N=10
         #for transition populations + state populations (for inital and test)
         test_pops=create_default_population(self.nsetup,'seq',N)
-        addrs=self.nsetup.mon[test_pops.soma.channel].addrLogicalConstruct([range(N)])
+        addrs=self.nsetup.mon[test_pops.soma.channel].addrLogicalConstruct([list(range(N))])
         for i,a in enumerate(test_pops.soma.laddr):
-            self.assert_(a in addrs)
+            self.assertTrue(a in addrs)
 
     def testMonitors(self):
         N=3
@@ -128,9 +128,9 @@ class TestSequenceFunctions(unittest.TestCase):
         P = int(p*127)
         for i in s.soma.paddr:
             for j in t.synapses['excitatory0'].paddr:
-                self.assert_([i, j, P] in m.mapping)
+                self.assertTrue([i, j, P] in m.mapping)
         for n in range(len(s.soma.paddr)):
-            self.assert_([s.soma.paddr[n], t.synapses['excitatory0'].paddr[n], P] in m.mapping)
+            self.assertTrue([s.soma.paddr[n], t.synapses['excitatory0'].paddr[n], P] in m.mapping)
         self.nsetup.mapping.merge(m)
         self.nsetup.prepare()
         self.nsetup.chips['ifslwta'].set_parameter('nsynstdw0',.5)
@@ -153,9 +153,9 @@ class TestSequenceFunctions(unittest.TestCase):
         P = int(p*127)
         for i in s.soma.paddr:
             for j in t.synapses['excitatory0'].paddr:
-                self.assert_([i, j, P] in m.mapping)
+                self.assertTrue([i, j, P] in m.mapping)
         for n in range(len(s.soma.paddr)):
-            self.assert_([s.soma.paddr[n], t.synapses['excitatory0'].paddr[n], P] in m.mapping)
+            self.assertTrue([s.soma.paddr[n], t.synapses['excitatory0'].paddr[n], P] in m.mapping)
 
         self.nsetup.prepare()            
         input_stim=s.soma.spiketrains_poisson(400)
@@ -173,8 +173,8 @@ class TestSequenceFunctions(unittest.TestCase):
         m=pyNCS.PMapping('')
         M = np.random.randint(0,2,size=(len(s.soma),2))
         m.mapping.extend(np.random.randint(0,50000,size=(500000,2)))       
-        for j in xrange(len(s)):   
-            print j      
+        for j in range(len(s)):   
+            print(j)      
             m.connect(s.soma[j], t.synapses['inhibitory'][(j*2):((j+1)*2)], fashion = 'by_boolean_matrix', fashion_kwargs={'connection': M[[j],:]})        
         
 

@@ -12,14 +12,15 @@ et=pyNCS.et
 
 # set dirnames
 def set_default_biases(nsetup=None, biases_dir='biases/'):
-    for c in nsetup.chips.itervalues():
+    for c in nsetup.chips.values():
 
         filename=''
         try:
             if not c.virtual:
                 filename=biases_dir+'defaultBiases_'+c.chipclass.lower()
                 c.load_parameters(filename)
-        except IOError as (errno, strerror):
+        except IOError as xxx_todo_changeme:
+            (errno, strerror) = xxx_todo_changeme.args
             warnings.warn("I/O error({0}): {1}".format(errno, strerror))
             warnings.warn("Could not find file {0}".format(filename))
             pass

@@ -22,9 +22,9 @@ for i in range(max(fps,0)):
     out[0]
 
 t1 = time.time()-t0
-print t1
+print(t1)
 
-print 'Performance is {0} events per second'.format(float(stim[0].raw_data().__len__())/t1*fps)
+print('Performance is {0} events per second'.format(float(stim[0].raw_data().__len__())/t1*fps))
 
 
 #2**15 neurons, 100 Hz, 1s. Coding, Decoding. 298682 events/second

@@ -6,7 +6,7 @@
 # Copyright : University of Zurich, Giacomo Indiveri, Emre Neftci, Sadique Sheik, Fabio Stefanini
 # Licence : GPLv2
 #-----------------------------------------------------------------------------
-from __future__ import with_statement, absolute_import
+
 from xml.dom import minidom as md
 from . import pyST
 from .pyST.STas import addrSpec
@@ -70,12 +70,12 @@ class Block():
         else:
             doc = etree.Element('synapse')
         doc.attrib['type'] = self.TYPE
-        for k, v in self.dims.items():
+        for k, v in list(self.dims.items()):
             dimdoc = etree.Element('dim')
             dimdoc.attrib['id'] = k
             dimdoc.attrib['range'] = str(v)
             doc.append(dimdoc)
-        for k, v in self.parameters.items():
+        for k, v in list(self.parameters.items()):
             paramdoc = etree.Element('parameter')
             paramdoc.attrib['id'] = k
             paramdoc.attrib['SignalName'] = v.SignalName
@@ -98,7 +98,7 @@ class Block():
         self.id = doc.get('id')
         for elm in doc:
             if elm.tag == 'dim':
-                if self.dims.has_key(elm.get('id')):
+                if elm.get('id') in self.dims:
                     self.dims[elm.get('id')] = \
                         self.dims[elm.get('id')] + eval(elm.get('range'))
                 else:
@@ -160,7 +160,7 @@ class NeuronBlock():
         somadoc.attrib['id'] = self.soma.id
         doc.append(somadoc)
         # Synapses
-        for k, v in self.synapses.items():
+        for k, v in list(self.synapses.items()):
             syndoc = v.__getNHML__()
             syndoc.attrib['id'] = k
             doc.append(syndoc)
@@ -187,7 +187,7 @@ class NeuronBlock():
                 group = Block(self.neurochip)
                 group.__parseNHML__(elm)
                 self.synapses[elm.get('id')] = group
-        for k, v in self.synapses.items():
+        for k, v in list(self.synapses.items()):
             self.synapses[k].addresses = self.expand_dims(k)
         self.soma.addresses = self.expand_dims()
 
@@ -206,11 +206,11 @@ class NeuronBlock():
             keys = [i['id'] for i in self.neurochip.aerIn.addrConf]
         # here they should be in the same order of the
         # address specification
-        for k in [i for i in keys if i in self.soma.dims.keys()]:
+        for k in [i for i in keys if i in list(self.soma.dims.keys())]:
             dims_array.append(self.soma.dims[k])
         if synapse:
             s = self.synapses[synapse]
-            for k in [i for i in keys if i in s.dims.keys()]:
+            for k in [i for i in keys if i in list(s.dims.keys())]:
                 dims_array = dims_array
                 dims_array.append(s.dims[k])  # do it with dict.values()!
         if not len(dims_array) > 0:
@@ -499,7 +499,7 @@ class NeuroChip(Chip):
         Returns nhml representation of this object.
         '''
         doc = Chip.__getNHML__(self)
-        for k, v in self.neuron.items():
+        for k, v in list(self.neuron.items()):
             neurodoc = v.__getNHML__()
             neurodoc.attrib['id'] = k
             doc.append(neurodoc)
